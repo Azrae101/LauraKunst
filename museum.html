@@ -100,14 +100,13 @@
             margin-top: 2rem;
             font-family: 'Cinzel', serif;
             letter-spacing: 2px;
-            transition: all 0.3s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
         }
-
+        
         .start-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
-            background: linear-gradient(to right, #b88a5c, #9c6a35);
+            box-shadow: 0 7px 20px rgba(0, 0, 0, 0.4);
+            transform: translateY(-2px);
         }
 
         /* Museum Container */
@@ -241,12 +240,6 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            transition: all 0.3s ease;
-        }
-
-        .close-viewer:hover {
-            background: rgba(255, 215, 0, 0.2);
-            transform: rotate(90deg);
         }
 
         /* Navigation Arrows */
@@ -266,11 +259,6 @@
             justify-content: center;
             align-items: center;
             z-index: 20;
-            transition: all 0.3s ease;
-        }
-
-        .nav-arrow:hover {
-            background: rgba(255, 215, 0, 0.2);
         }
 
         .nav-arrow.left {
@@ -288,8 +276,10 @@
             overflow-x: auto;
             overflow-y: hidden;
             scroll-behavior: smooth;
-            background: linear-gradient(180deg, #2a2520 0%, #1a1510 50%, #2a2520 100%);
+            background: linear-gradient(180deg, #3a3028 0%, #2a2318 30%, #1a1510 100%);
             position: relative;
+            perspective: 1000px;
+            perspective-origin: 50% 60%;
         }
 
         #museum-scene::-webkit-scrollbar {
@@ -309,27 +299,64 @@
             display: flex;
             height: 100%;
             padding: 0 10%;
+            padding-right: 10%;
             align-items: center;
             gap: 8%;
-            min-width: 480%;
+            min-width: max-content;
             background: 
                 repeating-linear-gradient(
                     90deg,
-                    #1a1510 0px,
-                    #1a1510 2px,
-                    #0f0a08 2px,
-                    #0f0a08 4px
+                    #2a2318 0px,
+                    #2a2318 2px,
+                    #1f1810 2px,
+                    #1f1810 4px
                 ),
-                linear-gradient(180deg, #1a1510 0%, #2a2520 50%, #1a1510 100%);
+                linear-gradient(180deg, #2a2318 0%, #3a3028 50%, #2a2318 100%);
             background-size: 120px 100%, 100% 100%;
+            transform-style: preserve-3d;
+            transform: rotateX(5deg) translateY(-8%);
+        }
+        
+        /* 3D Floor */
+        .gallery-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -50%;
+            right: -50%;
+            height: 45%;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    #5a4f45 0px,
+                    #5a4f45 100px,
+                    #4d4238 100px,
+                    #4d4238 102px
+                ),
+                repeating-linear-gradient(
+                    0deg,
+                    #5a4f45 0px,
+                    #5a4f45 100px,
+                    #4d4238 100px,
+                    #4d4238 102px
+                ),
+                linear-gradient(180deg, #5a4f45 0%, #3a3028 100%);
+            background-size: 100px 100%, 100px 100%, 100% 100%;
+            transform: rotateX(70deg) translateY(25%) translateZ(-150px);
+            transform-origin: bottom;
+            box-shadow: 
+                0 -30px 60px rgba(0, 0, 0, 0.7),
+                inset 0 5px 20px rgba(0, 0, 0, 0.5);
+            pointer-events: none;
+            opacity: 0.95;
         }
         
         .gallery-wrapper::before {
             content: '';
             position: absolute;
             top: 0;
-            left: 0;
-            right: 0;
+            left: -50%;
+            right: -50%;
             bottom: 0;
             background: 
                 repeating-linear-gradient(
@@ -359,9 +386,10 @@
         }
         
         .painting-section.artist-section .painting {
-            width: 350px;
-            height: 450px;
+            width: 400px;
+            height: 500px;
             flex-shrink: 0;
+            overflow: visible;
         }
         
         .painting-section.artist-section .painting img {
@@ -393,34 +421,76 @@
         }
 
         .painting {
-            background-color: #1a1a1a;
-            border: 15px solid #8b5a2b;
-            box-shadow: 
-                0 20px 60px rgba(0, 0, 0, 0.8),
-                inset 0 0 0 2px rgba(212, 175, 55, 0.2);
             cursor: pointer;
-            transition: all 0.4s ease;
             display: flex;
             justify-content: center;
             align-items: center;
-            overflow: hidden;
-            width: 450px;
-            height: 600px;
+            overflow: visible;
+            width: 500px;
+            height: 650px;
+            position: relative;
+            background: 
+                radial-gradient(ellipse at center, #8b5a2b 0%, #5a3a1e 100%);
+            padding: 50px;
+            box-sizing: border-box;
+            box-shadow: 
+                0 40px 100px rgba(0, 0, 0, 0.9),
+                inset 0 0 0 1px rgba(212, 175, 55, 0.3);
+            border-radius: 15px;
+            transition: all 0.4s ease;
         }
 
         .painting:hover {
             transform: translateY(-10px) scale(1.02);
             box-shadow: 
-                0 30px 80px rgba(0, 0, 0, 0.9),
-                0 0 40px rgba(212, 175, 55, 0.5),
-                inset 0 0 0 2px rgba(212, 175, 55, 0.4);
-            border-color: #a67c52;
+                0 60px 120px rgba(0, 0, 0, 1),
+                0 0 30px rgba(212, 175, 55, 0.3);
+        }
+
+        .painting-inner {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 
+                inset 0 0 40px rgba(0, 0, 0, 0.8),
+                0 0 0 2px rgba(90, 60, 30, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* Wood grain effect for frame */
+        .painting::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                linear-gradient(90deg, 
+                    rgba(90, 60, 30, 0.1) 0%, 
+                    rgba(212, 175, 55, 0.2) 50%, 
+                    rgba(90, 60, 30, 0.1) 100%),
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(60, 40, 20, 0.3) 2px,
+                    rgba(60, 40, 20, 0.3) 4px
+                );
+            border-radius: 15px;
+            pointer-events: none;
         }
 
         .painting img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            display: block;
+            position: relative;
+            z-index: 1;
         }
 
         .painting-label {
@@ -444,15 +514,6 @@
             color: #f5e6c8;
             line-height: 1.6;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        
-        .painting-info:hover {
-            box-shadow: 
-                0 10px 30px rgba(0, 0, 0, 0.7),
-                0 0 20px rgba(212, 175, 55, 0.3);
-            border-color: rgba(212, 175, 55, 0.5);
         }
         
         .painting-info .title {
@@ -476,31 +537,11 @@
             margin-bottom: 15px;
         }
         
-        .painting-info .description.blurred {
-            filter: blur(5px);
-            user-select: none;
-            pointer-events: none;
-        }
-        
         .painting-info .meta {
             font-size: 0.85rem;
             color: #b8a580;
             padding-top: 10px;
             border-top: 1px solid rgba(212, 175, 55, 0.2);
-        }
-        
-        .painting-info .meta.blurred {
-            filter: blur(5px);
-            user-select: none;
-            pointer-events: none;
-        }
-        
-        .painting-info .read-hint {
-            text-align: center;
-            font-size: 0.75rem;
-            margin-top: 12px;
-            color: #8b7355;
-            font-style: italic;
         }
 
         /* Gallery Navigation Buttons */
@@ -520,13 +561,6 @@
             justify-content: center;
             align-items: center;
             z-index: 15;
-            transition: all 0.3s ease;
-        }
-
-        .gallery-nav:hover {
-            background: rgba(166, 124, 82, 1);
-            transform: translateY(-50%) scale(1.1);
-            box-shadow: 0 5px 20px rgba(212, 175, 55, 0.5);
         }
 
         .gallery-nav.left {
@@ -535,6 +569,123 @@
 
         .gallery-nav.right {
             right: 30px;
+        }
+        
+        /* Shadowy Figures */
+        .shadow-figure {
+            position: absolute;
+            bottom: -180px;
+            width: auto;
+            height: 550px;
+            pointer-events: none;
+            z-index: 2;
+            opacity: 0.9;
+            filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.9));
+            display: flex;
+            align-items: flex-end;
+        }
+        
+        .shadow-figure img {
+            height: 150%;
+            width: auto;
+            object-fit: contain;
+            object-position: bottom;
+            display: block;
+        }
+        
+        .shadow-figure.left {
+            left: -350px;
+        }
+        
+        .shadow-figure.right {
+            right: -350px;
+        }
+        
+        .shadow-figure.small {
+            height: 480px;
+        }
+        
+        /* first figure (p1): standing woman */
+        .shadow-figure.p1 {
+            height: 780px;
+            left: 400px;
+            bottom: -425px;
+        }
+
+        /* second figure (p2): standing man */
+        .shadow-figure.p2 {
+            height: 460px;
+            left: 820px;
+            bottom: -190px;
+        }
+
+        /* third figure (p3): walking man */
+        .shadow-figure.p3 {
+            height: 490px;
+            right: -350px;
+            bottom: -290px;
+        }
+        
+        /* fourth figure (p4): picture man */
+        .shadow-figure.p4 {
+            height: 480px;
+            left: -100px;
+            bottom: -225px;
+        }
+        
+        /* fifth figure (p5): picture girl */
+        .shadow-figure.p5 {
+            height: 420px;
+            left: -200px;
+            bottom: -200px;
+        }
+        
+        .shadow-figure.p5 img {
+            transform: scaleX(-1);
+        }
+        
+        /* sixth figure (p6): new person at Urban Symphony */
+        .shadow-figure.p6 {
+            height: 420px;
+            left: -200px;
+            bottom: -190px;
+        }
+        
+        /* Museum Ending Section */
+        .museum-ending {
+            flex: 0 0 auto;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 3rem;
+            text-align: center;
+            margin-right: 5%;
+        }
+        
+        .ending-content {
+            max-width: 600px;
+            background: rgba(20, 20, 40, 0.85);
+            padding: 3rem;
+            border-radius: 15px;
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
+        }
+        
+        .ending-content h2 {
+            font-family: 'Cinzel', serif;
+            color: #d4af37;
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .ending-content p {
+            color: #f5e6c8;
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 1rem;
         }
 
         /* Loading Screen */
@@ -623,9 +774,9 @@
             <div class="intro-content">
                 <h1>Virtual Art Gallery</h1>
                 <div class="artist-info">
-                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=688&q=80" alt="Artist Photo" class="artist-photo">
+                    <img src="laura.jpeg" alt="Artist Photo" class="artist-photo">
                     <div class="artist-description">
-                        <p>Welcome to the virtual gallery of <strong>Alexandra Monet</strong>, a contemporary visual artist whose work explores the intersection of nature and human emotion. With a career spanning over 15 years, Alexandra's paintings have been exhibited in galleries across Europe and North America.</p>
+                        <p>Welcome to the virtual gallery of <strong>Laura Kruuse</strong>, a contemporary visual artist whose work explores the intersection of nature and human emotion. With a career spanning over 15 years, Laura's paintings have been exhibited in galleries across Europe and North America.</p>
                         <br>
                         <p>Her latest collection, "Ethereal Landscapes," captures the transient beauty of natural environments through a unique blend of traditional techniques and digital experimentation. Each piece invites viewers to contemplate their relationship with the natural world.</p>
                     </div>
@@ -642,10 +793,9 @@
             
             <!-- Controls Info -->
             <div class="controls">
-                <p><i class="fas fa-chevron-left"></i> <i class="fas fa-chevron-right"></i> Use <strong>Arrow Buttons</strong> or <strong>Scroll Horizontally</strong> to navigate</p>
+                <p><i class="fas fa-chevron-left"></i> <i class="fas fa-chevron-right"></i> Use <strong>Arrow Buttons</strong> or <strong>Scroll</strong> to navigate</p>
                 <p><i class="fas fa-mouse-pointer"></i> <strong>Click on paintings</strong> to view details | <strong>ESC</strong> to exit painting view</p>
             </div>
-            
             <!-- Navigation Arrows for Painting Viewer -->
             <div class="nav-arrow left" id="prev-painting" style="display: none;">
                 <i class="fas fa-chevron-left"></i>
@@ -722,13 +872,13 @@
                 {
                     id: 0,
                     isArtist: true,
-                    title: "Alexandra Monet",
-                    artistName: "Alexandra Monet",
-                    description: "Welcome to the virtual gallery of Alexandra Monet, a contemporary visual artist whose work explores the intersection of nature and human emotion. With a career spanning over 15 years, Alexandra's paintings have been exhibited in galleries across Europe and North America. Her latest collection, 'Ethereal Landscapes,' captures the transient beauty of natural environments through a unique blend of traditional techniques and digital experimentation.",
+                    title: "Laura Kruuse",
+                    artistName: "Laura Kruuse",
+                    description: "Welcome to the virtual gallery of Laura Kruuse, a contemporary visual artist whose work explores the intersection of nature and human emotion. With a career spanning over 15 years, Laura's paintings have been exhibited in galleries across Europe and North America. Her latest collection, 'Ethereal Landscapes,' captures the transient beauty of natural environments through a unique blend of traditional techniques and digital experimentation.",
                     medium: "Contemporary Visual Artist",
                     dimensions: "15+ Years Experience",
                     year: "Active Since 2011",
-                    placeholder: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=688&q=80"
+                    placeholder: "laura.jpeg"
                 },
                 {
                     id: 1,
@@ -832,10 +982,14 @@
                         paintingEl.dataset.id = painting.id;
                         paintingEl.dataset.index = index;
                         
+                        const paintingInner = document.createElement('div');
+                        paintingInner.className = 'painting-inner';
+                        
                         const img = document.createElement('img');
                         img.src = painting.placeholder;
                         img.alt = painting.title;
-                        paintingEl.appendChild(img);
+                        paintingInner.appendChild(img);
+                        paintingEl.appendChild(paintingInner);
                         
                         const bio = document.createElement('div');
                         bio.className = 'artist-bio';
@@ -847,6 +1001,15 @@
                         
                         section.appendChild(paintingEl);
                         section.appendChild(bio);
+                        
+                        // Add p3 (walking man) after the artist section
+                        const p3Figure = document.createElement('div');
+                        p3Figure.className = 'shadow-figure p3';
+                        const p3Img = document.createElement('img');
+                        p3Img.src = 'p3.png';
+                        p3Img.alt = 'Museum visitor';
+                        p3Figure.appendChild(p3Img);
+                        section.appendChild(p3Figure);
                     } else {
                         // Regular painting
                         const paintingEl = document.createElement('div');
@@ -854,10 +1017,14 @@
                         paintingEl.dataset.id = painting.id;
                         paintingEl.dataset.index = index;
                         
+                        const paintingInner = document.createElement('div');
+                        paintingInner.className = 'painting-inner';
+                        
                         const img = document.createElement('img');
                         img.src = painting.placeholder;
                         img.alt = painting.title;
-                        paintingEl.appendChild(img);
+                        paintingInner.appendChild(img);
+                        paintingEl.appendChild(paintingInner);
                         
                         // Add painting info card to the right
                         const infoCard = document.createElement('div');
@@ -865,27 +1032,12 @@
                         infoCard.innerHTML = `
                             <div class="title">${painting.title}</div>
                             <div class="year">${painting.year}</div>
-                            <div class="description blurred">${painting.description}</div>
-                            <div class="meta blurred">
+                            <div class="description">${painting.description}</div>
+                            <div class="meta">
                                 <strong>Medium:</strong> ${painting.medium}<br>
                                 <strong>Dimensions:</strong> ${painting.dimensions}
                             </div>
-                            <div class="read-hint">Click to read full description</div>
                         `;
-                        
-                        // Click to reveal description
-                        infoCard.addEventListener('click', (e) => {
-                            e.stopPropagation();
-                            const desc = infoCard.querySelector('.description');
-                            const meta = infoCard.querySelector('.meta');
-                            const hint = infoCard.querySelector('.read-hint');
-                            
-                            if (desc.classList.contains('blurred')) {
-                                desc.classList.remove('blurred');
-                                meta.classList.remove('blurred');
-                                hint.textContent = 'Click painting for detailed view';
-                            }
-                        });
                         
                         // Click painting to open full viewer
                         paintingEl.addEventListener('click', (e) => {
@@ -895,10 +1047,60 @@
                         
                         section.appendChild(paintingEl);
                         section.appendChild(infoCard);
+                        
+                        // Add people viewing the painting (skip artist section)
+                        const peopleImages = ['p1.png', 'p2.png', 'p3.png', 'p4.png', 'p5.png', 'p6.png'];
+                        
+                        // Add p5 BEFORE painting for "Whispers of the Sea"
+                        if (painting.title === "Whispers of the Sea") {
+                            const p5Figure = document.createElement('div');
+                            p5Figure.className = 'shadow-figure p5';
+                            const p5Img = document.createElement('img');
+                            p5Img.src = 'p5.png';
+                            p5Img.alt = 'Museum visitor';
+                            p5Figure.appendChild(p5Img);
+                            section.insertBefore(p5Figure, paintingEl);
+                        }
+                        
+                        // Map specific figures to specific paintings (added AFTER painting)
+                        const figureMapping = {
+                            "Ethereal Dawn": ['p1'],
+                            "Whispers of the Sea": ['p2'],
+                            "Urban Symphony": ['p6'],  // New person p6
+                            "Desert Bloom": ['p4']
+                        };
+                        
+                        const figures = figureMapping[painting.title] || [];
+                        
+                        figures.forEach(figureClass => {
+                            const figure = document.createElement('div');
+                            figure.className = 'shadow-figure';
+                            figure.classList.add(figureClass);
+                            
+                            const figureImageIndex = parseInt(figureClass.substring(1)) - 1;
+                            const personImg = document.createElement('img');
+                            personImg.src = peopleImages[figureImageIndex];
+                            personImg.alt = 'Museum visitor';
+                            figure.appendChild(personImg);
+                            section.appendChild(figure);
+                        });
                     }
                     
                     galleryWrapper.appendChild(section);
                 });
+                
+                // Add ending section
+                const endingSection = document.createElement('div');
+                endingSection.className = 'museum-ending';
+                endingSection.innerHTML = `
+                    <div class="ending-content">
+                        <h2>Thank You</h2>
+                        <p>Thank you for visiting this virtual gallery and experiencing the artworks of Laura Kruuse.</p>
+                        <p>We hope these pieces inspired you and offered a moment of reflection on the beauty of nature and human emotion.</p>
+                        <p style="margin-top: 2rem; font-style: italic; opacity: 0.8;">~ End of Exhibition ~</p>
+                    </div>
+                `;
+                galleryWrapper.appendChild(endingSection);
             }
             
             // Setup horizontal scroll with arrow keys and vertical scroll
