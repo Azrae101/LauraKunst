@@ -322,8 +322,8 @@
             content: '';
             position: absolute;
             bottom: 0;
-            left: -50%;
-            right: -50%;
+            left: -100%;
+            right: -100%;
             height: 45%;
             background: 
                 repeating-linear-gradient(
@@ -355,8 +355,8 @@
             content: '';
             position: absolute;
             top: 0;
-            left: -50%;
-            right: -50%;
+            left: -100%;
+            right: -100%;
             bottom: 0;
             background: 
                 repeating-linear-gradient(
@@ -919,12 +919,19 @@
             ];
             
             let currentPaintingIndex = 0;
+            let currentSectionIndex = 0;
+            let sections = [];
             
             // Initialize the museum
             function initializeMuseum() {
                 createMuseum();
                 setupMovement();
                 setupPaintingInteractions();
+                
+                // Center the first section (artist) after a brief delay
+                setTimeout(() => {
+                    centerSection(0);
+                }, 100);
             }
             
             // Create the horizontal scrolling gallery
@@ -954,7 +961,7 @@
                 leftNav.className = 'gallery-nav left';
                 leftNav.innerHTML = '<i class="fas fa-chevron-left"></i>';
                 leftNav.addEventListener('click', () => {
-                    scene.scrollBy({ left: -window.innerWidth * 0.8, behavior: 'smooth' });
+                    goToPreviousSection();
                 });
                 museumContainer.appendChild(leftNav);
                 
@@ -962,7 +969,7 @@
                 rightNav.className = 'gallery-nav right';
                 rightNav.innerHTML = '<i class="fas fa-chevron-right"></i>';
                 rightNav.addEventListener('click', () => {
-                    scene.scrollBy({ left: window.innerWidth * 0.8, behavior: 'smooth' });
+                    goToNextSection();
                 });
                 museumContainer.appendChild(rightNav);
             }
@@ -1101,19 +1108,53 @@
                     </div>
                 `;
                 galleryWrapper.appendChild(endingSection);
+                
+                // Store all sections for navigation
+                sections = Array.from(galleryWrapper.querySelectorAll('.painting-section, .museum-ending'));
+            }
+            
+            // Center a specific section
+            function centerSection(index) {
+                if (index < 0 || index >= sections.length) return;
+                
+                const scene = document.getElementById('museum-scene');
+                const section = sections[index];
+                const sectionLeft = section.offsetLeft;
+                const sectionWidth = section.offsetWidth;
+                const sceneWidth = scene.offsetWidth;
+                
+                // Calculate scroll position to center the section
+                const scrollPosition = sectionLeft - (sceneWidth / 2) + (sectionWidth / 2);
+                
+                scene.scrollTo({ left: scrollPosition, behavior: 'smooth' });
+                currentSectionIndex = index;
+            }
+            
+            // Navigate to next section
+            function goToNextSection() {
+                if (currentSectionIndex < sections.length - 1) {
+                    centerSection(currentSectionIndex + 1);
+                }
+            }
+            
+            // Navigate to previous section
+            function goToPreviousSection() {
+                if (currentSectionIndex > 0) {
+                    centerSection(currentSectionIndex - 1);
+                }
             }
             
             // Setup horizontal scroll with arrow keys and vertical scroll
             function setupMovement() {
                 const scene = document.getElementById('museum-scene');
                 
-                // Allow arrow keys to scroll horizontally
+                // Allow arrow keys to navigate between sections
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'ArrowLeft') {
-                        scene.scrollBy({ left: -window.innerWidth * 0.8, behavior: 'smooth' });
+                        goToPreviousSection();
                         e.preventDefault();
                     } else if (e.key === 'ArrowRight') {
-                        scene.scrollBy({ left: window.innerWidth * 0.8, behavior: 'smooth' });
+                        goToNextSection();
                         e.preventDefault();
                     }
                 });
