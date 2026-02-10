@@ -1789,9 +1789,9 @@
             }
 
             .painting {
-                width: min(300px, 90vw);
-                height: min(400px, 60vh);
-                padding: min(30px, 4vw);
+                width: min(350px, 95vw);
+                height: min(480px, 70vh);
+                padding: min(35px, 5vw);
             }
             
             .painting-section.artist-section .painting {
@@ -1859,33 +1859,50 @@
             
             .painting-info .year {
                 font-size: 0.85rem;
+                margin-bottom: 0.75rem;
             }
             
-            .painting-info .description,
+            .painting-info .description {
+                font-size: 0.85rem;
+                display: block;
+            }
+            
             .painting-info .meta {
                 display: none;
+            }
+            
+            .artist-bio {
+                cursor: pointer;
+                transition: background 0.3s ease;
+            }
+            
+            .artist-bio:hover {
+                background: rgba(25, 30, 50, 0.9);
             }
             
             .artist-bio h2 {
                 font-size: 1.2rem;
             }
             
-            .artist-bio p {
+            .artist-bio h2::after {
+                content: 'Read more if you press on my picture...';
+                display: block;
                 font-size: 0.85rem;
+                font-weight: 400;
+                font-family: 'Raleway', sans-serif;
+                color: #d4af37;
+                font-style: italic;
+                margin-top: 0.75rem;
+                line-height: 1.5;
             }
             
-            /* Scale down shadow figures on very small screens */
+            .artist-bio p {
+                display: none;
+            }
+            
+            /* Hide shadow figures on very small screens */
             .shadow-figure {
-                height: 30vh;
-                opacity: 0.8;
-            }
-            
-            .shadow-figure.p1 {
-                height: 45vh;
-            }
-            
-            .shadow-figure.p2 {
-                height: 28vh;
+                display: none;
             }
             
             .sketches-grid {
@@ -2419,6 +2436,12 @@
                             paintingEl.style.pointerEvents = 'auto';
                             paintingEl.style.cursor = 'pointer';
                             paintingEl.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                openPaintingViewer(index);
+                            });
+                            
+                            // Also make bio clickable
+                            bio.addEventListener('click', (e) => {
                                 e.stopPropagation();
                                 openPaintingViewer(index);
                             });
