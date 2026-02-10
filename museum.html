@@ -343,6 +343,8 @@
             transition: all 0.4s ease;
             position: relative;
             overflow: hidden;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .start-btn::before {
@@ -409,9 +411,11 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 20;
+            z-index: 1000;
             transition: all 0.3s ease;
             font-family: 'Cinzel', serif;
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
         }
 
         .help-button:hover {
@@ -432,7 +436,7 @@
             border: 2px solid #8b5a2b;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
             max-width: 320px;
-            z-index: 19;
+            z-index: 999;
             display: none;
             font-size: 0.95rem;
             line-height: 1.6;
@@ -1438,6 +1442,7 @@
             .intro-content {
                 padding: 2.5rem 2rem;
                 max-width: 90%;
+                margin-top: 2rem;
             }
             
             .artist-info {
@@ -1508,8 +1513,19 @@
                 letter-spacing: 0.08em;
             }
             
+            #intro-screen {
+                padding: 2rem 1rem;
+                align-items: flex-start;
+                padding-top: 1rem;
+            }
+            
+            #intro-screen {
+                padding: 2rem 1rem;
+            }
+            
             .intro-content {
                 padding: 2rem 1.5rem;
+                margin-top: 1rem;
             }
             
             .artist-photo {
@@ -1559,6 +1575,7 @@
                 top: 20px;
                 right: 20px;
                 font-size: 1.3rem;
+                z-index: 1000;
             }
             
             .help-tooltip {
@@ -1673,8 +1690,19 @@
                 letter-spacing: 0.05em;
             }
             
+            #intro-screen {
+                padding: 1.5rem 0.5rem;
+                padding-top: 0.5rem;
+                align-items: flex-start;
+            }
+            
+            #intro-screen {
+                padding: 1.5rem 0.5rem;
+            }
+            
             .intro-content {
                 padding: 1.5rem 1rem;
+                margin-top: 0.5rem;
             }
             
             .artist-photo {
@@ -1748,11 +1776,12 @@
             }
             
             .help-button {
-                width: 40px;
-                height: 40px;
+                width: 50px;
+                height: 50px;
                 top: 15px;
                 right: 15px;
-                font-size: 1.1rem;
+                font-size: 1.4rem;
+                z-index: 1000;
             }
             
             .help-tooltip {
@@ -2009,8 +2038,21 @@
                 helpTooltip.classList.toggle('show');
             });
             
+            // Add touch support for mobile
+            helpButton.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                helpTooltip.classList.toggle('show');
+            });
+            
             // Close help tooltip when clicking outside
             document.addEventListener('click', function(e) {
+                if (!helpButton.contains(e.target) && !helpTooltip.contains(e.target)) {
+                    helpTooltip.classList.remove('show');
+                }
+            });
+            
+            document.addEventListener('touchend', function(e) {
                 if (!helpButton.contains(e.target) && !helpTooltip.contains(e.target)) {
                     helpTooltip.classList.remove('show');
                 }
@@ -2024,6 +2066,17 @@
             
             // Start the tour
             startButton.addEventListener('click', function() {
+                startMuseumTour();
+            });
+            
+            // Add touch support for mobile
+            startButton.addEventListener('touchend', function(e) {
+                e.preventDefault();
+                startMuseumTour();
+            });
+            
+            // Function to start museum tour
+            function startMuseumTour() {
                 // Request fullscreen
                 requestFullscreen();
                 
@@ -2031,9 +2084,13 @@
                 setTimeout(() => {
                     introScreen.style.display = 'none';
                     museumContainer.style.display = 'block';
-                    initializeMuseum();
+                    
+                    // Small delay to ensure display:block is applied
+                    setTimeout(() => {
+                        initializeMuseum();
+                    }, 100);
                 }, 1500);
-            });
+            }
             
             // Fullscreen function
             function requestFullscreen() {
