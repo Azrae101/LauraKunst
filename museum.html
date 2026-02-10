@@ -84,8 +84,10 @@
             overflow-y: auto;
             overflow-x: hidden;
             padding: 0;
-            min-height: 100vh;
             display: block;
+            scroll-padding-top: 0;
+            -webkit-overflow-scrolling: touch;
+            height: 100vh;
         }
         
         /* Artistic paint stroke effect */
@@ -114,7 +116,7 @@
             max-width: 900px;
             width: 90%;
             text-align: center;
-            padding: 3.5rem 3rem;
+            padding: 2.5rem 2rem;
             background: 
                 linear-gradient(145deg, 
                     rgba(212, 175, 55, 0.08) 0%,
@@ -142,8 +144,9 @@
             overflow: visible;
             transition: transform 0.5s ease, box-shadow 0.5s ease;
             flex-shrink: 0;
-            margin: 1rem auto;
-            margin-bottom: 2rem;
+            margin: 0 auto;
+            position: relative;
+            top: 0;
         }
         
         .intro-content:hover {
@@ -183,6 +186,7 @@
             font-size: 4rem;
             font-weight: 400;
             color: #f5e6c8;
+            margin-top: 0;
             margin-bottom: 2rem;
             letter-spacing: 0.15em;
             text-transform: uppercase;
@@ -214,8 +218,7 @@
             justify-content: center;
             gap: 3rem;
             margin: 2.5rem 0;
-            max-height: 50vh;
-            overflow-y: auto;
+            overflow-y: visible;
         }
 
         .artist-photo {
@@ -474,7 +477,7 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            z-index: 50;
+            z-index: 1000;
             padding: 2rem;
         }
 
@@ -566,6 +569,14 @@
             display: flex;
             justify-content: center;
             align-items: center;
+            z-index: 100;
+            transition: all 0.3s ease;
+            pointer-events: auto;
+        }
+        
+        .close-viewer:hover {
+            background: rgba(212, 175, 55, 0.9);
+            transform: scale(1.1);
         }
 
         /* Navigation Arrows */
@@ -584,7 +595,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            z-index: 20;
+            z-index: 100;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-arrow:hover {
+            background: rgba(212, 175, 55, 0.9);
+            transform: translateY(-50%) scale(1.1);
         }
 
         .nav-arrow.left {
@@ -754,6 +771,15 @@
             max-height: 500px;
             flex-shrink: 0;
             overflow: visible;
+            cursor: default;
+            pointer-events: none;
+        }
+        
+        .painting-section.artist-section .painting:hover {
+            transform: none;
+            box-shadow: 
+                0 40px 100px rgba(0, 0, 0, 0.9),
+                inset 0 0 0 1px rgba(212, 175, 55, 0.3);
         }
         
         .painting-section.artist-section .painting img {
@@ -761,7 +787,7 @@
         }
         
         .artist-bio {
-            max-width: 400px;
+            max-width: 500px;
             max-height: 60vh;
             overflow-y: auto;
             background: rgba(20, 20, 40, 0.85);
@@ -810,9 +836,9 @@
                 0 40px 100px rgba(0, 0, 0, 0.9),
                 inset 0 0 0 1px rgba(212, 175, 55, 0.3);
             border-radius: 8px;
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            will-change: transform;
+            transition: box-shadow 0.5s ease;
             backface-visibility: hidden;
+            transform: translateZ(0);
             background: 
                 /* Gold inner border */
                 radial-gradient(ellipse at center, 
@@ -822,11 +848,10 @@
         }
 
         .painting:hover {
-            transform: scale(1.02);
             box-shadow: 
                 0 50px 110px rgba(0, 0, 0, 0.95),
-                0 0 40px rgba(212, 175, 55, 0.4),
-                inset 0 0 0 1px rgba(212, 175, 55, 0.5);
+                0 0 50px rgba(212, 175, 55, 0.6),
+                inset 0 0 0 1px rgba(212, 175, 55, 0.6);
         }
 
         .painting-inner {
@@ -909,6 +934,7 @@
             position: relative;
             z-index: 2;
             pointer-events: none;
+            user-select: none;
         }
 
         .painting-label {
@@ -924,7 +950,7 @@
         }
         
         .painting-info {
-            max-width: 350px;
+            max-width: 450px;
             width: 100%;
             max-height: 60vh;
             overflow-y: auto;
@@ -1038,7 +1064,7 @@
         /* first figure (p1): standing woman */
         .shadow-figure.p1 {
             height: 78vh;
-            left: 20%;
+            left: -5%;
             bottom: -43vh;
         }
 
@@ -1178,10 +1204,9 @@
             box-shadow: 
                 0 10px 30px rgba(0, 0, 0, 0.3),
                 inset 0 1px 0 rgba(255, 255, 255, 0.8);
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), z-index 0s;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             flex: 0 0 280px;
             position: relative;
-            will-change: transform;
             transform-origin: center center;
             backface-visibility: hidden;
         }
@@ -1210,7 +1235,7 @@
         }
         
         .sketch-item:nth-child(1):hover {
-            transform: rotate(-3deg) translateY(20px) scale(1.04);
+            transform: rotate(-3deg) translateY(20px) scale(1.05);
             z-index: 10;
             box-shadow: 
                 0 20px 50px rgba(0, 0, 0, 0.4),
@@ -1223,7 +1248,7 @@
         }
         
         .sketch-item:nth-child(2):hover {
-            transform: rotate(2deg) translateY(-10px) scale(1.04);
+            transform: rotate(2deg) translateY(-10px) scale(1.05);
             z-index: 10;
             box-shadow: 
                 0 20px 50px rgba(0, 0, 0, 0.4),
@@ -1236,7 +1261,7 @@
         }
         
         .sketch-item:nth-child(3):hover {
-            transform: rotate(-1deg) translateY(30px) scale(1.04);
+            transform: rotate(-1deg) translateY(30px) scale(1.05);
             z-index: 10;
             box-shadow: 
                 0 20px 50px rgba(0, 0, 0, 0.4),
@@ -1249,7 +1274,7 @@
         }
         
         .sketch-item:nth-child(4):hover {
-            transform: rotate(3deg) translateY(5px) scale(1.04);
+            transform: rotate(3deg) translateY(5px) scale(1.05);
             z-index: 10;
             box-shadow: 
                 0 20px 50px rgba(0, 0, 0, 0.4),
@@ -1258,7 +1283,7 @@
         }
         
         .sketch-item:hover {
-            transform: scale(1.04);
+            transform: scale(1.05);
             z-index: 10;
             box-shadow: 
                 0 20px 50px rgba(0, 0, 0, 0.4),
@@ -1274,11 +1299,12 @@
             margin-bottom: 15px;
             border: 2px solid rgba(212, 175, 55, 0.2);
             cursor: pointer;
-            transition: opacity 0.3s ease;
+            transition: opacity 0.4s ease, transform 0.4s ease;
         }
         
         .sketch-image:hover {
-            opacity: 0.85;
+            opacity: 0.9;
+            transform: scale(1.02);
         }
         
         /* Sketch zoom modal */
@@ -1458,7 +1484,8 @@
             .artist-info {
                 flex-direction: column;
                 text-align: center;
-                gap: 2rem;
+                gap: 1rem;
+                margin: 0.5rem 0;
             }
             
             .artist-photo {
@@ -1502,7 +1529,7 @@
             
             .shadow-figure.p1 {
                 height: 65vh;
-                left: 15%;
+                left: 5%;
             }
             
             .shadow-figure.p2 {
@@ -1520,28 +1547,29 @@
 
         @media (max-width: 768px) {
             h1 {
-                font-size: 2rem;
+                font-size: 1.6rem;
                 letter-spacing: 0.08em;
+                margin-top: 0;
+                margin-bottom: 0.75rem;
             }
             
             #intro-screen {
-                padding: 1rem 1rem;
+                padding: 0;
+                padding-bottom: 1rem;
+                scroll-padding-top: 0;
                 align-items: flex-start;
-                padding-top: 0.5rem;
-            }
-            
-            #intro-screen {
-                padding: 1rem 1rem;
-                padding-top: 0.5rem;
             }
             
             .intro-content {
-                padding: 2rem 1.5rem;
+                padding: 1.25rem 1.25rem;
+                padding-top: 0.75rem;
+                margin: 0 auto;
+                width: 95%;
             }
             
             .artist-photo {
-                width: 200px;
-                height: 280px;
+                width: 180px;
+                height: 240px;
             }
             
             .artist-description {
@@ -1658,7 +1686,7 @@
             
             .shadow-figure.p1 {
                 height: 55vh;
-                left: 10%;
+                left: 2%;
             }
             
             .shadow-figure.p2 {
@@ -1697,29 +1725,35 @@
         
         @media (max-width: 480px) {
             h1 {
-                font-size: 1.5rem;
+                font-size: 1.3rem;
                 letter-spacing: 0.05em;
+                margin-top: 0;
+                margin-bottom: 0.5rem;
             }
             
             #intro-screen {
-                padding: 1.5rem 0.5rem;
-                padding-top: 0.5rem;
+                padding: 0;
+                padding-bottom: 0.5rem;
                 align-items: flex-start;
-            }
-            
-            #intro-screen {
-                padding: 1.5rem 0.5rem;
+                scroll-padding-top: 0;
             }
             
             .intro-content {
-                padding: 1.5rem 1rem;
-                margin-top: 0.5rem;
+                padding: 0.75rem 0.75rem;
+                padding-top: 0.5rem;
+                margin: 0 auto;
+                width: 98%;
             }
             
             .artist-photo {
-                width: 160px;
-                height: 220px;
-                border-width: 4px;
+                width: 140px;
+                height: 190px;
+                border-width: 3px;
+            }
+            
+            .artist-info {
+                margin: 0.25rem 0;
+                gap: 0.75rem;
             }
             
             .artist-description {
@@ -1904,31 +1938,7 @@
             }
         }
 
-        /* Adjust shadows to work with new background */
-        .sketch-item {
-            background: linear-gradient(135deg, #fffacd 0%, #fff9c4 100%);
-            padding: 20px;
-            border-radius: 3px;
-            border: none;
-            box-shadow: 
-                0 10px 30px rgba(0, 0, 0, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.8);
-            transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s cubic-bezier(0.4, 0, 0.2, 1), z-index 0s;
-            flex: 0 0 280px;
-            position: relative;
-            z-index: 5;
-            will-change: transform;
-            backface-visibility: hidden;
-            transform-origin: center center;
-        }
-
-        .sketch-item:hover {
-            box-shadow: 
-                0 20px 50px rgba(0, 0, 0, 0.4),
-                0 0 20px rgba(212, 175, 55, 0.3),
-                inset 0 1px 0 rgba(255, 255, 255, 0.9);
-            z-index: 10;
-        }
+        /* Note: Main sketch-item styles are defined earlier in the CSS */
 
         /* Add these lines to ensure proper 3D stacking */
         .painting-section,
@@ -2044,6 +2054,20 @@
             const helpButton = document.getElementById('help-button');
             const helpTooltip = document.getElementById('help-tooltip');
             
+            // Force scroll to top on load
+            introScreen.scrollTop = 0;
+            window.scrollTo(0, 0);
+            document.documentElement.scrollTop = 0;
+            document.body.scrollTop = 0;
+            
+            // Also reset after a brief moment to ensure it sticks
+            requestAnimationFrame(() => {
+                introScreen.scrollTop = 0;
+                requestAnimationFrame(() => {
+                    introScreen.scrollTop = 0;
+                });
+            });
+            
             // Toggle help tooltip
             helpButton.addEventListener('click', function(e) {
                 e.stopPropagation();
@@ -2074,6 +2098,11 @@
             setTimeout(() => {
                 loadingScreen.style.display = 'none';
                 introScreen.style.opacity = '1';
+                // Force scroll to top after loading
+                setTimeout(() => {
+                    introScreen.scrollTop = 0;
+                    window.scrollTo(0, 0);
+                }, 50);
             }, 1500);
             
             // Start the tour
