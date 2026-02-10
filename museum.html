@@ -1905,27 +1905,49 @@
                 display: none;
             }
             
+            .behind-scenes-board {
+                max-width: 100vw;
+                overflow-x: hidden;
+            }
+            
             .sketches-grid {
-                gap: 12px;
+                display: flex;
+                flex-wrap: nowrap;
+                gap: 20px;
+                overflow-x: auto;
+                scroll-snap-type: x mandatory;
+                -webkit-overflow-scrolling: touch;
+                padding: 20px;
+                margin: 0 -20px;
             }
             
             .sketch-item {
-                flex: 0 0 min(180px, 85vw);
-                padding: 12px;
+                flex: 0 0 85vw;
+                max-width: 85vw;
+                padding: 15px;
+                scroll-snap-align: center;
+                transform: none !important;
+            }
+            
+            .sketch-item:nth-child(1),
+            .sketch-item:nth-child(2),
+            .sketch-item:nth-child(3),
+            .sketch-item:nth-child(4) {
+                transform: none !important;
             }
             
             .sketch-item h3 {
-                font-size: 0.85rem;
-                margin-bottom: 8px;
-            }
-            
-            .sketch-image {
-                height: 140px;
+                font-size: 0.95rem;
                 margin-bottom: 10px;
             }
             
+            .sketch-image {
+                height: 200px;
+                margin-bottom: 12px;
+            }
+            
             .sketch-caption {
-                font-size: 0.75rem;
+                font-size: 0.8rem;
             }
             
             .behind-scenes-board {
