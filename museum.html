@@ -1071,7 +1071,7 @@
         /* first figure (p1): standing woman */
         .shadow-figure.p1 {
             height: 78vh;
-            left: -5%;
+            left: 12%;
             bottom: -50vh;
         }
 
@@ -1197,7 +1197,8 @@
             display: flex;
             flex-wrap: wrap;
             gap: 25px;
-            margin-bottom: 40px;
+            margin-bottom: 10px;
+            margin-top: 50px;
             justify-content: center;
             align-items: flex-start;
             max-width: 1200px;
@@ -1338,6 +1339,16 @@
             max-width: 90%;
             max-height: 90%;
             animation: zoomIn 0.3s ease;
+        }
+        
+        .sketch-modal-content.large-sketch {
+            max-width: 45%;
+            max-height: 65%;
+        }
+        
+        .sketch-modal-content.portrait-sketch {
+            max-width: 65%;
+            max-height: 90%;
         }
         
         @keyframes zoomIn {
@@ -1966,14 +1977,20 @@
             
             .ending-content {
                 padding: 1.5rem;
+                max-width: 95%;
+                width: 95%;
             }
             
             .ending-content h2 {
                 font-size: 1.6rem;
+                margin-bottom: 1rem;
             }
             
             .ending-content p {
                 font-size: 0.9rem;
+                line-height: 1.6;
+                word-wrap: break-word;
+                overflow-wrap: break-word;
             }
             
             .painting-viewer .painting-container {
@@ -2036,16 +2053,10 @@
                 <div class="artist-info">
                     <img src="laura2.png" alt="Artist Photo" class="artist-photo">
                     <div class="artist-description">
-                        <p>Welcome to the virtual gallery of <strong>Laura Kruuse</strong>, a contemporary visual artist whose work explores the intersection of nature and human emotion. With a career spanning over 15 years, Laura's paintings have been exhibited in galleries across Europe and North America.</p>
+                        <p>Welcome to the virtual gallery of <strong>Laura Kruuse</strong>, a contemporary visual artist whose work explores the intersection of nature and human emotion.</p>
                         <br>
-                        <p>Her latest collection, "Ethereal Landscapes," captures the transient beauty of natural environments through a unique blend of traditional techniques and digital experimentation. Each piece invites viewers to contemplate their relationship with the natural world.</p>
+                        <p>Her latest collection captures the transient beauty of natural environments through a unique blend of traditional techniques and digital experimentation. Each piece invites viewers to contemplate their relationship with the natural world.</p>
                     </div>
-                </div>
-                <div class="social-links">
-                    <a href="https://www.instagram.com/hassel__art?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" target="_blank" rel="noopener noreferrer" class="social-link">
-                        <i class="fab fa-instagram"></i>
-                        <span>@hassel__art</span>
-                    </a>
                 </div>
                 <button class="start-btn" id="start-tour">
                     <i class="fas fa-door-open"></i> Enter the Museum
@@ -2227,7 +2238,7 @@
                     isArtist: true,
                     title: "Laura Kruuse",
                     artistName: "Laura Kruuse",
-                    description: "Welcome to the virtual gallery of Laura Kruuse, a contemporary visual artist whose work explores the intersection of nature and human emotion. With a career spanning over 15 years, Laura's paintings have been exhibited in galleries across Europe and North America. Her latest collection, 'Ethereal Landscapes,' captures the transient beauty of natural environments through a unique blend of traditional techniques and digital experimentation.",
+                    description: "Welcome to the virtual gallery of Laura Kruuse, a contemporary visual artist whose work explores the intersection of nature and human emotion.",
                     medium: "Contemporary Visual Artist",
                     dimensions: "15+ Years Experience",
                     year: "Active Since 2011",
@@ -2236,7 +2247,7 @@
                 {
                     id: 1,
                     title: "•VESTIGE•",
-                    description: "A 80x60cm mixed media painting that combines acrylics with carefully preserved dried flowers against an intense blue background. The centerpiece features a girl's face rendered in vibrant, colorful hues that contrast beautifully with the deep blue surrounding. Delicate gold ginkgo leaves are pressed into the textured surface, adding a luminous quality to the composition. The artwork invites viewers to contemplate the fragile beauty of nature captured in time.",
+                    description: "A 80x60cm mixed media painting that combines acrylics with carefully preserved dried flowers against an intense blue background. The centerpiece features a girl's face rendered in vibrant, colorful hues that contrast beautifully with the deep blue surrounding. Delicate gold ginkgo leaves are pressed into the textured surface, adding a luminous quality to the composition.",
                     medium: "Acrylic with dried flowers and gold ginkgo leaves on canvas",
                     dimensions: '80 x 60 cm',
                     year: "August 3, 2025",
@@ -2246,7 +2257,7 @@
                 {
                     id: 2,
                     title: "•ABIDING•",
-                    description: "An 80x60cm acrylics painting adorned with carefully preserved dried flowers. The incorporation of natural elements adds an ephemeral quality to the piece, reminding viewers of nature's transient beauty. Each flower was selected for its color harmony, pressed and preserved before being applied to the canvas. This piece invites contemplation on the passage of time and the beauty found in both growth and decay. The textured surface creates subtle shadows that shift with changing light throughout the day.",
+                    description: "An 80x60cm acrylics painting adorned with carefully preserved dried flowers. The incorporation of natural elements adds an ephemeral quality to the piece, reminding viewers of nature's transient beauty. Each flower was selected for its color harmony, pressed and preserved before being applied to the canvas. This piece invites contemplation on the passage of time and the beauty found in both growth and decay.",
                     medium: "Acrylics with dried flowers on canvas",
                     dimensions: '80 x 60 cm',
                     year: "September 6, 2025",
@@ -2377,9 +2388,23 @@
             // Open sketch modal
             function openSketchModal(src, title) {
                 const modal = document.getElementById('sketch-modal');
+                const modalContent = modal.querySelector('.sketch-modal-content');
                 const img = modal.querySelector('img');
                 img.src = src;
                 img.alt = title;
+                
+                // Remove any existing size classes
+                modalContent.classList.remove('large-sketch', 'portrait-sketch');
+                
+                // Apply different sizes based on the image
+                if (src.includes('sketch.png')) {
+                    // Art Project in Progress - make smaller
+                    modalContent.classList.add('large-sketch');
+                } else if (src.includes('sketch1.png') || src.includes('sketch2.png')) {
+                    // Portrait sketches - make bigger
+                    modalContent.classList.add('portrait-sketch');
+                }
+                
                 modal.classList.add('active');
                 document.body.style.overflow = 'hidden';
             }
@@ -2503,14 +2528,6 @@
                                 <strong>Medium:</strong> ${painting.medium}<br>
                                 <strong>Dimensions:</strong> ${painting.dimensions}
                             </div>
-                            ${painting.instagramLink ? `
-                                <div style="margin-top: 1.5rem; text-align: center; padding-top: 1rem; border-top: 1px solid rgba(212, 175, 55, 0.2);">
-                                    <a href="${painting.instagramLink}" target="_blank" rel="noopener noreferrer" style="display: inline-flex; align-items: center; gap: 0.5rem; color: #d4af37; text-decoration: none; padding: 0.7rem 1.3rem; border: 2px solid rgba(212, 175, 55, 0.4); border-radius: 25px; font-size: 0.9rem; transition: all 0.3s ease; background: rgba(212, 175, 55, 0.05);">
-                                        <i class="fab fa-instagram" style="font-size: 1.2rem;"></i>
-                                        <span>View on Instagram</span>
-                                    </a>
-                                </div>
-                            ` : ''}
                         `;
                         
                         // Click painting to open full viewer
@@ -2605,7 +2622,7 @@
                 subtitle.addEventListener('mouseleave', () => {
                     subtitle.style.transform = 'rotate(-1deg)';
                 });
-                content.appendChild(subtitle);
+                // Removed subtitle from DOM - not appending it
                 
                 // Create sketches grid
                 const sketchesGrid = document.createElement('div');
