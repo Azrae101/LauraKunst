@@ -775,6 +775,13 @@
             pointer-events: none;
         }
         
+        @media (max-width: 768px) {
+            .painting-section.artist-section .painting {
+                cursor: pointer;
+                pointer-events: auto;
+            }
+        }
+        
         .painting-section.artist-section .painting:hover {
             transform: none;
             box-shadow: 
@@ -1850,8 +1857,13 @@
                 font-size: 1.1rem;
             }
             
-            .painting-info .description {
+            .painting-info .year {
                 font-size: 0.85rem;
+            }
+            
+            .painting-info .description,
+            .painting-info .meta {
+                display: none;
             }
             
             .artist-bio h2 {
@@ -1862,9 +1874,18 @@
                 font-size: 0.85rem;
             }
             
-            /* Hide shadow figures on very small screens */
+            /* Scale down shadow figures on very small screens */
             .shadow-figure {
-                display: none;
+                height: 30vh;
+                opacity: 0.8;
+            }
+            
+            .shadow-figure.p1 {
+                height: 45vh;
+            }
+            
+            .shadow-figure.p2 {
+                height: 28vh;
             }
             
             .sketches-grid {
@@ -2392,6 +2413,16 @@
                         
                         section.appendChild(paintingEl);
                         section.appendChild(bio);
+                        
+                        // Make artist section clickable on mobile screens
+                        if (window.innerWidth <= 768) {
+                            paintingEl.style.pointerEvents = 'auto';
+                            paintingEl.style.cursor = 'pointer';
+                            paintingEl.addEventListener('click', (e) => {
+                                e.stopPropagation();
+                                openPaintingViewer(index);
+                            });
+                        }
                         
                         // Add p3 (walking man) after the artist section
                         const p3Figure = document.createElement('div');
