@@ -80,12 +80,15 @@
             background-position: center;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             z-index: 100;
             transition: opacity 1.5s ease;
             position: relative;
-            overflow: hidden;
+            overflow-y: auto;
+            overflow-x: hidden;
+            padding: 3rem 1rem;
+            min-height: 100vh;
         }
         
         /* Artistic paint stroke effect */
@@ -112,6 +115,7 @@
 
         .intro-content {
             max-width: 900px;
+            width: 90%;
             text-align: center;
             padding: 3.5rem 3rem;
             background: 
@@ -138,8 +142,9 @@
                 rgba(212, 175, 55, 0.6) 100%) 1;
             backdrop-filter: blur(15px);
             position: relative;
-            overflow: hidden;
+            overflow: visible;
             transition: transform 0.5s ease, box-shadow 0.5s ease;
+            flex-shrink: 0;
         }
         
         .intro-content:hover {
@@ -283,6 +288,33 @@
         
         .social-link i {
             font-size: 1.3rem;
+        }
+
+        .fullscreen-prompt {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-top: 2rem;
+            padding: 1rem 1.5rem;
+            background: rgba(212, 175, 55, 0.1);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+            border-radius: 10px;
+            color: #d4af37;
+            font-size: 0.95rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .fullscreen-prompt i {
+            font-size: 1.2rem;
+        }
+        
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(212, 175, 55, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 10px rgba(212, 175, 55, 0);
+            }
         }
 
         .start-btn {
@@ -552,6 +584,8 @@
             overflow-x: auto;
             overflow-y: hidden;
             scroll-behavior: smooth;
+            -webkit-overflow-scrolling: touch;
+            touch-action: pan-x pan-y;
             background: 
                 /* Main gradient background */
                 linear-gradient(180deg, #1a1510 0%, #2a2318 30%, #3a3028 70%, #2a2318 100%),
@@ -695,8 +729,10 @@
         }
         
         .painting-section.artist-section .painting {
-            width: 400px;
-            height: 500px;
+            width: min(400px, 70vw);
+            height: min(500px, 65vh);
+            max-width: 400px;
+            max-height: 500px;
             flex-shrink: 0;
             overflow: visible;
         }
@@ -736,10 +772,12 @@
             justify-content: center;
             align-items: center;
             overflow: visible;
-            width: 500px;
-            height: 650px;
+            width: min(500px, 80vw);
+            height: min(650px, 85vh);
+            max-width: 500px;
+            max-height: 650px;
             position: relative;
-            padding: 60px;
+            padding: min(60px, 8vw);
             box-sizing: border-box;
             box-shadow: 
                 0 40px 100px rgba(0, 0, 0, 0.9),
@@ -927,9 +965,9 @@
         /* Shadowy Figures */
         .shadow-figure {
             position: absolute;
-            bottom: -180px;
+            bottom: -18vh;
             width: auto;
-            height: 550px;
+            height: 55vh;
             pointer-events: none;
             z-index: 2;
             opacity: 0.9;
@@ -947,50 +985,50 @@
         }
         
         .shadow-figure.left {
-            left: -350px;
+            left: -25%;
         }
         
         .shadow-figure.right {
-            right: -350px;
+            right: -25%;
         }
         
         .shadow-figure.small {
-            height: 480px;
+            height: 48vh;
         }
         
         /* first figure (p1): standing woman */
         .shadow-figure.p1 {
-            height: 780px;
-            left: 400px;
-            bottom: -430px;
+            height: 78vh;
+            left: 20%;
+            bottom: -43vh;
         }
 
         /* second figure (p2): standing man */
         .shadow-figure.p2 {
-            height: 460px;
-            left: 820px;
-            bottom: -190px;
+            height: 46vh;
+            left: 40%;
+            bottom: -19vh;
         }
 
         /* third figure (p3): walking man */
         .shadow-figure.p3 {
-            height: 490px;
-            right: -350px;
-            bottom: -290px;
+            height: 49vh;
+            right: -20%;
+            bottom: -29vh;
         }
         
         /* fourth figure (p4): picture man */
         .shadow-figure.p4 {
-            height: 480px;
-            left: -100px;
-            bottom: -225px;
+            height: 48vh;
+            left: -5%;
+            bottom: -22.5vh;
         }
         
         /* fifth figure (p5): picture girl */
         .shadow-figure.p5 {
-            height: 420px;
-            left: -200px;
-            bottom: -200px;
+            height: 42vh;
+            left: -10%;
+            bottom: -20vh;
         }
         
         .shadow-figure.p5 img {
@@ -999,9 +1037,9 @@
         
         /* sixth figure (p6): new person at Urban Symphony */
         .shadow-figure.p6 {
-            height: 420px;
-            left: -200px;
-            bottom: -190px;
+            height: 42vh;
+            left: -10%;
+            bottom: -19vh;
         }
         
         .behind-scenes-section {
@@ -1302,6 +1340,7 @@
             flex-direction: column;
             gap: 40px;
             max-width: 1200px;
+            width: 100%;
             position: relative;
             z-index: 4; /* Above the floor and background */
         }
@@ -1334,6 +1373,27 @@
         }
 
         /* Responsive Design */
+        @media (max-width: 1400px) {
+            .painting {
+                width: min(450px, 75vw);
+                height: min(580px, 75vh);
+                padding: min(50px, 6vw);
+            }
+            
+            .painting-section.artist-section .painting {
+                width: min(380px, 65vw);
+                height: min(480px, 60vh);
+            }
+            
+            .shadow-figure {
+                height: 50vh;
+            }
+            
+            .shadow-figure.p1 {
+                height: 70vh;
+            }
+        }
+        
         @media (max-width: 1024px) {
             .painting-container {
                 flex-direction: column;
@@ -1347,44 +1407,434 @@
             
             h1 {
                 font-size: 2.5rem;
+                letter-spacing: 0.1em;
+            }
+            
+            .intro-content {
+                padding: 2.5rem 2rem;
+                max-width: 90%;
             }
             
             .artist-info {
                 flex-direction: column;
                 text-align: center;
+                gap: 2rem;
+            }
+            
+            .artist-photo {
+                width: 240px;
+                height: 320px;
             }
             
             .artist-description {
                 text-align: center;
+                max-width: 100%;
             }
             
             .sketches-grid {
-                grid-template-columns: repeat(2, 1fr);
+                gap: 20px;
+            }
+            
+            .sketch-item {
+                flex: 0 0 240px;
+            }
+            
+            .painting {
+                width: min(400px, 80vw);
+                height: min(520px, 70vh);
+                padding: min(45px, 5vw);
+            }
+            
+            .painting-section.artist-section .painting {
+                width: min(350px, 75vw);
+                height: min(440px, 60vh);
+            }
+            
+            .artist-bio, .painting-info {
+                max-width: 90%;
+                padding: 20px;
+            }
+            
+            .shadow-figure {
+                height: 45vh;
+            }
+            
+            .shadow-figure.p1 {
+                height: 65vh;
+                left: 15%;
+            }
+            
+            .shadow-figure.p2 {
+                left: 35%;
+            }
+            
+            .behind-scenes-board {
+                padding: 2rem;
+                padding-top: 4rem;
+                border-width: 15px;
+                transform: scale(0.85);
+                transform-origin: center;
             }
         }
 
         @media (max-width: 768px) {
             h1 {
                 font-size: 2rem;
+                letter-spacing: 0.08em;
+            }
+            
+            .intro-content {
+                padding: 2rem 1.5rem;
+            }
+            
+            .artist-photo {
+                width: 200px;
+                height: 280px;
+            }
+            
+            .artist-description {
+                font-size: 0.95rem;
+            }
+            
+            .start-btn {
+                padding: 1rem 2.5rem;
+                font-size: 1rem;
+            }
+            
+            .social-links {
+                flex-direction: column;
+                gap: 0.8rem;
             }
             
             .painting-title {
                 font-size: 1.8rem;
             }
             
-            .nav-arrow {
+            .painting-description {
+                font-size: 1rem;
+            }
+            
+            .nav-arrow, .gallery-nav {
                 width: 50px;
                 height: 50px;
                 font-size: 1.2rem;
             }
             
+            .gallery-nav.left {
+                left: 15px;
+            }
+            
+            .gallery-nav.right {
+                right: 15px;
+            }
+            
+            .help-button {
+                width: 45px;
+                height: 45px;
+                top: 20px;
+                right: 20px;
+                font-size: 1.3rem;
+            }
+            
+            .help-tooltip {
+                top: 75px;
+                right: 20px;
+                max-width: calc(100vw - 40px);
+                padding: 15px 20px;
+                font-size: 0.85rem;
+            }
+            
             .sketches-grid {
-                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+            
+            .sketch-item {
+                flex: 0 0 min(200px, 80vw);
+            }
+            
+            .sketch-item h3 {
+                font-size: 0.9rem;
+            }
+            
+            .fullscreen-prompt {
+                font-size: 0.8rem;
+                padding: 0.8rem 1.2rem;
+                margin-top: 1.5rem;
+            }
+            
+            .fullscreen-prompt i {
+                font-size: 1rem;
             }
             
             .gallery-wrapper {
                 padding: 0 5%;
                 gap: 5%;
+            }
+            
+            .painting {
+                width: min(350px, 85vw);
+                height: min(460px, 65vh);
+                padding: min(40px, 5vw);
+            }
+            
+            .painting-section.artist-section .painting {
+                width: min(300px, 80vw);
+                height: min(380px, 55vh);
+            }
+            
+            .painting-info .title {
+                font-size: 1.2rem;
+            }
+            
+            .painting-info .description {
+                font-size: 0.9rem;
+            }
+            
+            .artist-bio h2 {
+                font-size: 1.4rem;
+            }
+            
+            .artist-bio p {
+                font-size: 0.9rem;
+            }
+            
+            .shadow-figure {
+                height: 40vh;
+                opacity: 0.7;
+            }
+            
+            .shadow-figure.p1 {
+                height: 55vh;
+                left: 10%;
+            }
+            
+            .shadow-figure.p2 {
+                height: 38vh;
+                left: 30%;
+            }
+            
+            .behind-scenes-board {
+                padding: 1.5rem;
+                padding-top: 3.5rem;
+                border-width: 12px;
+                margin-bottom: 15vh;
+                transform: scale(0.7);
+                transform-origin: center;
+                max-width: 90vw;
+            }
+            
+            .behind-scenes-board::before {
+                font-size: 1.8rem;
+                top: 1.5rem;
+            }
+            
+            .ending-content {
+                padding: 2rem;
+                max-width: 90%;
+            }
+            
+            .ending-content h2 {
+                font-size: 2rem;
+            }
+            
+            .ending-content p {
+                font-size: 1rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            h1 {
+                font-size: 1.5rem;
+                letter-spacing: 0.05em;
+            }
+            
+            .intro-content {
+                padding: 1.5rem 1rem;
+            }
+            
+            .artist-photo {
+                width: 160px;
+                height: 220px;
+                border-width: 4px;
+            }
+            
+            .artist-description {
+                font-size: 0.85rem;
+            }
+            
+            .start-btn {
+                padding: 0.9rem 2rem;
+                font-size: 0.9rem;
+                letter-spacing: 0.1em;
+            }
+            
+            .social-link {
+                padding: 0.7rem 1.2rem;
+                font-size: 0.85rem;
+            }
+            
+            .fullscreen-prompt {
+                font-size: 0.8rem;
+                padding: 0.8rem 1.2rem;
+                margin-top: 1.5rem;
+            }
+            
+            .fullscreen-prompt i {
+                font-size: 1rem;
+            }
+
+            .painting {
+                width: min(300px, 90vw);
+                height: min(400px, 60vh);
+                padding: min(30px, 4vw);
+            }
+            
+            .painting-section.artist-section .painting {
+                width: min(260px, 85vw);
+                height: min(330px, 50vh);
+            }
+            
+            .painting::before {
+                top: 15px;
+                left: 15px;
+                right: 15px;
+                bottom: 15px;
+            }
+            
+            .painting::after {
+                top: 35px;
+                left: 35px;
+                right: 35px;
+                bottom: 35px;
+            }
+            
+            .nav-arrow, .gallery-nav {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+            }
+            
+            .gallery-nav.left {
+                left: 10px;
+            }
+            
+            .gallery-nav.right {
+                right: 10px;
+            }
+            
+            .help-button {
+                width: 40px;
+                height: 40px;
+                top: 15px;
+                right: 15px;
+                font-size: 1.1rem;
+            }
+            
+            .help-tooltip {
+                top: 65px;
+                right: 15px;
+                padding: 12px 15px;
+                font-size: 0.8rem;
+            }
+            
+            .help-tooltip h3 {
+                font-size: 1rem;
+            }
+            
+            .painting-info, .artist-bio {
+                padding: 15px;
+                max-width: 95%;
+            }
+            
+            .painting-info .title {
+                font-size: 1.1rem;
+            }
+            
+            .painting-info .description {
+                font-size: 0.85rem;
+            }
+            
+            .artist-bio h2 {
+                font-size: 1.2rem;
+            }
+            
+            .artist-bio p {
+                font-size: 0.85rem;
+            }
+            
+            /* Hide shadow figures on very small screens */
+            .shadow-figure {
+                display: none;
+            }
+            
+            .sketches-grid {
+                gap: 12px;
+            }
+            
+            .sketch-item {
+                flex: 0 0 min(180px, 85vw);
+                padding: 12px;
+            }
+            
+            .sketch-item h3 {
+                font-size: 0.85rem;
+                margin-bottom: 8px;
+            }
+            
+            .sketch-image {
+                height: 140px;
+                margin-bottom: 10px;
+            }
+            
+            .sketch-caption {
+                font-size: 0.75rem;
+            }
+            
+            .behind-scenes-board {
+                padding: 1rem;
+                padding-top: 3rem;
+                border-width: 10px;
+                transform: scale(0.55);
+                transform-origin: center;
+                max-width: 95vw;
+            }
+            
+            .behind-scenes-board::before {
+                font-size: 1.4rem;
+                top: 1rem;
+            }
+            
+            .ending-content {
+                padding: 1.5rem;
+            }
+            
+            .ending-content h2 {
+                font-size: 1.6rem;
+            }
+            
+            .ending-content p {
+                font-size: 0.9rem;
+            }
+            
+            .painting-viewer .painting-container {
+                padding: 1rem;
+                gap: 1rem;
+            }
+            
+            .painting-title {
+                font-size: 1.4rem;
+            }
+            
+            .painting-description {
+                font-size: 0.9rem;
+            }
+            
+            .close-viewer {
+                width: 40px;
+                height: 40px;
+                top: 15px;
+                right: 15px;
+                font-size: 1.2rem;
             }
         }
 
@@ -1549,6 +1999,9 @@
             
             // Start the tour
             startButton.addEventListener('click', function() {
+                // Request fullscreen
+                requestFullscreen();
+                
                 introScreen.style.opacity = '0';
                 setTimeout(() => {
                     introScreen.style.display = 'none';
@@ -1556,6 +2009,23 @@
                     initializeMuseum();
                 }, 1500);
             });
+            
+            // Fullscreen function
+            function requestFullscreen() {
+                const elem = document.documentElement;
+                
+                if (elem.requestFullscreen) {
+                    elem.requestFullscreen().catch(err => {
+                        console.log('Fullscreen request failed:', err);
+                    });
+                } else if (elem.webkitRequestFullscreen) { /* Safari */
+                    elem.webkitRequestFullscreen();
+                } else if (elem.msRequestFullscreen) { /* IE11 */
+                    elem.msRequestFullscreen();
+                } else if (elem.mozRequestFullScreen) { /* Firefox */
+                    elem.mozRequestFullScreen();
+                }
+            }
             
             // Close painting viewer
             closeViewerButton.addEventListener('click', closePaintingViewer);
