@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light only">
+  <meta name="theme-color" content="#f7f4ee">
+  <title>Laura Kruuse | Malerier, auktion og prints</title>
+  <meta name="description" content="Malerier af Laura Kruuse. Byd på originalerne, eller køb et print i 50 × 70 cm.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-title="meta.home">
+
+<header class="site-nav on-hero">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Laura Kruuse</a>
+    <nav data-i18n-aria="nav.main" aria-label="Hovedmenu">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html" aria-current="page" data-i18n="nav.home">Forside</a></li>
+        <li><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
+        <li><a href="gallery.html" data-i18n="nav.prints">Prints</a></li>
+        <li><a href="about.html" data-i18n="nav.about">Om mig</a></li>
+        <li><a href="contact.html" data-i18n="nav.contact">Kontakt</a></li>
+      </ul>
+    </nav>
+    <button class="lang-btn" type="button" aria-label="Switch to English"><span class="lang-short">EN</span></button>
+    <button class="basket-btn" type="button" aria-haspopup="dialog"><span class="label" data-i18n="nav.basket">Kurv</span><span class="count">0</span><span class="sr-only" data-i18n="nav.items">varer i kurven</span></button>
+    <button class="nav-toggle" type="button" aria-controls="navLinks" aria-expanded="false" data-i18n-aria="nav.menu" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="wrap hero-content">
+      <p class="eyebrow" data-i18n="home.eyebrow">Originale malerier og prints</p>
+      <h1 class="hero-title">Laura<br><em>Kruuse</em></h1>
+      <p class="hero-sub" data-i18n="home.sub">Naturinspirerede malerier med tørrede blomster og bladguld. Byd på originalerne, eller tag et print med hjem.</p>
+      <div class="hero-actions">
+        <a class="btn light" href="auction.html" data-i18n="home.ctaAuction">Se auktionen</a>
+        <a class="btn line" href="gallery.html" data-i18n="home.ctaPrints">Køb et print</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="block tint" aria-labelledby="teaser-eyebrow">
+    <div class="wrap">
+      <p class="eyebrow" id="teaser-eyebrow" data-i18n="teaser.eyebrow">Auktion</p>
+      <div class="teaser" id="teaser"><p class="lede">…</p></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap split">
+      <div class="reveal">
+        <h2 class="h-section" style="margin-bottom:1.5rem" data-i18n-html="home.aboutH">Kunst med rødder i<br><em>natur og stilhed</em></h2>
+        <p data-i18n="home.aboutP1">Jeg er Laura, en dansk kunstner, der arbejder med maling, botanik og den stille skønhed i naturen. Mine værker undersøger de teksturer og farver, man finder i skove, på marker og alt derimellem.</p>
+        <p data-i18n="home.aboutP2">Hvert værk begynder som et originalt maleri. Originalen sælges på auktion, og maleriet fås også som print i et lille, nummereret oplag.</p>
+        <a class="text-link" href="about.html" data-i18n="home.aboutLink">Læs min historie</a>
+        <div class="social-row" data-auto></div>
+      </div>
+      <div class="about-frame reveal">
+        <div class="art"><img src="images/laura2.jpg" width="1000" height="1378" alt="Laura Kruuse" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"><div class="ph">Laura</div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block tint">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="h-section" data-i18n-html="home.paintH">Originale <em>malerier</em></h2>
+        <p class="lede" data-i18n="home.paintP">Tryk på et maleri for at se detaljer, byde på originalen eller købe et print.</p>
+      </div>
+      <div class="paint-grid" id="paint-grid"></div>
+    </div>
+  </section>
+
+  <section class="block">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="h-section" data-i18n-html="home.sketchH">Fra <em>atelieret</em></h2>
+        <p class="lede" data-i18n="home.sketchP">Studier, skitser og værker undervejs.</p>
+      </div>
+      <div class="sketch-grid" id="sketch-grid"></div>
+    </div>
+  </section>
+
+  <section class="block tint" id="soon">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="h-section" data-i18n-html="soon.h">Kommer <em>snart</em></h2>
+        <p class="lede" data-i18n="soon.p">Skriv din e-mail ved det, du gerne vil høre om først.</p>
+      </div>
+      <div class="soon-grid" id="soon-grid"></div>
+    </div>
+  </section>
+
+  <section class="block center">
+    <div class="wrap">
+      <h2 class="h-section" data-i18n-html="social.h">Følg <em>rejsen</em></h2>
+      <p class="lede" style="margin-top:1rem" data-i18n="social.p">Jeg deler værker undervejs, øjeblikke fra atelieret og det, der inspirerer mig, på Instagram og TikTok.</p>
+      <div class="social-row" data-auto></div>
+    </div>
+  </section>
+</main>
+
+<dialog class="viewer" id="viewer">
+  <button class="close-x" type="button" id="viewer-close" data-i18n-aria="close" aria-label="Luk">×</button>
+  <div class="viewer-inner" id="viewer-inner"></div>
+</dialog>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-logo">Laura Kruuse</div>
+    <ul class="footer-nav">
+      <li><a href="index.html" data-i18n="nav.home">Forside</a></li>
+      <li><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
+      <li><a href="gallery.html" data-i18n="nav.prints">Prints</a></li>
+      <li><a href="about.html" data-i18n="nav.about">Om mig</a></li>
+      <li><a href="contact.html" data-i18n="nav.contact">Kontakt</a></li>
+    </ul>
+    <p class="footer-copy">© <span class="year">2026</span> Laura Kruuse. <span data-i18n="footer.rights">Alle rettigheder forbeholdes.</span></p>
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/site.js"></script>
+<script>
+let auctions = [];
+let shown = null;   // what the viewer is showing
+
+async function loadAuctions() {
+  try { auctions = (await api.auctions()).filter(a => artById(a.artwork_id)); }
+  catch { auctions = null; }
+  renderTeaser();
+}
+
+function renderTeaser() {
+  const box = $("#teaser");
+  if (auctions === null) { box.innerHTML = `<p class="msg err">${t("err.load")}</p>`; return; }
+  const a = featuredAuction(auctions);
+  if (!a) { box.innerHTML = `<p class="lede">${t("status.none")}</p>`; return; }
+  const w = artById(a.artwork_id), ph = auctionPhase(a);
+  box.innerHTML = `${artHTML(w)}
+    <div>
+      <span class="status ${ph}">${esc(statusText(a))}</span>
+      <h3>${esc(w.title)}</h3>
+      <p class="lede">${t("teaser.text")}</p>
+      <div class="now">
+        <div><div class="amount-label">${amountLabel(a)}</div><div class="amount">${kr(a.top_bid || a.start_price)}</div><div class="bid-count">${bidCount(a)}</div></div>
+        ${ph === "ended" ? "" : `<div><div class="amount-label">${t(ph === "soon" ? "clock.opensIn" : "clock.endsIn")}</div><div class="clock" id="t-clock">${clockHTML()}</div></div>`}
+      </div>
+      <a class="btn" href="auction.html?id=${esc(a.artwork_id)}">${t(ph === "live" ? "teaser.live" : "teaser.soon")}</a>
+    </div>`;
+  tickTeaser();
+}
+function tickTeaser() {
+  const a = auctions && featuredAuction(auctions), c = $("#t-clock");
+  if (!a || !c) return;
+  const target = Date.parse(auctionPhase(a) === "soon" ? a.starts_at : a.ends_at);
+  setClock(c, target);
+  if (target <= Date.now() && !tickTeaser.busy) { tickTeaser.busy = true; loadAuctions().finally(() => tickTeaser.busy = false); }
+}
+
+function renderPaintings() {
+  $("#paint-grid").innerHTML = ARTWORKS.map(a => `
+    <button class="paint-card" type="button" data-art="${esc(a.id)}">
+      ${artHTML(a)}
+      <h3>${esc(a.title)}</h3>
+      <p>${esc(L(a.medium))}. ${esc(a.size)}, ${esc(a.year)}</p>
+    </button>`).join("");
+}
+function renderSketches() {
+  $("#sketch-grid").innerHTML = SKETCHES.map((s, i) => `
+    <button class="sketch-card" type="button" data-sketch="${i}">
+      ${artHTML(s)}
+      <h4>${esc(L(s.title))}</h4>
+      <p>${esc(L(s.medium))}</p>
+    </button>`).join("");
+}
+function renderSoon() {
+  $("#soon-grid").innerHTML = COMING_SOON.map(s => `
+    <div class="soon-item">
+      <span class="soon-tag">${t("soon.tag")}</span>
+      <h3>${esc(L(s.title))}</h3>
+      <p>${esc(L(s.text))}</p>
+      <form class="inline-form" data-notify="${esc(s.topic)}" novalidate>
+        <label class="sr-only" for="n-${esc(s.topic)}">${t("email.label")}</label>
+        <input id="n-${esc(s.topic)}" type="email" inputmode="email" autocomplete="email" placeholder="${t("email.ph")}" required>
+        <button class="btn line" type="submit">${t("notify.btn")}</button>
+      </form>
+      <p class="msg" role="status"></p>
+    </div>`).join("");
+}
+
+/* Viewer for paintings and sketches */
+const viewer = $("#viewer");
+function renderViewer() {
+  if (!shown) return;
+  const inner = $("#viewer-inner");
+  if (shown.type === "art") {
+    const a = artById(shown.id);
+    inner.innerHTML = `${artHTML(a)}
+      <div class="info">
+        <h2>${esc(a.title)}</h2>
+        <p>${esc(L(a.description))}</p>
+        <p class="fineprint">${esc(L(a.medium))}<br>${esc(a.size)}, ${esc(a.year)}</p>
+        <div class="actions">
+          <a class="btn" href="auction.html?id=${esc(a.id)}">${t("viewer.bid")}</a>
+          <a class="btn line" href="gallery.html#print-${esc(a.id)}">${t("viewer.print")}</a>
+        </div>
+      </div>`;
+  } else {
+    const s = SKETCHES[shown.i];
+    inner.innerHTML = `${artHTML(s)}
+      <div class="info">
+        <h2>${esc(L(s.title))}</h2>
+        <p class="fineprint">${esc(L(s.medium))}</p>
+        <p>${esc(L(s.desc))}</p>
+      </div>`;
+  }
+}
+function openViewer(item) { shown = item; renderViewer(); viewer.showModal(); document.body.classList.add("menu-locked"); }
+$("#paint-grid").addEventListener("click", e => { const b = e.target.closest("[data-art]"); if (b) openViewer({ type: "art", id: b.dataset.art }); });
+$("#sketch-grid").addEventListener("click", e => { const b = e.target.closest("[data-sketch]"); if (b) openViewer({ type: "sketch", i: +b.dataset.sketch }); });
+$("#viewer-close").addEventListener("click", () => viewer.close());
+viewer.addEventListener("click", e => { if (e.target === viewer) viewer.close(); });
+viewer.addEventListener("close", () => { shown = null; document.body.classList.remove("menu-locked"); });
+
+document.addEventListener("lang:change", () => { renderTeaser(); renderPaintings(); renderSketches(); renderSoon(); renderViewer(); });
+loadAuctions();
+setInterval(tickTeaser, 1000);
+setInterval(loadAuctions, 30000);
+</script>
+</body>
+</html>

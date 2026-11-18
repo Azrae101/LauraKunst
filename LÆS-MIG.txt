@@ -1,0 +1,31 @@
+LAURA KRUUSE: WEBSITE
+
+Folders
+  index.html, auction.html, gallery.html, about.html, contact.html   the pages
+  css/style.css      all styling
+  js/config.js       settings: MobilePay number, e-mail, links, paintings, prices for shipping
+  js/i18n.js         all text in Danish and English
+  js/site.js         basket, checkout, auction and language logic
+  images/            the pictures, already resized and compressed for phones
+  supabase-setup.sql the database
+
+Getting it live
+  1. Make a free project on supabase.com. Open the SQL Editor, paste supabase-setup.sql,
+     change the dates, prices and stock at the bottom, and click Run.
+  2. In Supabase, open Project settings, then API. Copy the Project URL and the anon key
+     into js/config.js.
+  3. Make a free form on formspree.io and paste its address into js/config.js.
+  4. Fill in the MobilePay number, e-mail and Messenger link in js/config.js.
+  5. Upload the whole folder to Netlify or GitHub Pages.
+
+Until step 3 is done, the site runs in demo mode and only saves bids and orders in your own browser.
+
+Changing text
+  Fixed text is in js/i18n.js. Every line has a Danish (da) and an English (en) version.
+  Painting descriptions and the coming soon items are in js/config.js.
+
+Adding a new painting
+  1. Save the picture as a .jpg in the images folder, around 1200 to 1600 pixels tall.
+  2. Add it to ARTWORKS in js/config.js with its width (w) and height (h) in pixels.
+     The site uses those numbers to show the picture at its own shape without cropping.
+  3. Add a row for it in Supabase (auctions and prints tables) with the same id.

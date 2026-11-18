@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light only">
+  <meta name="theme-color" content="#f7f4ee">
+  <title>Prints | Laura Kruuse</title>
+  <meta name="description" content="Prints i 50 × 70 cm af Laura Kruuses malerier, usignerede eller signerede og nummererede.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-title="meta.prints">
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Laura Kruuse</a>
+    <nav data-i18n-aria="nav.main" aria-label="Hovedmenu">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html" data-i18n="nav.home">Forside</a></li>
+        <li><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
+        <li><a href="gallery.html" aria-current="page" data-i18n="nav.prints">Prints</a></li>
+        <li><a href="about.html" data-i18n="nav.about">Om mig</a></li>
+        <li><a href="contact.html" data-i18n="nav.contact">Kontakt</a></li>
+      </ul>
+    </nav>
+    <button class="lang-btn" type="button" aria-label="Switch to English"><span class="lang-short">EN</span></button>
+    <button class="basket-btn" type="button" aria-haspopup="dialog"><span class="label" data-i18n="nav.basket">Kurv</span><span class="count">0</span><span class="sr-only" data-i18n="nav.items">varer i kurven</span></button>
+    <button class="nav-toggle" type="button" aria-controls="navLinks" aria-expanded="false" data-i18n-aria="nav.menu" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main class="page">
+  <header class="wrap page-head">
+    <h1 class="h-display" data-i18n-html="prints.h">Prints, <em>50 × 70 cm</em></h1>
+    <p class="lede" data-i18n="prints.p">Hvert maleri trykkes i små oplag på 10 ad gangen og aldrig mere end 50 i alt. Vælg et usigneret print eller et, som Laura signerer og nummererer i hånden.</p>
+  </header>
+  <section class="wrap" style="padding-bottom:5rem">
+    <div class="print-grid" id="print-grid"><p class="lede">…</p></div>
+    <div class="note-box" id="gift-box">
+      <h3 data-i18n="prints.giftH">En lille gave</h3>
+      <p id="gift-note"></p>
+    </div>
+    <div class="note-box" style="margin-top:1rem">
+      <h3 data-i18n="prints.sizesH">Flere størrelser kommer</h3>
+      <p data-i18n="prints.sizesP">Lige nu findes printene kun i 50 × 70 cm. Skriv dig op, hvis du vil høre om andre størrelser.</p>
+      <form class="inline-form" data-notify="sizes" novalidate style="margin-top:0.5rem">
+        <label class="sr-only" for="n-sizes" data-i18n="email.label">E-mail</label>
+        <input id="n-sizes" type="email" inputmode="email" autocomplete="email" data-i18n-ph="email.ph" placeholder="din@email.dk" required>
+        <button class="btn line" type="submit" data-i18n="notify.btn">Giv mig besked</button>
+      </form>
+      <p class="msg" role="status"></p>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-logo">Laura Kruuse</div>
+    <ul class="footer-nav">
+      <li><a href="index.html" data-i18n="nav.home">Forside</a></li>
+      <li><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
+      <li><a href="gallery.html" data-i18n="nav.prints">Prints</a></li>
+      <li><a href="about.html" data-i18n="nav.about">Om mig</a></li>
+      <li><a href="contact.html" data-i18n="nav.contact">Kontakt</a></li>
+    </ul>
+    <p class="footer-copy">© <span class="year">2026</span> Laura Kruuse. <span data-i18n="footer.rights">Alle rettigheder forbeholdes.</span></p>
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/site.js"></script>
+<script>
+let loaded = false, loadFailed = false;
+
+function stockLine(p) {
+  const left = p.stock - inBasket(p.artwork_id), edLeft = p.edition_size - p.sold;
+  if (p.stock <= 0) return { text: t(edLeft > 0 ? "prints.soldBatch" : "prints.soldAll"), low: true, out: true };
+  if (left <= 0) return { text: t("prints.lastInBasket"), low: true, out: true };
+  return { text: t("prints.ready", { n: left, e: p.edition_size, l: edLeft }), low: left <= 3, out: false };
+}
+
+function renderPrints() {
+  const grid = $("#print-grid");
+  if (loadFailed) { grid.innerHTML = `<p class="msg err">${t("err.load")}</p>`; return; }
+  if (!loaded) return;
+  // keep the choices people already made when re-drawing
+  const state = {};
+  $$(".print-card", grid).forEach(c => { state[c.dataset.id] = { signed: c.querySelector("input:checked")?.value, qty: c.querySelector("output").textContent }; });
+  grid.innerHTML = printsCache.map(p => {
+    const a = artById(p.artwork_id); if (!a) return "";
+    const s = stockLine(p), keep = state[p.artwork_id] || {};
+    return `<article class="print-card" id="print-${esc(p.artwork_id)}" data-id="${esc(p.artwork_id)}">
+      <div class="frame">${printMockupHTML(a)}</div>
+      <h2>${esc(a.title)}</h2>
+      <p class="stock ${s.low ? "low" : ""}">${esc(s.text)}</p>
+      <div class="variant" role="radiogroup" aria-label="${t("prints.type")}">
+        <label><input type="radio" name="v-${esc(p.artwork_id)}" value="0" ${keep.signed !== "1" ? "checked" : ""}>${t("prints.unsigned")}<b>${kr(p.price_unsigned)}</b></label>
+        <label><input type="radio" name="v-${esc(p.artwork_id)}" value="1" ${keep.signed === "1" ? "checked" : ""}>${t("prints.signed")}<b>${kr(p.price_signed)}</b></label>
+      </div>
+      <div class="buy-row">
+        <div class="qty" role="group" aria-label="${t("prints.qty")}"><button type="button" data-q="-1" aria-label="${t("prints.fewer")}">−</button><output>${keep.qty || 1}</output><button type="button" data-q="1" aria-label="${t("prints.more")}">+</button></div>
+        <button class="btn" type="button" data-add ${s.out ? "disabled" : ""}>${t(s.out ? "prints.na" : "prints.add")}</button>
+      </div>
+    </article>`;
+  }).join("");
+  const note = L(CONFIG.giftNote);
+  $("#gift-box").hidden = !note; $("#gift-note").textContent = note || "";
+  if (location.hash && !renderPrints.scrolled) { renderPrints.scrolled = true; document.querySelector(location.hash)?.scrollIntoView(); }
+}
+
+$("#print-grid").addEventListener("click", e => {
+  const card = e.target.closest(".print-card"); if (!card) return;
+  const out = card.querySelector("output"), q = e.target.closest("[data-q]");
+  if (q) { out.textContent = Math.min(5, Math.max(1, +out.textContent + +q.dataset.q)); return; }
+  if (e.target.closest("[data-add]")) {
+    if (addToBasket(card.dataset.id, card.querySelector("input:checked").value === "1", +out.textContent)) { out.textContent = 1; renderPrints(); }
+  }
+});
+
+async function load() {
+  try { await loadPrints(); loaded = true; loadFailed = false; } catch { loadFailed = true; }
+  renderPrints();
+}
+document.addEventListener("lang:change", renderPrints);
+document.addEventListener("basket:change", renderPrints);
+document.addEventListener("prints:change", renderPrints);
+load();
+document.addEventListener("visibilitychange", () => { if (!document.hidden) load(); });
+</script>
+</body>
+</html>

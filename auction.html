@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light only">
+  <meta name="theme-color" content="#f7f4ee">
+  <title>Auktion | Laura Kruuse</title>
+  <meta name="description" content="Byd på originale malerier af Laura Kruuse.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-title="meta.auction">
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Laura Kruuse</a>
+    <nav data-i18n-aria="nav.main" aria-label="Hovedmenu">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html" data-i18n="nav.home">Forside</a></li>
+        <li><a href="auction.html" aria-current="page" data-i18n="nav.auction">Auktion</a></li>
+        <li><a href="gallery.html" data-i18n="nav.prints">Prints</a></li>
+        <li><a href="about.html" data-i18n="nav.about">Om mig</a></li>
+        <li><a href="contact.html" data-i18n="nav.contact">Kontakt</a></li>
+      </ul>
+    </nav>
+    <button class="lang-btn" type="button" aria-label="Switch to English"><span class="lang-short">EN</span></button>
+    <button class="basket-btn" type="button" aria-haspopup="dialog"><span class="label" data-i18n="nav.basket">Kurv</span><span class="count">0</span><span class="sr-only" data-i18n="nav.items">varer i kurven</span></button>
+    <button class="nav-toggle" type="button" aria-controls="navLinks" aria-expanded="false" data-i18n-aria="nav.menu" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main class="page">
+  <section class="wrap auction-grid" style="padding-top:2rem">
+    <figure class="auction-art">
+      <div id="a-art"></div>
+      <figcaption data-i18n="auction.caption">Det originale maleri. Ét eksemplar.</figcaption>
+    </figure>
+
+    <div>
+      <span class="status" id="a-status">…</span>
+      <h1 class="art-title" id="a-title"></h1>
+      <p class="art-meta" id="a-meta"></p>
+      <p class="art-desc" id="a-desc"></p>
+
+      <div class="bid-now">
+        <div>
+          <div class="amount-label" id="a-label"></div>
+          <div class="amount" id="a-amount">…</div>
+          <div class="bid-count" id="a-count"></div>
+        </div>
+        <div id="a-clock-wrap">
+          <div class="clock-label" id="a-clock-label"></div>
+          <div class="clock" id="a-clock"></div>
+        </div>
+      </div>
+
+      <div class="you" id="a-you" hidden></div>
+
+      <form class="bid-form" id="bid-form" novalidate hidden>
+        <label class="field amount-field"><span data-i18n="auction.yourBid">Dit bud</span>
+          <input id="bid-amount" type="number" inputmode="numeric" required><span class="unit">DKK</span></label>
+        <div class="quick" id="bid-quick"></div>
+        <div class="row-2">
+          <label class="field"><span data-i18n="basket.name">Navn</span><input id="bid-name" autocomplete="name" required></label>
+          <label class="field"><span data-i18n="email.label">E-mail</span><input id="bid-email" type="email" inputmode="email" autocomplete="email" required></label>
+        </div>
+        <label class="field"><span data-i18n="basket.phone">Telefon (valgfrit)</span><input id="bid-phone" type="tel" autocomplete="tel"></label>
+        <label class="check"><input type="checkbox" id="bid-agree"><span data-i18n="auction.agree">Jeg forstår, at mit bud er bindende. Hvis jeg vinder, kontakter Laura mig på e-mail om betaling og levering.</span></label>
+        <button class="btn block" type="submit" id="bid-submit" data-i18n="auction.submit">Afgiv bud</button>
+        <p class="msg" id="bid-msg" role="status"></p>
+        <p class="fineprint" data-i18n="auction.privacy">Din e-mail bruges kun til at kontakte dig om denne auktion. Andre besøgende ser kun dit fornavn og forbogstav. Et bud i de sidste minutter forlænger auktionen, så ingen kan snuppe maleriet i sidste sekund.</p>
+      </form>
+
+      <div id="notify-box" hidden>
+        <p style="margin-bottom:0.75rem" data-i18n="auction.notifyP">Få en e-mail, når budgivningen åbner.</p>
+        <form class="inline-form" id="notify-form" novalidate>
+          <label class="sr-only" for="notify-email" data-i18n="email.label">E-mail</label>
+          <input id="notify-email" type="email" inputmode="email" autocomplete="email" data-i18n-ph="email.ph" placeholder="din@email.dk" required>
+          <button class="btn" type="submit" data-i18n="notify.btn">Giv mig besked</button>
+        </form>
+        <p class="msg" id="notify-msg" role="status"></p>
+      </div>
+
+      <div class="history">
+        <h2 data-i18n="auction.bidsH">Bud</h2>
+        <ol id="a-history"></ol>
+      </div>
+
+      <div class="switcher" id="a-switch" role="group" data-i18n-aria="auction.switch" aria-label="Vælg auktion"></div>
+    </div>
+  </section>
+
+  <section class="block tint">
+    <div class="wrap">
+      <h2 class="h-section" style="margin-bottom:2rem" data-i18n-html="how.h">Sådan <em>fungerer</em> det</h2>
+      <ol class="how">
+        <li><h3 data-i18n="how.1h">Byd</h3><p data-i18n="how.1p">Skriv dit bud, dit navn og din e-mail. Hvert nyt bud skal være højere end det forrige.</p></li>
+        <li><h3 data-i18n="how.2h">Følg med</h3><p data-i18n="how.2p">Siden viser det højeste bud og tiden tilbage. Kommer der et bud i de sidste minutter, bliver auktionen forlænget.</p></li>
+        <li><h3 data-i18n="how.3h">Højeste bud vinder</h3><p data-i18n="how.3p">Når tiden løber ud, får det højeste bud lov at købe maleriet.</p></li>
+        <li><h3 data-i18n="how.4h">Betal og få maleriet</h3><p data-i18n="how.4p">Laura skriver til vinderen og aftaler betaling med MobilePay eller bankoverførsel, og hvordan maleriet kommer hjem til dig.</p></li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-logo">Laura Kruuse</div>
+    <ul class="footer-nav">
+      <li><a href="index.html" data-i18n="nav.home">Forside</a></li>
+      <li><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
+      <li><a href="gallery.html" data-i18n="nav.prints">Prints</a></li>
+      <li><a href="about.html" data-i18n="nav.about">Om mig</a></li>
+      <li><a href="contact.html" data-i18n="nav.contact">Kontakt</a></li>
+    </ul>
+    <p class="footer-copy">© <span class="year">2026</span> Laura Kruuse. <span data-i18n="footer.rights">Alle rettigheder forbeholdes.</span></p>
+  </div>
+</footer>
+
+<script src="js/config.js"></script>
+<script src="js/i18n.js"></script>
+<script src="js/site.js"></script>
+<script>
+let auctions = [];
+let selected = new URLSearchParams(location.search).get("id");
+const myBids = local.get("lk-mybids", {});
+
+async function refresh() {
+  try {
+    auctions = (await api.auctions()).filter(a => artById(a.artwork_id));
+    if (!selected || !auctions.find(a => a.artwork_id === selected)) selected = featuredAuction(auctions)?.artwork_id;
+    render();
+  } catch { $("#a-status").textContent = t("err.load"); }
+}
+
+function render() {
+  const a = auctions.find(x => x.artwork_id === selected);
+  if (!a) { $("#a-status").textContent = t("status.none"); return; }
+  const w = artById(a.artwork_id), ph = auctionPhase(a);
+
+  if ($("#a-art").dataset.id !== w.id) { $("#a-art").innerHTML = artHTML(w); $("#a-art").dataset.id = w.id; }
+  $("#a-title").textContent = w.title;
+  $("#a-meta").textContent = t("auction.meta", { m: L(w.medium), s: w.size, y: w.year });
+  $("#a-desc").textContent = L(w.description);
+  const st = $("#a-status"); st.className = "status " + ph; st.textContent = statusText(a);
+
+  $("#a-label").textContent = amountLabel(a);
+  $("#a-amount").textContent = kr(a.top_bid || a.start_price);
+  $("#a-count").textContent = bidCount(a);
+  $("#a-clock-wrap").hidden = ph === "ended";
+  $("#a-clock-label").textContent = ph === "soon" ? t("clock.opensIn") : t("clock.ends", { d: fmtDate(a.ends_at) });
+  $("#a-clock").innerHTML = clockHTML();
+
+  const mine = myBids[a.artwork_id] || [], you = $("#a-you");
+  if (mine.length && a.recent.length) {
+    const leading = mine.includes(a.recent[0].id);
+    you.hidden = false; you.className = "you" + (leading ? "" : " outbid");
+    you.textContent = t(ph === "ended" ? (leading ? "you.won" : "you.lost") : (leading ? "you.leading" : "you.outbid"));
+  } else you.hidden = true;
+
+  $("#bid-form").hidden = ph !== "live";
+  $("#notify-box").hidden = ph !== "soon";
+  if (ph === "live") {
+    const min = minBid(a), inp = $("#bid-amount");
+    inp.min = min; inp.step = a.min_increment;
+    if (!inp.value || +inp.value < min || inp.dataset.for !== a.artwork_id) { inp.value = min; inp.dataset.for = a.artwork_id; }
+    $("#bid-quick").innerHTML = [0, 2, 4].map(k => `<button type="button" class="chip" data-v="${min + k * a.min_increment}">${kr(min + k * a.min_increment)}</button>`).join("");
+  }
+
+  $("#a-history").innerHTML = a.recent.length
+    ? a.recent.map(b => `<li><span>${esc(b.name)}<span class="when">${fmtDate(b.created_at)}</span></span><span class="amt">${kr(b.amount)}</span></li>`).join("")
+    : `<li class="empty">${ph === "soon" ? t("auction.notOpen") : t("auction.first", { n: kr(a.start_price) })}</li>`;
+
+  const sw = $("#a-switch");
+  sw.hidden = auctions.length < 2;
+  sw.innerHTML = auctions.map(x => {
+    const p = auctionPhase(x);
+    const sub = p === "live" ? t("auction.swLive", { n: kr(x.top_bid || x.start_price) }) : p === "soon" ? t("status.soon", { d: fmtDate(x.starts_at) }) : t("auction.swEnded");
+    return `<button type="button" data-id="${esc(x.artwork_id)}" aria-pressed="${x.artwork_id === selected}"><b>${esc(artById(x.artwork_id).title)}</b><span>${esc(sub)}</span></button>`;
+  }).join("");
+  tick();
+}
+
+function tick() {
+  const a = auctions.find(x => x.artwork_id === selected); if (!a) return;
+  const ph = auctionPhase(a), target = Date.parse(ph === "soon" ? a.starts_at : a.ends_at);
+  setClock($("#a-clock"), target);
+  if (target <= Date.now() && ph !== "ended" && !tick.busy) { tick.busy = true; refresh().finally(() => tick.busy = false); }
+}
+
+$("#a-switch").addEventListener("click", e => {
+  const b = e.target.closest("[data-id]"); if (!b) return;
+  selected = b.dataset.id; $("#bid-msg").textContent = "";
+  history.replaceState(null, "", "?id=" + selected);
+  render(); window.scrollTo({ top: 0, behavior: "smooth" });
+});
+$("#bid-quick").addEventListener("click", e => { const b = e.target.closest("[data-v]"); if (b) $("#bid-amount").value = b.dataset.v; });
+
+const me = local.get("lk-me", {});
+$("#bid-name").value = me.name || ""; $("#bid-email").value = me.email || ""; $("#bid-phone").value = me.phone || "";
+
+$("#bid-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = $("#bid-msg"), btn = $("#bid-submit");
+  const a = auctions.find(x => x.artwork_id === selected);
+  const amount = Math.round(+$("#bid-amount").value);
+  const name = $("#bid-name").value.trim(), email = $("#bid-email").value.trim(), phone = $("#bid-phone").value.trim();
+  msg.className = "msg err";
+  if (!amount || amount < minBid(a)) { msg.textContent = t("err.minBid", { n: kr(minBid(a)) }); return; }
+  if (name.length < 2) { msg.textContent = t("err.NAME"); $("#bid-name").focus(); return; }
+  if (!validEmail(email)) { msg.textContent = t("err.EMAIL"); $("#bid-email").focus(); return; }
+  if (!$("#bid-agree").checked) { msg.textContent = t("err.agree"); return; }
+  btn.disabled = true; msg.className = "msg"; msg.textContent = t("auction.placing");
+  try {
+    const r = await api.bid({ artwork: a.artwork_id, name, email, phone, amount });
+    (myBids[a.artwork_id] = myBids[a.artwork_id] || []).push(r.id);
+    local.set("lk-mybids", myBids); local.set("lk-me", { name, email, phone });
+    msg.className = "msg ok"; msg.textContent = t("auction.placed", { n: kr(amount), e: email });
+    $("#bid-amount").value = "";
+    await refresh();
+  } catch (err) { msg.className = "msg err"; msg.textContent = errText(err); refresh(); }
+  finally { btn.disabled = false; }
+});
+
+$("#notify-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = $("#notify-msg");
+  try { await api.notify($("#notify-email").value.trim(), "auction:" + selected); msg.className = "msg ok"; msg.textContent = t("notify.ok"); e.target.reset(); }
+  catch (err) { msg.className = "msg err"; msg.textContent = errText(err); }
+});
+
+document.addEventListener("lang:change", () => { if (auctions.length) render(); });
+refresh();
+setInterval(tick, 1000);
+setInterval(refresh, 15000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden) refresh(); });
+</script>
+</body>
+</html>
