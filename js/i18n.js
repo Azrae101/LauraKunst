@@ -50,6 +50,14 @@ const I18N = {
     "da": "varer i kurven",
     "en": "items in basket"
   },
+  "basket.aria": {
+    "da": "Kurv, antal varer: {n}",
+    "en": "Basket, items: {n}"
+  },
+  "toast.view": {
+    "da": "Se kurven",
+    "en": "View basket"
+  },
   "nav.menu": {
     "da": "Menu",
     "en": "Menu"
@@ -587,8 +595,8 @@ const I18N = {
     "en": "Prints, <em>50 × 70 cm</em>"
   },
   "prints.p": {
-    "da": "Hvert maleri trykkes i små oplag på 10 ad gangen og aldrig mere end 50 i alt. Vælg et usigneret print eller et, som Laura signerer og nummererer i hånden.",
-    "en": "Each painting is printed in small batches of 10 at a time, and never more than 50 in total. Choose an unsigned print, or one that Laura signs and numbers by hand."
+    "da": "Hvert maleri trykkes i små oplag på 10 ad gangen. Vælg et usigneret print eller et, som Laura signerer og nummererer i hånden.",
+    "en": "Each painting is printed in small batches of 10 at a time. Choose an unsigned print, or one that Laura signs and numbers by hand."
   },
   "prints.unsigned": {
     "da": "Usigneret",
@@ -723,8 +731,8 @@ const I18N = {
     "en": "The print"
   },
   "process.3p": {
-    "da": "Færdige malerier bliver digitaliseret og trykt i 50 × 70 cm i små oplag på højst 50. Du kan vælge et usigneret print eller et, jeg signerer og nummererer i hånden.",
-    "en": "Finished paintings are digitised and printed at 50 × 70 cm in small editions of at most 50. You can choose an unsigned print, or one I sign and number by hand."
+    "da": "Færdige malerier bliver digitaliseret og trykt i 50 × 70 cm i små oplag. Du kan vælge et usigneret print eller et, jeg signerer og nummererer i hånden.",
+    "en": "Finished paintings are digitised and printed at 50 × 70 cm in small batches. You can choose an unsigned print, or one I sign and number by hand."
   },
   "contact.eyebrow": {
     "da": "Kontakt",

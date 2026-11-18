@@ -29,6 +29,7 @@ function applyLang() {
   $$("[data-i18n-ph]").forEach(el => { el.placeholder = t(el.dataset.i18nPh); });
   $$("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
   if (document.body.dataset.title) document.title = t(document.body.dataset.title);
+  renderBasketBtn();
   // The button shows the flag of the language you can switch TO
   const other = LANG === "da" ? "en" : "da";
   $$(".lang-btn").forEach(b => {
@@ -62,11 +63,18 @@ const local = {
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }
 };
 
-function toast(text) {
+function toast(text, action) {
   let el = $("#toast");
   if (!el) { el = document.createElement("div"); el.id = "toast"; el.className = "toast"; el.setAttribute("role", "status"); document.body.appendChild(el); }
-  el.textContent = text; el.classList.add("show");
-  clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), 2600);
+  el.innerHTML = "";
+  const msg = document.createElement("span"); msg.textContent = text; el.appendChild(msg);
+  if (action) {
+    const b = document.createElement("button"); b.type = "button"; b.className = "toast-action"; b.textContent = action.label;
+    b.addEventListener("click", () => { el.classList.remove("show"); action.onClick(); });
+    el.appendChild(b);
+  }
+  el.classList.add("show");
+  clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("show"), action ? 5000 : 2600);
 }
 
 /* Artwork image with a soft placeholder if the file is missing.
@@ -160,20 +168,29 @@ function remoteApi() {
 
 function demoApi() {
   const KEY = "lk-demo-v4";
+  const SCHEDULE_VERSION = 2;
+  const AUCTION_SCHEDULE = {
+    vestige: { starts_at: "2026-11-01T18:00:00+01:00", ends_at: "2027-01-01T20:00:00+01:00" },
+    florere: { starts_at: "2026-11-01T18:00:00+01:00", ends_at: "2027-01-01T20:00:00+01:00" }
+  };
   let db = local.get(KEY, null);
   function seed() {
-    const now = Date.now(), H = 36e5, D = 24 * H;
     return {
-      auctions: [
-        { artwork_id: "vestige", starts_at: new Date(now - H).toISOString(), ends_at: new Date(now + 7 * D).toISOString(), start_price: 5000, min_increment: 250, extend_minutes: 5 },
-        { artwork_id: "florere", starts_at: new Date(now + 3 * D).toISOString(), ends_at: new Date(now + 10 * D).toISOString(), start_price: 5000, min_increment: 250, extend_minutes: 5 }
-      ],
+      scheduleVersion: SCHEDULE_VERSION,
+      auctions: Object.entries(AUCTION_SCHEDULE).map(([artwork_id, dates]) => ({
+        artwork_id, ...dates, start_price: 5000, min_increment: 250, extend_minutes: 5
+      })),
       bids: [],
       prints: ARTWORKS.map(a => ({ artwork_id: a.id, stock: 10, edition_size: 50, sold: 0, price_unsigned: 450, price_signed: 750 })),
       orders: [], waitlist: []
     };
   }
   if (!db) { db = seed(); local.set(KEY, db); }
+  else if (db.scheduleVersion !== SCHEDULE_VERSION) {
+    db.auctions.forEach(a => { if (AUCTION_SCHEDULE[a.artwork_id]) Object.assign(a, AUCTION_SCHEDULE[a.artwork_id]); });
+    db.scheduleVersion = SCHEDULE_VERSION;
+    local.set(KEY, db);
+  }
   const save = () => local.set(KEY, db);
   const ok = (v) => new Promise(r => setTimeout(() => r(JSON.parse(JSON.stringify(v))), 200));
   const fail = (m) => new Promise((_, rej) => setTimeout(() => rej(new Error(m)), 200));
@@ -237,9 +254,21 @@ let basket = local.get("lk-basket", []);           // [{ artwork_id, signed, qty
 const basketQty = () => basket.reduce((s, i) => s + i.qty, 0);
 const inBasket = (id) => basket.filter(i => i.artwork_id === id).reduce((s, i) => s + i.qty, 0);
 const printFor = (id) => printsCache.find(p => p.artwork_id === id);
+const BAG_ICON = `<svg class="bag" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/></svg>`;
+function renderBasketBtn() {
+  const n = basketQty();
+  $$(".basket-btn").forEach(b => {
+    b.innerHTML = `${BAG_ICON}<span class="label">${t("nav.basket")}</span>${n ? `<span class="count">${n}</span>` : ""}`;
+    b.classList.toggle("has-items", n > 0);
+    b.setAttribute("aria-label", n ? t("basket.aria", { n }) : t("nav.basket"));
+  });
+}
+function bumpBasket() {
+  $$(".basket-btn").forEach(b => { b.classList.remove("bump"); void b.offsetWidth; b.classList.add("bump"); });
+}
 function saveBasket() {
   local.set("lk-basket", basket);
-  $$(".basket-btn .count").forEach(c => c.textContent = basketQty());
+  renderBasketBtn();
   document.dispatchEvent(new CustomEvent("basket:change"));
 }
 async function loadPrints() { printsCache = await api.prints(); return printsCache; }
@@ -250,7 +279,8 @@ function addToBasket(artwork_id, signed, qty) {
   if (qty > room) { toast(room > 0 ? t("toast.onlyLeft", { n: room }) : t("toast.none")); return false; }
   const ex = basket.find(i => i.artwork_id === artwork_id && i.signed === signed);
   if (ex) ex.qty = Math.min(5, ex.qty + qty); else basket.push({ artwork_id, signed, qty });
-  saveBasket(); toast(t("toast.added", { t: artById(artwork_id).title }));
+  saveBasket(); bumpBasket();
+  toast(t("toast.added", { t: artById(artwork_id).title }), { label: t("toast.view"), onClick: openBasket });
   return true;
 }
 

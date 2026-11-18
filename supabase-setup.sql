@@ -185,8 +185,8 @@ grant execute on function join_waitlist(text, text) to anon;
 --  Times are Danish time (Europe/Copenhagen).
 -- ============================================================
 insert into auctions (artwork_id, title, starts_at, ends_at, start_price, min_increment) values
-  ('vestige', 'VESTIGE', '2026-11-20 18:00 Europe/Copenhagen', '2026-11-27 20:00 Europe/Copenhagen', 5000, 250),
-  ('florere', 'FLORERE', '2026-12-04 18:00 Europe/Copenhagen', '2026-12-11 20:00 Europe/Copenhagen', 5000, 250)
+  ('vestige', 'VESTIGE', '2026-11-01 18:00 Europe/Copenhagen', '2027-01-01 20:00 Europe/Copenhagen', 5000, 250),
+  ('florere', 'FLORERE', '2026-11-01 18:00 Europe/Copenhagen', '2027-01-01 20:00 Europe/Copenhagen', 5000, 250)
 on conflict (artwork_id) do update set starts_at = excluded.starts_at, ends_at = excluded.ends_at,
   start_price = excluded.start_price, min_increment = excluded.min_increment;
 
