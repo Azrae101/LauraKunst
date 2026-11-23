@@ -29,7 +29,7 @@ const CONFIG = {
   // Prices in DKK. Keep "ship" the same as in supabase-setup.sql.
   shipping: { ship: 59, pickup: 0 },
   reserveHours: 48,
-  pickupText: { da: "Hent selv, vi aftaler et tidspunkt", en: "Pick up in person, we agree on a time" },
+  pickupText: { da: "Hent selv foran Odense Banegård Center, Østre Stationsvej 29, 5000 Odense. Vi aftaler et tidspunkt", en: "Pick up in person in front of Odense Banegård Center, Østre Stationsvej 29, 5000 Odense. We agree on a time" },
   giftNote: { da: "Alle printordrer får en lille overraskelse med fra atelieret.", en: "Every print order comes with a small surprise from the studio." }
 };
 

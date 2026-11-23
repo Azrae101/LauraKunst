@@ -3,28 +3,28 @@
 
 const I18N = {
   "meta.home": {
-    "da": "Laura Kruuse | Malerier, auktion og prints",
-    "en": "Laura Kruuse | Paintings, auction and prints"
+    "da": "Japper studio | Malerier, auktion og prints",
+    "en": "Japper studio | Paintings, auction and prints"
   },
   "meta.auction": {
-    "da": "Auktion | Laura Kruuse",
-    "en": "Auction | Laura Kruuse"
+    "da": "Auktion | Japper studio",
+    "en": "Auction | Japper studio"
   },
   "meta.prints": {
-    "da": "Prints | Laura Kruuse",
-    "en": "Prints | Laura Kruuse"
+    "da": "Prints | Japper studio",
+    "en": "Prints | Japper studio"
   },
   "meta.about": {
-    "da": "Om mig | Laura Kruuse",
-    "en": "About me | Laura Kruuse"
+    "da": "Om mig | Japper studio",
+    "en": "About me | Japper studio"
   },
   "meta.contact": {
-    "da": "Kontakt | Laura Kruuse",
-    "en": "Contact | Laura Kruuse"
+    "da": "Kontakt | Japper studio",
+    "en": "Contact | Japper studio"
   },
   "meta.museum": {
-    "da": "Portefølje | Laura Kruuse",
-    "en": "Portfolio | Laura Kruuse"
+    "da": "Portefølje | Japper studio",
+    "en": "Portfolio | Japper studio"
   },
   "nav.museum": {
     "da": "Portefølje",
@@ -91,8 +91,8 @@ const I18N = {
     "en": "Back to the start"
   },
   "meta.home.noAuction": {
-    "da": "Laura Kruuse | Malerier og prints",
-    "en": "Laura Kruuse | Paintings and prints"
+    "da": "Japper studio | Malerier og prints",
+    "en": "Japper studio | Paintings and prints"
   },
   "home.sub.noAuction": {
     "da": "Naturinspirerede malerier med tørrede blomster og bladguld. Køb dem som signerede og nummererede prints, sendt direkte hjem til dig.",
@@ -127,8 +127,8 @@ const I18N = {
     "en": "Buy a print"
   },
   "shop.p": {
-    "da": "Hvert print er 50 × 70 cm og bliver signeret og nummereret i hånden af Laura. {p} pr. print. Levering koster {s}, eller du kan hente det gratis.",
-    "en": "Every print is 50 × 70 cm and signed and numbered by hand by Laura. {p} per print. Delivery costs {s}, or you can pick it up for free."
+    "da": "Hvert print er 50 × 70 cm og bliver signeret og nummereret i hånden af Laura. {p} pr. print. Levering koster {s}, eller du kan hente det gratis foran Odense Banegård Center (Østre Stationsvej 29, 5000 Odense).",
+    "en": "Every print is 50 × 70 cm and signed and numbered by hand by Laura. {p} per print. Delivery costs {s}, or you can pick it up for free in front of Odense Banegård Center (Østre Stationsvej 29, 5000 Odense)."
   },
   "viewer.printLine": {
     "da": "Print i 50 × 70 cm, signeret og nummereret: {p}",
@@ -163,8 +163,8 @@ const I18N = {
     "en": "New work, glimpses from the studio and paintings as they come to life."
   },
   "ig.gate": {
-    "da": "Opslagene hentes fra Instagram. Når du viser dem, deles din IP-adresse med Instagram (Meta), og de kan sætte cookies.",
-    "en": "The posts are loaded from Instagram. When you show them, your IP address is shared with Instagram (Meta), and they may set cookies."
+    "da": "Opslagene kommer fra Instagram. Når du trykker på knappen, accepterer du cookies fra Facebook.",
+    "en": "The posts come from Instagram. By clicking the button, you accept cookies from Facebook."
   },
   "ig.load": {
     "da": "Vis opslagene",
@@ -181,6 +181,10 @@ const I18N = {
   "ig.cta": {
     "da": "Se mere på Instagram",
     "en": "See more on Instagram"
+  },
+  "contact.role": {
+    "da": "Kunstneren bag Japper studio",
+    "en": "The artist behind Japper studio"
   },
   "nav.home": {
     "da": "Forside",
@@ -823,20 +827,20 @@ const I18N = {
     "en": "Right now the prints only come in 50 × 70 cm. Sign up if you want to hear about other sizes."
   },
   "about.eyebrow": {
-    "da": "Kunstneren",
-    "en": "The artist"
+    "da": "Kunstneren: Laura Kruuse",
+    "en": "The artist: Laura Kruuse"
   },
   "about.h": {
     "da": "Hej, jeg hedder<br><em>Laura</em>",
     "en": "Hello, I’m<br><em>Laura</em>"
   },
   "about.p1": {
-    "da": "Jeg er en dansk kunstner med en dyb kærlighed til naturen: dens teksturer, dens stille øjeblikke og måden, lyset forandrer alt på. Mine malerier lever et sted mellem det botaniske og det abstrakte.",
-    "en": "I’m a Danish artist with a deep love for the natural world: its textures, its quiet moments, the way light changes everything. My paintings live somewhere between the botanical and the abstract."
+    "da": "Hej! Jeg hedder Laura, og det er mig, der står bag Japper Studio, som er mit lille atelier hvor jeg begraver mig ned i min kunstverden. Japper Studio opstod som en ide, i oktober 2026, da jeg længe havde gået med tanken om at begynde at sælge nogle af mine malerier.",
+    "en": "Hi! My name is Laura, and I’m the one behind Japper Studio, my little studio where I bury myself in my world of art. Japper Studio started as an idea in October 2026, after I had been thinking for a long time about starting to sell some of my paintings."
   },
   "about.p2": {
-    "da": "Jeg bor i Danmark og arbejder i et lille atelier derhjemme, omgivet af planter, bøger og alt for meget maling på gulvet.",
-    "en": "I’m based in Denmark and work from a small home studio surrounded by plants, books and too much paint on the floor."
+    "da": "Du undrer dig måske over hvem Japper er? Japper er navnet på en kanin bamse jeg har haft siden jeg var helt lille, en trofast følgesvend gennem min opvækst og en lille ven med en fast plads på hylden i mit atelier.",
+    "en": "You might be wondering who Japper is? Japper is the name of a stuffed bunny I’ve had since I was very little, a faithful companion through my childhood and a little friend with a permanent spot on the shelf in my studio."
   },
   "about.caption": {
     "da": "Laura i sit atelier",

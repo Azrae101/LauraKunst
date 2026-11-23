@@ -5,28 +5,32 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#f7f4ee">
-  <title>Portefølje | Laura Kruuse</title>
-  <meta name="description" content="Gå en tur gennem Laura Kruuses malerier i et virtuelt museum.">
+  <title>Portefølje | Japper studio</title>
+  <meta name="description" content="Japper studio: gå en tur gennem Laura Kruuses malerier.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Cinzel:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Patrick+Hand&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
   <link rel="apple-touch-icon" href="images/general/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20261144">
+  <link rel="stylesheet" href="css/style.css?v=20261158">
   <style>
     /* ---------- Virtual museum ----------
        The hall is a horizontal scroller. Paintings, visitors (the shadow people),
        the sketch board and the ending sit side by side as flex items, so a visitor
        can never be drawn on top of a painting. Sizes use cqh (1% of the hall's height),
        so everything scales with the screen. */
+    /* Colours: a calm, natural gallery. Warm grey walls, oak floor, dark wooden frames,
+       off-white museum labels with dark text. No gold, no neon. */
     :root {
-      --gold: #d4af37;
-      --gold-soft: #f5e6c8;
-      --wall-1: #2b241a;
-      --wall-2: #3a3028;
-      --card: rgba(18, 16, 30, 0.88);
-      --cinzel: "Cinzel", Georgia, serif;
+      --m-wall-1: #615b53;
+      --m-wall-2: #57524b;
+      --m-wall-3: #4d4943;
+      --m-ink: #2a2520;
+      --m-muted: #6b6157;
+      --m-paper: #f4f0e8;
+      --m-line: #d8d0c2;
+      --m-light: #f4f0e8;
     }
     body.museum-page {
       height: 100vh; height: 100dvh;
@@ -34,9 +38,9 @@
       overflow: hidden;
       padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px));
       padding-bottom: 0;
-      background: #14110c;
+      background: var(--m-wall-3);
     }
-    .museum { position: relative; flex: 1 1 auto; min-height: 0; color: var(--gold-soft); }
+    .museum { position: relative; flex: 1 1 auto; min-height: 0; color: var(--m-light); }
 
     .hall {
       container: hall / size;
@@ -44,9 +48,9 @@
       overflow-x: auto; overflow-y: hidden;
       overscroll-behavior-x: contain;
       -webkit-overflow-scrolling: touch;
-      scrollbar-width: thin; scrollbar-color: #8b5a2b rgba(0,0,0,0.3);
+      scrollbar-width: thin; scrollbar-color: rgba(244,240,232,0.45) transparent;
     }
-    .hall:focus-visible { outline: 2px solid var(--gold); outline-offset: -4px; }
+    .hall:focus-visible { outline: 2px solid var(--m-light); outline-offset: -4px; }
     @media (pointer: coarse) { .hall { scroll-snap-type: x mandatory; } }
 
     .track {
@@ -57,12 +61,14 @@
       width: max-content; height: 100%;
       padding-inline: 6vw;
       background:
-        /* shadow where wall meets floor */
-        linear-gradient(to bottom, transparent var(--wall), rgba(0,0,0,0.55) var(--wall), transparent calc(var(--wall) + 2.5cqh)),
-        /* wall panels */
-        repeating-linear-gradient(90deg, rgba(0,0,0,0.14) 0 2px, transparent 2px 140px) top / 100% var(--wall) no-repeat,
-        /* wall and concrete floor */
-        linear-gradient(to bottom, var(--wall-1) 0, var(--wall-2) 45%, #2a2318 var(--wall), #66645f var(--wall), #4b4945 100%);
+        /* skirting board and its soft shadow on the floor */
+        linear-gradient(to bottom, transparent calc(var(--wall) - 1.2cqh), #3a3632 calc(var(--wall) - 1.2cqh), #3a3632 var(--wall), rgba(0,0,0,0.28) var(--wall), transparent calc(var(--wall) + 3cqh)),
+        /* oak floor: plank seams */
+        repeating-linear-gradient(to bottom, transparent 0 calc(var(--floor) / 4 - 1px), rgba(60,40,25,0.35) calc(var(--floor) / 4 - 1px) calc(var(--floor) / 4)) left bottom / 100% var(--floor) no-repeat,
+        /* oak floor: grain */
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 3px, transparent 3px 11px, rgba(0,0,0,0.04) 11px 13px, transparent 13px 29px) left bottom / 100% var(--floor) no-repeat,
+        /* warm grey wall, then the oak floor */
+        linear-gradient(to bottom, var(--m-wall-1) 0, var(--m-wall-2) 55%, var(--m-wall-3) var(--wall), #8d6c4d var(--wall), #7a5c41 100%);
     }
 
     /* Every stop the arrows move between */
@@ -73,10 +79,10 @@
       padding: 2cqh 3vw var(--floor);
       scroll-snap-align: center;
     }
-    /* spotlight from the ceiling */
+    /* soft gallery light from the ceiling */
     .stop::before {
       content: ""; position: absolute; inset: 0 0 var(--floor); pointer-events: none;
-      background: radial-gradient(ellipse 55% 70% at 50% 0%, rgba(255, 226, 170, 0.16), transparent 72%);
+      background: radial-gradient(ellipse 50% 65% at 50% 0%, rgba(255, 250, 240, 0.13), transparent 72%);
     }
     .stop > * { position: relative; }
 
@@ -86,136 +92,137 @@
       height: 48cqh;
       margin: 0 1vw calc(var(--floor) * 0.3);
       pointer-events: none;
-      opacity: 0.92;
-      filter: drop-shadow(0 2cqh 2.5cqh rgba(0, 0, 0, 0.85));
+      opacity: 0.88;
+      filter: drop-shadow(0 1.5cqh 2cqh rgba(0, 0, 0, 0.45));
     }
     .visitor img { height: 100%; width: auto; max-width: none; }
     .visitor.flip img { transform: scaleX(-1); }
 
-    /* Painting frame */
+    /* Painting frame: a simple, thin, dark wooden frame */
     .frame {
       --pw: min(calc(58cqh * var(--ar)), 46vw);
-      display: block; flex: none; padding: clamp(8px, 2cqh, 20px);
-      border: 0; border-radius: 3px; cursor: pointer;
-      background: linear-gradient(135deg, #6e4520, #d4af37 28%, #8b5a2b 52%, #c9a24a 78%, #6e4520);
-      box-shadow: 0 3cqh 6cqh rgba(0,0,0,0.75), inset 0 0 0 2px rgba(255,235,180,0.35), inset 0 0 12px rgba(0,0,0,0.6);
-      transition: box-shadow 0.4s, transform 0.4s;
+      display: block; flex: none; padding: clamp(6px, 1.3cqh, 12px);
+      border: 0; border-radius: 1px; cursor: pointer;
+      background: linear-gradient(180deg, #4a3728, #33261c);
+      box-shadow: 0 2.5cqh 4.5cqh rgba(0,0,0,0.42), 0 0.6cqh 1cqh rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.12);
+      transition: transform 0.4s, box-shadow 0.4s;
     }
-    .frame:hover { box-shadow: 0 3cqh 6cqh rgba(0,0,0,0.8), 0 0 40px rgba(212,175,55,0.45), inset 0 0 0 2px rgba(255,235,180,0.5); }
-    .frame:focus-visible { outline: 2px solid var(--gold-soft); outline-offset: 6px; }
-    .frame img { display: block; width: var(--pw); height: auto; max-width: none; box-shadow: 0 0 0 3px #1a140c, 0 0 18px rgba(0,0,0,0.6); background: #000; }
+    .frame:hover { transform: translateY(-2px); box-shadow: 0 3cqh 5.5cqh rgba(0,0,0,0.45), 0 0.6cqh 1cqh rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.12); }
+    .frame:focus-visible { outline: 2px solid var(--m-light); outline-offset: 6px; }
+    .frame img { display: block; width: var(--pw); height: auto; max-width: none; background: #2b2622; }
     .frame.photo { cursor: default; }
-    .frame.photo:hover { box-shadow: 0 3cqh 6cqh rgba(0,0,0,0.75), inset 0 0 0 2px rgba(255,235,180,0.35), inset 0 0 12px rgba(0,0,0,0.6); }
+    .frame.photo:hover { transform: none; }
 
-    /* Placard next to each painting */
+    /* Museum label next to each painting: off-white card, dark text */
     .placard {
       width: clamp(240px, 26vw, 340px); max-height: 60cqh; overflow-y: auto;
-      background: var(--card); border: 1px solid rgba(212,175,55,0.3); border-radius: 8px;
-      padding: clamp(1rem, 2.4cqh, 1.6rem);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      background: var(--m-paper); color: var(--m-ink); border-radius: 1px;
+      padding: clamp(1rem, 2.6cqh, 1.7rem);
+      box-shadow: 0 1.5cqh 3cqh rgba(0,0,0,0.25);
       line-height: 1.65; overflow-wrap: break-word;
-      scrollbar-width: thin; scrollbar-color: rgba(212,175,55,0.5) transparent;
+      scrollbar-width: thin; scrollbar-color: var(--m-line) transparent;
     }
-    .placard .kicker { font-size: 0.7rem; letter-spacing: 0.22em; text-transform: uppercase; color: #b8a580; margin-bottom: 0.4rem; }
-    .placard h2 { font-family: var(--cinzel); font-weight: 400; color: var(--gold); font-size: clamp(1.15rem, 2.2vw, 1.5rem); line-height: 1.25; margin-bottom: 0.7rem; }
-    .placard p { font-size: 0.93rem; margin-bottom: 0.8rem; }
-    .placard dl { font-size: 0.82rem; color: #b8a580; border-top: 1px solid rgba(212,175,55,0.2); padding-top: 0.7rem; display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.8rem; }
-    .placard dt { color: var(--gold); }
+    .placard .kicker { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--m-muted); margin-bottom: 0.35rem; }
+    .placard h2 { font-family: var(--serif); font-weight: 500; color: var(--m-ink); font-size: clamp(1.4rem, 2.4vw, 1.8rem); line-height: 1.15; letter-spacing: 0.02em; margin-bottom: 0.7rem; }
+    .placard p { font-size: 0.92rem; margin-bottom: 0.8rem; color: #3d3630; }
+    .placard dl { font-size: 0.8rem; color: var(--m-muted); border-top: 1px solid var(--m-line); padding-top: 0.7rem; display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.8rem; }
+    .placard dt { color: var(--m-ink); }
     .placard .open { margin-top: 1rem; }
     .m-btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 44px;
-      padding: 0 1.2rem; border-radius: 999px; cursor: pointer; text-decoration: none;
-      font: 400 0.85rem/1 var(--sans); letter-spacing: 0.06em;
-      color: var(--gold); background: rgba(212,175,55,0.06); border: 1px solid rgba(212,175,55,0.5);
+      padding: 0 1.2rem; border-radius: 0; cursor: pointer; text-decoration: none;
+      font: 400 0.78rem/1 var(--sans); letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--m-ink); background: transparent; border: 1px solid var(--m-ink);
       transition: background 0.25s, color 0.25s;
     }
-    .m-btn:hover { background: var(--gold); color: #1a140c; }
-    .m-btn.solid { background: var(--gold); color: #1a140c; }
-    .m-btn.solid:hover { background: var(--gold-soft); }
+    .m-btn:hover { background: var(--m-ink); color: var(--m-paper); }
+    .m-btn.solid { background: var(--m-ink); color: var(--m-paper); }
+    .m-btn.solid:hover { background: #4a423a; }
 
     /* Artist / welcome */
     .welcome .placard { width: clamp(260px, 30vw, 420px); }
-    .welcome h1 { font-family: var(--cinzel); font-weight: 400; color: var(--gold-soft); font-size: clamp(1.5rem, 3vw, 2.2rem); letter-spacing: 0.08em; line-height: 1.2; margin-bottom: 0.9rem; }
+    .welcome h1 { font-family: var(--serif); font-weight: 400; color: var(--m-ink); font-size: clamp(1.8rem, 3.2vw, 2.6rem); line-height: 1.1; margin-bottom: 0.9rem; }
     .welcome .social-row { margin-top: 1rem; }
-    .museum .social-pill { color: var(--gold); border-color: rgba(212,175,55,0.45); }
-    .museum .social-pill:hover { background: var(--gold); color: #1a140c; border-color: var(--gold); }
 
-    /* Behind the scenes: cork board with post-it notes */
+    /* Behind the scenes: a cork board with notes */
     .board {
       width: min(980px, 70vw); max-height: 70cqh; overflow-y: auto;
       padding: clamp(1rem, 3cqh, 2rem);
-      border: clamp(8px, 1.6cqh, 16px) solid #8b5a2b; border-radius: 4px;
+      border: clamp(6px, 1.2cqh, 12px) solid #4a3728; border-radius: 1px;
       background:
-        repeating-linear-gradient(45deg, #c4884d 0 1px, #b37940 1px 2px) 0 0 / 8px 8px,
-        radial-gradient(circle at 30% 40%, #d4a573, #b37940);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.55), inset 0 0 40px rgba(0,0,0,0.3);
-      scrollbar-width: thin; scrollbar-color: #8b5a2b transparent;
+        repeating-linear-gradient(45deg, rgba(0,0,0,0.035) 0 1px, transparent 1px 3px),
+        radial-gradient(circle at 30% 40%, #c9a77f, #b38f66);
+      box-shadow: 0 2.5cqh 4.5cqh rgba(0,0,0,0.38);
+      scrollbar-width: thin; scrollbar-color: #4a3728 transparent;
     }
-    .board h2 { font-family: var(--cinzel); font-weight: 700; text-align: center; color: #6e4520; letter-spacing: 0.1em; text-transform: uppercase; font-size: clamp(1.1rem, 2.4vw, 1.9rem); text-shadow: 0 1px 0 rgba(255,255,255,0.2); }
-    .board .sub { text-align: center; color: #4a2f15; font-family: "Patrick Hand", cursive; font-size: 1.05rem; margin-bottom: clamp(0.8rem, 2.5cqh, 1.6rem); }
+    .board h2 { font-family: var(--serif); font-weight: 500; text-align: center; color: var(--m-ink); letter-spacing: 0.03em; font-size: clamp(1.4rem, 2.6vw, 2rem); }
+    .board .sub { text-align: center; color: #3d3630; font-family: "Patrick Hand", cursive; font-size: 1.05rem; margin-bottom: clamp(0.8rem, 2.5cqh, 1.6rem); }
     .notes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(0.8rem, 2vw, 1.6rem); align-items: start; }
     .note {
       position: relative; display: block; width: 100%; text-align: left; cursor: pointer;
-      background: linear-gradient(135deg, #fffacd, #fff3a8); color: #2c2c2c; border: 0; border-radius: 2px;
-      padding: 1.1rem 0.8rem 0.8rem; box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      background: #fbf7ec; color: var(--m-ink); border: 0; border-radius: 1px;
+      padding: 1.1rem 0.8rem 0.8rem; box-shadow: 0 6px 14px rgba(0,0,0,0.22);
       transition: transform 0.3s, box-shadow 0.3s;
     }
-    .note::before { content: ""; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 11px; height: 11px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #e74c3c, #c0392b); box-shadow: 0 2px 3px rgba(0,0,0,0.35); }
-    .note:nth-child(4n+1) { transform: rotate(-2.5deg); }
-    .note:nth-child(4n+2) { transform: rotate(1.8deg) translateY(-6px); }
-    .note:nth-child(4n+3) { transform: rotate(-1deg) translateY(8px); }
-    .note:nth-child(4n+4) { transform: rotate(2.4deg); }
-    .note:hover, .note:focus-visible { transform: rotate(0) scale(1.04); box-shadow: 0 14px 30px rgba(0,0,0,0.4); z-index: 2; }
-    .note img { width: 100%; height: clamp(70px, 20cqh, 220px); object-fit: cover; border-radius: 2px; margin-bottom: 0.6rem; }
-    .note h3 { font-family: var(--cinzel); color: #8b5a2b; font-size: 0.95rem; font-weight: 700; line-height: 1.25; margin-bottom: 0.3rem; }
-    .note p { font-family: "Patrick Hand", cursive; font-size: 1rem; line-height: 1.3; }
+    .note::before { content: ""; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 10px; height: 10px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #8a7f72, #4f4840); box-shadow: 0 1px 2px rgba(0,0,0,0.35); }
+    .note:nth-child(4n+1) { transform: rotate(-1.5deg); }
+    .note:nth-child(4n+2) { transform: rotate(1deg) translateY(-6px); }
+    .note:nth-child(4n+3) { transform: rotate(-0.6deg) translateY(8px); }
+    .note:nth-child(4n+4) { transform: rotate(1.4deg); }
+    .note:hover, .note:focus-visible { transform: rotate(0) scale(1.03); box-shadow: 0 12px 24px rgba(0,0,0,0.3); z-index: 2; }
+    .note img { width: 100%; height: clamp(70px, 20cqh, 220px); object-fit: cover; margin-bottom: 0.6rem; }
+    .note h3 { font-family: var(--serif); color: var(--m-ink); font-size: 1.1rem; font-weight: 500; line-height: 1.2; margin-bottom: 0.3rem; }
+    .note p { font-family: "Patrick Hand", cursive; font-size: 1rem; line-height: 1.3; color: #3d3630; }
 
     /* Ending */
     .ending .placard { width: min(520px, 80vw); text-align: center; }
-    .ending h2 { font-size: clamp(1.4rem, 3vw, 2.2rem); }
+    .ending h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); }
     .ending .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-top: 1.2rem; }
     .ending .social-row { justify-content: center; }
-    .ending .fin { margin-top: 1.2rem; font-style: italic; opacity: 0.75; font-family: var(--cinzel); font-size: 0.85rem; }
+    .ending .fin { margin-top: 1.2rem; font-style: italic; color: var(--m-muted); font-family: var(--serif); font-size: 1rem; }
 
     /* Arrows and hint over the hall */
     .hall-nav {
       position: absolute; top: 39%; transform: translateY(-50%); z-index: 5;
       width: 48px; height: 48px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
-      background: rgba(139, 90, 43, 0.9); color: var(--gold-soft); border: 2px solid rgba(212,175,55,0.5);
+      background: rgba(244, 240, 232, 0.92); color: var(--m-ink); border: 0;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.25);
       transition: background 0.25s, opacity 0.25s;
     }
-    .hall-nav:hover { background: #a67c52; }
+    .hall-nav:hover { background: #fff; }
     .hall-nav[disabled] { opacity: 0; pointer-events: none; }
     .hall-nav svg { width: 22px; height: 22px; }
     .hall-nav.prev { left: max(10px, env(safe-area-inset-left, 0px)); }
     .hall-nav.next { right: max(10px, env(safe-area-inset-right, 0px)); }
     .hall-hint {
       position: absolute; left: 50%; bottom: 1rem; transform: translateX(-50%); z-index: 5;
-      font-size: 0.78rem; letter-spacing: 0.12em; text-transform: uppercase; color: rgba(245,230,200,0.85);
-      background: rgba(0,0,0,0.45); padding: 0.4rem 0.9rem; border-radius: 999px; white-space: nowrap;
+      font-size: 0.74rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--m-paper);
+      background: rgba(42, 37, 32, 0.55); padding: 0.4rem 0.9rem; border-radius: 999px; white-space: nowrap;
       pointer-events: none; transition: opacity 0.6s;
     }
     .hall-hint.gone { opacity: 0; }
 
-    /* Viewer */
+    /* Viewer: like a page in an exhibition catalogue */
     .m-viewer {
       width: min(1100px, 100% - 1.5rem); max-height: calc(100dvh - 1.5rem); margin: auto; padding: 0;
-      border: 1px solid rgba(212,175,55,0.35); border-radius: 10px;
-      background: #15121c; color: var(--gold-soft); overflow: hidden;
+      border: 0; border-radius: 2px;
+      background: var(--m-paper); color: var(--m-ink); overflow: hidden;
+      box-shadow: 0 30px 80px rgba(0,0,0,0.45);
     }
-    .m-viewer::backdrop { background: rgba(0,0,0,0.88); }
+    .m-viewer::backdrop { background: rgba(35, 32, 28, 0.82); }
     .mv-inner { display: grid; max-height: calc(100dvh - 1.5rem); overflow-y: auto; }
-    .mv-art { background: #000; display: grid; place-items: center; padding: 1rem; }
-    .mv-art img { max-height: 60dvh; width: auto; object-fit: contain; }
-    .mv-info { padding: 1.5rem 1.4rem 2rem; line-height: 1.7; }
-    .mv-info h2 { font-family: var(--cinzel); font-weight: 400; color: var(--gold); font-size: clamp(1.4rem, 4vw, 2rem); line-height: 1.2; margin: 0 2.5rem 1rem 0; border-bottom: 1px solid rgba(212,175,55,0.4); padding-bottom: 0.6rem; }
-    .mv-info p { margin-bottom: 1rem; }
-    .mv-info dl { font-size: 0.88rem; color: #b8a580; display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 1rem; border-top: 1px solid rgba(212,175,55,0.25); padding-top: 0.9rem; }
-    .mv-info dt { color: var(--gold); }
+    .mv-art { background: #48443e; display: grid; place-items: center; padding: 1.5rem; }
+    .mv-art img { max-height: 60dvh; width: auto; object-fit: contain; box-shadow: 0 12px 30px rgba(0,0,0,0.35); }
+    .mv-info { padding: 1.5rem 1.4rem 2rem; line-height: 1.75; }
+    .mv-info h2 { font-family: var(--serif); font-weight: 500; color: var(--m-ink); font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.1; margin: 0 2.5rem 1rem 0; border-bottom: 1px solid var(--m-line); padding-bottom: 0.7rem; }
+    .mv-info p { margin-bottom: 1rem; color: #3d3630; }
+    .mv-info dl { font-size: 0.86rem; color: var(--m-muted); display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 1rem; border-top: 1px solid var(--m-line); padding-top: 0.9rem; }
+    .mv-info dt { color: var(--m-ink); }
     .mv-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.4rem; }
     .mv-close, .mv-step {
       position: absolute; z-index: 2; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
-      background: rgba(0,0,0,0.65); color: var(--gold-soft); border: 1px solid rgba(212,175,55,0.5); font-size: 1.5rem; line-height: 1;
+      background: rgba(244, 240, 232, 0.92); color: var(--m-ink); border: 0; font-size: 1.5rem; line-height: 1;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
     }
     .mv-step[hidden] { display: none; }
     .mv-close { top: 0.6rem; right: 0.6rem; }
@@ -223,12 +230,12 @@
     .mv-step.prev { left: 0.6rem; }
     .mv-step.next { right: 0.6rem; }
     .mv-step svg { width: 20px; height: 20px; }
-    .mv-close:hover, .mv-step:hover { background: var(--gold); color: #1a140c; }
+    .mv-close:hover, .mv-step:hover { background: #fff; }
     @media (min-width: 800px) {
       .mv-inner { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
       .mv-art { min-height: 70dvh; }
-      .mv-art img { max-height: calc(100dvh - 4rem); }
-      .mv-info { padding: 3rem 2.2rem; align-self: center; }
+      .mv-art img { max-height: calc(100dvh - 5rem); }
+      .mv-info { padding: 3rem 2.4rem; align-self: center; }
       .mv-step { top: 50%; }
       .mv-step.next { right: calc(100% / 2.2 + 0.6rem); }
     }
@@ -304,9 +311,9 @@
   <div class="mv-inner" id="mvInner"></div>
 </dialog>
 
-<script src="js/config.js?v=20261144"></script>
-<script src="js/i18n.js?v=20261144"></script>
-<script src="js/site.js?v=20261144"></script>
+<script src="js/config.js?v=20261158"></script>
+<script src="js/i18n.js?v=20261158"></script>
+<script src="js/site.js?v=20261158"></script>
 <script>
 /* The museum is built from ARTWORKS and SKETCHES in js/config.js,
    so a new painting added there also gets hung here automatically. */
