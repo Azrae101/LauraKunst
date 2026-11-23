@@ -167,8 +167,8 @@ const ICONS = {
 function fillSocialRows() {
   const c = CONFIG.contact;
   $$(".social-row[data-auto]").forEach(row => {
-    row.innerHTML = `<a class="social-pill" href="${esc(c.instagram.url)}" target="_blank" rel="noopener">${ICONS.instagram}${esc(c.instagram.handle)}</a>
-      <a class="social-pill" href="${esc(c.tiktok.url)}" target="_blank" rel="noopener">${ICONS.tiktok}${esc(c.tiktok.handle)}</a>`;
+    row.innerHTML = `<a class="social-pill social-instagram" href="${esc(c.instagram.url)}" target="_blank" rel="noopener">${ICONS.instagram}<span>${esc(c.instagram.handle)}</span></a>
+      <a class="social-pill social-tiktok" href="${esc(c.tiktok.url)}" target="_blank" rel="noopener">${ICONS.tiktok}<span>${esc(c.tiktok.handle)}</span></a>`;
   });
 }
 

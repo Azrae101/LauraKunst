@@ -166,18 +166,26 @@
     /* Artist / welcome */
     .welcome .placard { width: clamp(260px, 30vw, 420px); }
     .welcome h1 { font-family: var(--serif); font-weight: 400; color: var(--m-cream); font-size: clamp(1.8rem, 3.2vw, 2.6rem); line-height: 1.1; margin-bottom: 0.9rem; }
-    /* Instagram / TikTok in the portfolio: filled cream pills with dark green text, dark green on hover */
+    /* Instagram / TikTok in the portfolio: distinct, framed platform pills */
     .museum .social-pill {
-      border-radius: 999px; padding: 0.5rem 1.2rem 0.5rem 0.6rem; gap: 0.55rem;
-      background: var(--m-cream); color: var(--m-frame); border: 2px solid var(--m-cream);
-      font-weight: 500; letter-spacing: 0.02em;
-      box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+      border-radius: 999px; min-height: 50px; padding: 0.4rem 1.2rem 0.4rem 0.4rem; gap: 0.65rem;
+      background: var(--m-cream); color: var(--m-frame); border: 1px solid rgba(239,232,218,0.9);
+      font-weight: 500; letter-spacing: 0.01em;
+      box-shadow: 0 8px 18px rgba(0,0,0,0.28);
       transition: background 0.25s, color 0.25s, border-color 0.25s, transform 0.25s;
     }
     .museum .social-pill svg {
-      width: 30px; height: 30px; padding: 6px; border-radius: 50%;
+      width: 38px; height: 38px; padding: 8px; border-radius: 50%;
       background: var(--m-frame); color: var(--m-cream); transition: background 0.25s, color 0.25s;
     }
+    .museum .social-instagram {
+      background: #a75a62; color: #fff8ef; border-color: #c58a8f;
+    }
+    .museum .social-instagram svg { background: #fff8ef; color: #a75a62; }
+    .museum .social-tiktok {
+      background: #b9c5a5; color: var(--m-frame); border-color: #d9dfcf;
+    }
+    .museum .social-tiktok svg { background: var(--m-frame); color: #b9c5a5; }
     .welcome .social-row { margin-top: 1rem; }
     /* The Japper logo next to the studio name */
     .welcome h1 { display: flex; align-items: center; gap: 0.6rem; }
@@ -318,9 +326,8 @@
     .hall-fs .fs-off, .hall-fs.on .fs-on { display: none; }
     .hall-fs.on .fs-off { display: block; }
     .hall-fs[hidden] { display: none; }
-    /* No hover effects in the portfolio (the site-wide social pills too) */
-    .museum .social-pill:hover { background: var(--m-frame); color: var(--m-cream); border-color: var(--m-cream); transform: translateY(-2px); }
-    .museum .social-pill:hover svg { background: var(--m-cream); color: var(--m-frame); }
+    .museum .social-pill:hover { background: var(--m-cream); color: var(--m-frame); border-color: var(--m-cream); transform: translateY(-3px); box-shadow: 0 11px 22px rgba(0,0,0,0.34); }
+    .museum .social-pill:hover svg { background: var(--m-frame); color: var(--m-cream); }
     /* Full screen: only the gallery, no menu */
     body.museum-page.is-fs { padding-top: env(safe-area-inset-top, 0px); }
     body.museum-page.is-fs .site-nav { display: none; }
@@ -607,6 +614,8 @@
         </div>
       </div>
     </section>`);
+    VISITORS[GAPS - 1].forEach(p => parts.push(person(p)));
+
     parts.push(`<section class="stop nature" aria-labelledby="m-nature">
       <div class="line-wall">
         <h2 id="m-nature">${t("museum.nature")}</h2>
@@ -621,7 +630,6 @@
         </div>
       </div>
     </section>`);
-    VISITORS[GAPS - 1].forEach(p => parts.push(person(p)));
 
     parts.push(`<section class="stop ending" aria-labelledby="m-end">
       <div class="placard">
