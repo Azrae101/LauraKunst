@@ -847,24 +847,24 @@ const I18N = {
     "en": "In my own<br><em>words</em>"
   },
   "story.p1": {
-    "da": "Hvorfor er jeg så bange for, hvad folk tænker om mig?",
-    "en": "Why am I so terrified of what people think of me?"
+    "da": "Hvorfor er jeg så pisse bange for hvad folk tænker om mig??",
+    "en": "Why am I so damn scared of what people think of me??"
   },
   "story.p2": {
-    "da": "Arbejdet med musik viste mig, hvor svært jeg havde ved at miste kontrollen, og hvor afhængig jeg var af andre mennesker. Selvom musikken altid vil have en særlig plads i mit hjerte, havde jeg glemt, hvad der gav mig ro, hvad der føltes meningsfuldt, og hvad jeg faktisk var bedst til: at lave kunst.",
-    "en": "Working with music showed me just how much I struggled with losing control, and how dependent I was on other people. Even though music will always have a special place in my heart, I had forgotten what gave me peace, what felt meaningful, and what I was actually best at: making art."
+    "da": "I mit arbejde med musikken gik det op for mig hvor meget kontrol tab jeg havde og hvor afhængig af andre jeg var. Selv om jeg elsker musik og det at skabe det, altid vil have en særlig plads i mit hjerte, glemte jeg hvad der gav mig ro, hvad der gave mening og hvad jeg faktisk var bedst til, som er at lave kunst.",
+    "en": "Working with music, I realised how much control I had lost and how dependent on others I was. Even though I love music and creating it, and it will always have a special place in my heart, I forgot what gave me peace, what gave meaning, and what I was actually best at, which is making art."
   },
   "story.p3": {
-    "da": "Mens jeg prøvede at finde tilbage til kunsten, gemte jeg den samtidig væk. Sikkert fordi den føltes så meget mere sårbar end min musik. Min kunst rummer tusindvis af timer alene med mig selv, følelser jeg ikke havde nogen anden måde at få ud på. Det var min måde at tage kontrollen tilbage på, for mine malerier var det eneste, der var helt og aldeles mit.",
-    "en": "While trying to find my way back to art, I was at the same time hiding it, keeping it out of sight. Probably because it felt so much more vulnerable than my music. My art represents thousands of hours spent alone with myself, feelings I had no other way of getting out. It was my way of reclaiming control, because my paintings were the one thing that was entirely, only mine."
+    "da": "I mit forsøg på at finde sammen med kunsten igen prøvede jeg samtidig at gemme den væk og skjule den. Nok fordi jeg følte at det var noget langt mere sårbart end min musik. Min kunst er tusindvis af timer brugt i mit eget selskab, følelser jeg ikke anede hvordan jeg kunne få ud på andre måder. Det var min måde at genvinde kontrollen på, fordi det KUN var mig der havde ansvar for mine malerier.",
+    "en": "In trying to find my way back to art, I was at the same time trying to put it away and hide it. Probably because it felt like something far more vulnerable than my music. My art is thousands of hours spent in my own company, feelings I had no idea how to get out in any other way. It was my way of regaining control, because ONLY I was responsible for my paintings."
   },
   "story.p4": {
-    "da": "Jeg indså, at jeg havde ladet frygten for andres meninger bestemme, hvad jeg gjorde. Måske var jeg også bange for at blive set som et mislykket projekt.",
-    "en": "I realised I had been letting the fear of other people’s opinions dictate what I did. Maybe I was also afraid of being seen as a failed project."
+    "da": "Det gik op for mig at jeg lod frygten for folks meninger om mig, styre hvad jeg gjorde.<br>Måske var jeg også bange for at blive set som et mislykket projekt…",
+    "en": "I realised I was letting the fear of what people thought of me control what I did.<br>Maybe I was also afraid of being seen as a failed project…"
   },
   "story.p5": {
-    "da": "Men nu giver jeg det et skud, selvom det er dybt skræmmende. 💛",
-    "en": "But now I’m giving it a shot, even though it’s deeply terrifying. 💛"
+    "da": "Men nu giver jeg det et skud, selv om det er super grænseoverskridende 💛💛",
+    "en": "But now I’m giving it a shot, even though it’s really nerve-racking 💛💛"
   },
   "quote": {
     "da": "“Min kunst er tusindvis af timer i mit eget selskab, følelser jeg ikke havde nogen anden måde at få ud på.”",
