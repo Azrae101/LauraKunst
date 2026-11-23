@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#f7f4ee">
-  <title>Laura Kruuse | Malerier, auktion og prints</title>
-  <meta name="description" content="Malerier af Laura Kruuse. Byd på originalerne, eller køb et print i 50 × 70 cm.">
+  <title>Laura Kruuse | Malerier og prints</title>
+  <meta name="description" content="Malerier af Laura Kruuse. Køb et signeret og nummereret print i 50 × 70 cm.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -19,11 +19,12 @@
     <a href="index.html" class="nav-logo">Laura Kruuse</a>
     <nav data-i18n-aria="nav.main" aria-label="Hovedmenu">
       <ul class="nav-links" id="navLinks">
-        <li><a href="index.html" aria-current="page" data-i18n="nav.home">Forside</a></li>
-        <li><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
-        <li><a href="gallery.html" data-i18n="nav.prints">Prints</a></li>
-        <li><a href="about.html" data-i18n="nav.about">Om mig</a></li>
-        <li><a href="contact.html" data-i18n="nav.contact">Kontakt</a></li>
+        <li><a href="index.html#top" aria-current="page" data-i18n="nav.home">Forside</a></li>
+        <li data-auction><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
+        <li><a href="index.html#prints" data-i18n="nav.prints">Prints</a></li>
+        <li><a href="index.html#om-mig" data-i18n="nav.about">Om mig</a></li>
+        <li><a href="museum.html" data-i18n="nav.museum">Museum</a></li>
+        <li><a href="index.html#kontakt" data-i18n="nav.contact">Kontakt</a></li>
       </ul>
     </nav>
     <button class="lang-btn" type="button" aria-label="Switch to English"><span class="lang-short">EN</span></button>
@@ -33,52 +34,92 @@
 </header>
 
 <main>
-  <section class="hero">
+  <section class="hero" id="top">
     <div class="hero-bg"></div>
     <div class="wrap hero-content">
-      <p class="eyebrow" data-i18n="home.eyebrow">Originale malerier og prints</p>
+      <p class="eyebrow" data-i18n="home.eyebrow">Malerier og signerede prints</p>
       <h1 class="hero-title">Laura<br><em>Kruuse</em></h1>
-      <p class="hero-sub" data-i18n="home.sub">Naturinspirerede malerier med tørrede blomster og bladguld. Byd på originalerne, eller tag et print med hjem.</p>
+      <p class="hero-sub" data-i18n="home.sub">Naturinspirerede malerier med tørrede blomster og bladguld. Tag et signeret print med hjem.</p>
       <div class="hero-actions">
-        <a class="btn light" href="auction.html" data-i18n="home.ctaAuction">Se auktionen</a>
-        <a class="btn line" href="gallery.html" data-i18n="home.ctaPrints">Køb et print</a>
+        <a class="btn light" href="#prints" data-i18n="home.ctaPrints">Køb et print</a>
+        <a class="btn line" href="auction.html" data-auction data-i18n="home.ctaAuction">Se auktionen</a>
+        <a class="btn line" href="museum.html" data-i18n="home.ctaMuseum">Gå ind i museet</a>
       </div>
+      <p class="hero-price" id="hero-price"></p>
     </div>
   </section>
 
-  <section class="block tint" aria-labelledby="teaser-eyebrow">
+  <section class="block tint" aria-labelledby="teaser-eyebrow" data-auction>
     <div class="wrap">
       <p class="eyebrow" id="teaser-eyebrow" data-i18n="teaser.eyebrow">Auktion</p>
       <div class="teaser" id="teaser"><p class="lede">…</p></div>
     </div>
   </section>
 
-  <section class="block">
-    <div class="wrap split">
-      <div class="reveal">
-        <h2 class="h-section" style="margin-bottom:1.5rem" data-i18n-html="home.aboutH">Kunst med rødder i<br><em>natur og stilhed</em></h2>
-        <p data-i18n="home.aboutP1">Jeg er Laura, en dansk kunstner, der arbejder med maling, botanik og den stille skønhed i naturen. Mine værker undersøger de teksturer og farver, man finder i skove, på marker og alt derimellem.</p>
-        <p data-i18n="home.aboutP2">Hvert værk begynder som et originalt maleri. Originalen sælges på auktion, og maleriet fås også som print i et lille, nummereret oplag.</p>
-        <a class="text-link" href="about.html" data-i18n="home.aboutLink">Læs min historie</a>
-        <div class="social-row" data-auto></div>
-      </div>
-      <div class="about-frame reveal">
-        <div class="art"><img src="images/laura2.jpg" width="1000" height="1378" alt="Laura Kruuse" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"><div class="ph">Laura</div></div>
-      </div>
-    </div>
-  </section>
-
-  <section class="block tint">
+  <!-- Prints shop -->
+  <section class="block" id="prints" aria-labelledby="prints-h">
     <div class="wrap">
       <div class="sec-head">
-        <h2 class="h-section" data-i18n-html="home.paintH">Originale <em>malerier</em></h2>
-        <p class="lede" data-i18n="home.paintP">Tryk på et maleri for at se detaljer, byde på originalen eller købe et print.</p>
+        <div>
+          <p class="eyebrow" data-i18n="shop.eyebrow">Køb et print</p>
+          <h2 class="h-section" id="prints-h" data-i18n-html="prints.h">Prints, <em>50 × 70 cm</em></h2>
+        </div>
+        <p class="lede" id="shop-lede"></p>
       </div>
-      <div class="paint-grid" id="paint-grid"></div>
+      <div class="print-grid" id="print-grid"><p class="lede">…</p></div>
+      <div class="note-box" id="gift-box">
+        <h3 data-i18n="prints.giftH">En lille gave</h3>
+        <p id="gift-note"></p>
+      </div>
+    </div>
+  </section>
+
+  <!-- About me -->
+  <section class="block tint" id="om-mig" aria-labelledby="about-h">
+    <div class="wrap about-hero">
+      <div class="reveal">
+        <p class="eyebrow" data-i18n="about.eyebrow">Kunstneren</p>
+        <h2 class="h-display" id="about-h" data-i18n-html="about.h">Hej, jeg hedder<br><em>Laura</em></h2>
+        <p data-i18n="about.p1">Jeg er en dansk kunstner med en dyb kærlighed til naturen.</p>
+        <p data-i18n="about.p2">Jeg bor i Danmark og arbejder i et lille atelier derhjemme.</p>
+        <div class="social-row" data-auto></div>
+      </div>
+      <figure class="reveal">
+        <div class="art"><img src="images/laura.jpg" width="1400" height="1230" alt="Laura Kruuse" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"><div class="ph">Laura</div></div>
+        <figcaption data-i18n="about.caption">Laura i sit atelier</figcaption>
+      </figure>
     </div>
   </section>
 
   <section class="block">
+    <div class="wrap story reveal">
+      <h2 class="h-section" data-i18n-html="story.h">Med mine<br><em>egne ord</em></h2>
+      <p data-i18n="story.p1"></p>
+      <p data-i18n="story.p2"></p>
+      <p data-i18n="story.p3"></p>
+      <p data-i18n="story.p4"></p>
+      <p data-i18n="story.p5"></p>
+    </div>
+  </section>
+
+  <div class="pull-quote">
+    <div class="wrap">
+      <blockquote><span data-i18n="quote"></span><cite>Laura Kruuse</cite></blockquote>
+    </div>
+  </div>
+
+  <section class="block">
+    <div class="wrap">
+      <h2 class="h-section center" data-i18n-html="process.h"><em>Processen</em></h2>
+      <ol class="steps">
+        <li class="reveal"><h3 data-i18n="process.1h">Iagttagelse</h3><p data-i18n="process.1p"></p></li>
+        <li class="reveal"><h3 data-i18n="process.2h">Maleriet</h3><p data-i18n="process.2p"></p></li>
+        <li class="reveal"><h3 data-i18n="process.3h">Printet</h3><p data-i18n="process.3p"></p></li>
+      </ol>
+    </div>
+  </section>
+
+  <section class="block tint" id="atelier">
     <div class="wrap">
       <div class="sec-head">
         <h2 class="h-section" data-i18n-html="home.sketchH">Fra <em>atelieret</em></h2>
@@ -88,7 +129,7 @@
     </div>
   </section>
 
-  <section class="block tint" id="soon">
+  <section class="block" id="soon">
     <div class="wrap">
       <div class="sec-head">
         <h2 class="h-section" data-i18n-html="soon.h">Kommer <em>snart</em></h2>
@@ -98,11 +139,48 @@
     </div>
   </section>
 
-  <section class="block center">
-    <div class="wrap">
-      <h2 class="h-section" data-i18n-html="social.h">Følg <em>rejsen</em></h2>
-      <p class="lede" style="margin-top:1rem" data-i18n="social.p">Jeg deler værker undervejs, øjeblikke fra atelieret og det, der inspirerer mig, på Instagram og TikTok.</p>
-      <div class="social-row" data-auto></div>
+  <!-- Contact -->
+  <section class="block tint" id="kontakt" aria-labelledby="contact-h">
+    <div class="wrap contact-grid">
+      <div>
+        <img class="avatar" src="images/laura-avatar.jpg" width="400" height="400" alt="Laura Kruuse" loading="lazy">
+        <p class="eyebrow" data-i18n="contact.eyebrow">Kontakt</p>
+        <h2 class="h-section" id="contact-h" data-i18n-html="contact.h">Lad os<br><em>snakke</em></h2>
+        <p class="lede" style="margin:1.2rem 0 2rem" data-i18n="contact.p">Har du et spørgsmål om et print eller en bestilling, eller vil du bare sige hej? Jeg vil meget gerne høre fra dig.</p>
+        <div class="contact-links" id="contact-links"></div>
+        <dl class="facts">
+          <div><dt data-i18n="contact.response">Svartid</dt><dd data-i18n="contact.responseV">Normalt inden for 2 til 3 dage</dd></div>
+          <div><dt data-i18n="contact.based">Bor i</dt><dd data-i18n="contact.basedV">Danmark</dd></div>
+        </dl>
+      </div>
+
+      <div>
+        <form class="contact-form" id="contact-form" novalidate>
+          <h3 class="form-title" data-i18n="form.h">Send en besked</h3>
+          <div class="row-2">
+            <label class="field"><span data-i18n="form.fname">Fornavn</span><input name="fname" autocomplete="given-name" data-i18n-ph="form.fnamePh" placeholder="Anna" required></label>
+            <label class="field"><span data-i18n="form.lname">Efternavn</span><input name="lname" autocomplete="family-name" data-i18n-ph="form.lnamePh" placeholder="Jensen"></label>
+          </div>
+          <label class="field"><span data-i18n="form.email">E-mailadresse</span><input name="email" type="email" inputmode="email" autocomplete="email" data-i18n-ph="email.ph" placeholder="din@email.dk" required></label>
+          <label class="field"><span data-i18n="form.subject">Emne</span>
+            <span class="select-wrap"><select name="subject">
+              <option value="" data-i18n="form.pick">Vælg et emne</option>
+              <option value="print" data-i18n="form.print">Spørgsmål om et print</option>
+              <option value="auction" data-auction data-i18n="form.auction">Spørgsmål om en auktion</option>
+              <option value="commission" data-i18n="form.commission">Bestilling af et værk</option>
+              <option value="collab" data-i18n="form.collab">Samarbejde</option>
+              <option value="other" data-i18n="form.other">Andet</option>
+            </select></span>
+          </label>
+          <label class="field"><span data-i18n="form.message">Besked</span><textarea name="message" rows="5" data-i18n-ph="form.messagePh" placeholder="Skriv, hvad du har på hjerte…" required></textarea></label>
+          <button class="btn block" type="submit" data-i18n="form.send">Send besked</button>
+          <p class="msg" id="form-msg" role="status"></p>
+        </form>
+        <div class="contact-form" id="form-done" hidden>
+          <h3 class="form-title" data-i18n="form.sentH">Tak for din besked</h3>
+          <p class="lede" data-i18n="form.sentP">Jeg vender tilbage inden for et par dage.</p>
+        </div>
+      </div>
     </div>
   </section>
 </main>
@@ -116,11 +194,12 @@
   <div class="wrap">
     <div class="footer-logo">Laura Kruuse</div>
     <ul class="footer-nav">
-      <li><a href="index.html" data-i18n="nav.home">Forside</a></li>
-      <li><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
-      <li><a href="gallery.html" data-i18n="nav.prints">Prints</a></li>
-      <li><a href="about.html" data-i18n="nav.about">Om mig</a></li>
-      <li><a href="contact.html" data-i18n="nav.contact">Kontakt</a></li>
+      <li><a href="index.html#top" data-i18n="nav.home">Forside</a></li>
+      <li data-auction><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
+      <li><a href="index.html#prints" data-i18n="nav.prints">Prints</a></li>
+      <li><a href="index.html#om-mig" data-i18n="nav.about">Om mig</a></li>
+      <li><a href="museum.html" data-i18n="nav.museum">Museum</a></li>
+      <li><a href="index.html#kontakt" data-i18n="nav.contact">Kontakt</a></li>
     </ul>
     <p class="footer-copy">© <span class="year">2026</span> Laura Kruuse. <span data-i18n="footer.rights">Alle rettigheder forbeholdes.</span></p>
   </div>
@@ -132,14 +211,16 @@
 <script>
 let auctions = [];
 let shown = null;   // what the viewer is showing
+const MAX_QTY = 99;
 
+/* ---------- Auction teaser (only while CONFIG.showAuction is on) ---------- */
 async function loadAuctions() {
   try { auctions = (await api.auctions()).filter(a => artById(a.artwork_id)); }
   catch { auctions = null; }
   renderTeaser();
 }
-
 function renderTeaser() {
+  if (!AUCTION) return;
   const box = $("#teaser");
   if (auctions === null) { box.innerHTML = `<p class="msg err">${t("err.load")}</p>`; return; }
   const a = featuredAuction(auctions);
@@ -166,17 +247,61 @@ function tickTeaser() {
   if (target <= Date.now() && !tickTeaser.busy) { tickTeaser.busy = true; loadAuctions().finally(() => tickTeaser.busy = false); }
 }
 
-function renderPaintings() {
-  $("#paint-grid").innerHTML = ARTWORKS.map(a => `
-    <button class="paint-card" type="button" data-art="${esc(a.id)}">
-      ${artHTML(a)}
-      <h3>${esc(a.title)}</h3>
-      <p>${esc(L(a.medium))}. ${esc(a.size)}, ${esc(a.year)}</p>
-    </button>`).join("");
+/* ---------- Prints shop ---------- */
+let printsLoaded = false, printsFailed = false;
+const lowestPrice = () => printsCache.length ? Math.min(...printsCache.map(p => p.price_signed)) : null;
+
+function renderShopText() {
+  const p = lowestPrice();
+  $("#shop-lede").textContent = t("shop.p", { p: p ? kr(p) : "…", s: kr(CONFIG.shipping.ship) });
+  $("#hero-price").textContent = p ? t("hero.price", { p: kr(p) }) : "";
 }
+
+function renderPrints() {
+  const grid = $("#print-grid");
+  renderShopText();
+  if (printsFailed) { grid.innerHTML = `<p class="msg err">${t("err.load")}</p>`; return; }
+  if (!printsLoaded) return;
+  // keep the quantities people already chose when re-drawing
+  const keep = {};
+  $$(".print-card", grid).forEach(c => { keep[c.dataset.id] = c.querySelector("output").textContent; });
+  grid.innerHTML = printsCache.map(p => {
+    const a = artById(p.artwork_id); if (!a) return "";
+    return `<article class="print-card" id="print-${esc(p.artwork_id)}" data-id="${esc(p.artwork_id)}">
+      <button class="frame frame-btn" type="button" data-art="${esc(a.id)}" aria-label="${esc(a.title)}">${printMockupHTML(a)}</button>
+      <h3>${esc(a.title)}</h3>
+      <p class="print-desc">${esc(L(a.description))}</p>
+      <p class="variant single"><span>${t("prints.signed")}<small>50 × 70 cm</small></span><b>${kr(p.price_signed)}</b></p>
+      <div class="buy-row">
+        <div class="qty" role="group" aria-label="${t("prints.qty")}"><button type="button" data-q="-1" aria-label="${t("prints.fewer")}">−</button><output>${keep[p.artwork_id] || 1}</output><button type="button" data-q="1" aria-label="${t("prints.more")}">+</button></div>
+        <button class="btn" type="button" data-add>${t("prints.add")}</button>
+      </div>
+    </article>`;
+  }).join("");
+  const note = L(CONFIG.giftNote);
+  $("#gift-box").hidden = !note; $("#gift-note").textContent = note || "";
+  // Links like index.html#print-vestige jump to that print once the cards exist
+  if (/^#print-/.test(location.hash) && !renderPrints.scrolled) { renderPrints.scrolled = true; document.querySelector(location.hash)?.scrollIntoView(); }
+}
+
+$("#print-grid").addEventListener("click", e => {
+  const card = e.target.closest(".print-card"); if (!card) return;
+  const art = e.target.closest("[data-art]");
+  if (art) { openViewer({ type: "art", id: art.dataset.art }); return; }
+  const out = card.querySelector("output"), q = e.target.closest("[data-q]");
+  if (q) { out.textContent = Math.min(MAX_QTY, Math.max(1, +out.textContent + +q.dataset.q)); return; }
+  if (e.target.closest("[data-add]") && addToBasket(card.dataset.id, true, +out.textContent)) out.textContent = 1;
+});
+
+async function loadShop() {
+  try { await loadPrints(); printsLoaded = true; printsFailed = false; } catch { printsFailed = true; }
+  renderPrints();
+}
+
+/* ---------- Sketches and coming soon ---------- */
 function renderSketches() {
   $("#sketch-grid").innerHTML = SKETCHES.map((s, i) => `
-    <button class="sketch-card" type="button" data-sketch="${i}">
+    <button class="sketch-card" type="button" data-sketch="${i}" style="--ar:${(s.w / s.h).toFixed(4)}">
       ${artHTML(s)}
       <h4>${esc(L(s.title))}</h4>
       <p>${esc(L(s.medium))}</p>
@@ -187,7 +312,7 @@ function renderSoon() {
     <div class="soon-item">
       <span class="soon-tag">${t("soon.tag")}</span>
       <h3>${esc(L(s.title))}</h3>
-      <p>${esc(L(s.text))}</p>
+      <p>${esc(L((!AUCTION && s.textNoAuction) || s.text))}</p>
       <form class="inline-form" data-notify="${esc(s.topic)}" novalidate>
         <label class="sr-only" for="n-${esc(s.topic)}">${t("email.label")}</label>
         <input id="n-${esc(s.topic)}" type="email" inputmode="email" autocomplete="email" placeholder="${t("email.ph")}" required>
@@ -197,21 +322,22 @@ function renderSoon() {
     </div>`).join("");
 }
 
-/* Viewer for paintings and sketches */
+/* ---------- Viewer for paintings and sketches ---------- */
 const viewer = $("#viewer");
 function renderViewer() {
   if (!shown) return;
   const inner = $("#viewer-inner");
   if (shown.type === "art") {
-    const a = artById(shown.id);
+    const a = artById(shown.id), p = printFor(a.id);
     inner.innerHTML = `${artHTML(a)}
       <div class="info">
         <h2>${esc(a.title)}</h2>
         <p>${esc(L(a.description))}</p>
-        <p class="fineprint">${esc(L(a.medium))}<br>${esc(a.size)}, ${esc(a.year)}</p>
+        <p class="fineprint">${esc(L(a.medium))}<br>${esc(sizeYear(a))}</p>
+        <p class="fineprint">${t("viewer.printLine", { p: p ? kr(p.price_signed) : "" })}</p>
         <div class="actions">
-          <a class="btn" href="auction.html?id=${esc(a.id)}">${t("viewer.bid")}</a>
-          <a class="btn line" href="gallery.html#print-${esc(a.id)}">${t("viewer.print")}</a>
+          ${p ? `<button class="btn" type="button" data-viewer-add="${esc(a.id)}">${t("prints.add")}</button>` : ""}
+          ${AUCTION ? `<a class="btn line" href="auction.html?id=${esc(a.id)}">${t("viewer.bid")}</a>` : ""}
         </div>
       </div>`;
   } else {
@@ -225,16 +351,68 @@ function renderViewer() {
   }
 }
 function openViewer(item) { shown = item; renderViewer(); viewer.showModal(); document.body.classList.add("menu-locked"); }
-$("#paint-grid").addEventListener("click", e => { const b = e.target.closest("[data-art]"); if (b) openViewer({ type: "art", id: b.dataset.art }); });
 $("#sketch-grid").addEventListener("click", e => { const b = e.target.closest("[data-sketch]"); if (b) openViewer({ type: "sketch", i: +b.dataset.sketch }); });
 $("#viewer-close").addEventListener("click", () => viewer.close());
-viewer.addEventListener("click", e => { if (e.target === viewer) viewer.close(); });
+viewer.addEventListener("click", e => {
+  if (e.target === viewer) { viewer.close(); return; }
+  const add = e.target.closest("[data-viewer-add]");
+  if (add && addToBasket(add.dataset.viewerAdd, true, 1)) viewer.close();
+});
 viewer.addEventListener("close", () => { shown = null; document.body.classList.remove("menu-locked"); });
 
-document.addEventListener("lang:change", () => { renderTeaser(); renderPaintings(); renderSketches(); renderSoon(); renderViewer(); });
-loadAuctions();
-setInterval(tickTeaser, 1000);
-setInterval(loadAuctions, 30000);
+/* ---------- Contact ---------- */
+function renderLinks() {
+  const c = CONFIG.contact;
+  $("#contact-links").innerHTML = `
+    <a class="contact-link" href="${esc(c.instagram.url)}" target="_blank" rel="noopener">${ICONS.instagram}<div><b>Instagram</b><span>${esc(c.instagram.handle)}</span></div></a>
+
+    <a class="contact-link" href="mailto:${esc(c.email)}">${ICONS.email}<div><b>E-mail</b><span>${esc(c.email)}</span></div></a>
+    <a class="contact-link" href="${esc(c.tiktok.url)}" target="_blank" rel="noopener">${ICONS.tiktok}<div><b>TikTok</b><span>${esc(c.tiktok.handle)}</span></div></a>`;
+}
+$("#contact-form").addEventListener("submit", async e => {
+  e.preventDefault();
+  const form = e.target, data = new FormData(form), msg = $("#form-msg"), btn = form.querySelector("button[type=submit]");
+  msg.className = "msg err";
+  if (!data.get("fname") || !validEmail(data.get("email")) || !data.get("message")) { msg.textContent = t("form.missing"); return; }
+  const done = () => { form.hidden = true; $("#form-done").hidden = false; };
+  if (CONFIG.formspreeEndpoint.includes("YOUR_FORM_ID")) { done(); return; }   // demo until Formspree is set up
+  btn.disabled = true; msg.className = "msg"; msg.textContent = t("form.sending");
+  try {
+    const res = await fetch(CONFIG.formspreeEndpoint, { method: "POST", body: data, headers: { Accept: "application/json" } });
+    if (!res.ok) throw new Error();
+    done();
+  } catch {
+    msg.className = "msg err"; msg.textContent = t("form.fail", { e: CONFIG.contact.email }); btn.disabled = false;
+  }
+});
+
+/* ---------- Menu follows the scroll: underline the section you are looking at ---------- */
+(() => {
+  const links = $$(".nav-links a[href^='index.html#']");
+  const ids = links.map(a => a.hash.slice(1)).filter(id => document.getElementById(id));
+  const mark = (id) => links.forEach(a => a.hash === "#" + id ? a.setAttribute("aria-current", "page") : a.removeAttribute("aria-current"));
+  const spy = () => {
+    const line = window.innerHeight * 0.35;
+    let current = ids[0];
+    ids.forEach(id => { if (document.getElementById(id).getBoundingClientRect().top <= line) current = id; });
+    // At the very bottom the last section (contact) is the one being read
+    if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 4) current = ids[ids.length - 1];
+    mark(current);
+  };
+  window.addEventListener("scroll", spy, { passive: true });
+  window.addEventListener("resize", spy);
+  spy();
+})();
+
+document.addEventListener("lang:change", () => { renderTeaser(); renderPrints(); renderSketches(); renderSoon(); renderViewer(); renderLinks(); });
+document.addEventListener("prints:change", renderPrints);
+loadShop();
+document.addEventListener("visibilitychange", () => { if (!document.hidden) loadShop(); });
+if (AUCTION) {
+  loadAuctions();
+  setInterval(tickTeaser, 1000);
+  setInterval(loadAuctions, 30000);
+}
 </script>
 </body>
 </html>

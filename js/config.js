@@ -13,13 +13,17 @@ const CONFIG = {
 
   defaultLanguage: "da",
 
+  // The auction is hidden for now (it will move to auction.net and be embedded later).
+  // All auction code is still here: set this to true to bring back the menu item,
+  // the auction page, the "bid" buttons and the auction texts.
+  showAuction: false,
+
   mobilepay: { number: "12 34 56 78", name: "Laura Kruuse" },
 
   contact: {
-    email: "hello@laurakruuse.dk",
+    email: "laur723kru@gmail.com",
     instagram: { url: "https://www.instagram.com/laur_kru", handle: "@laur_kru" },
-    tiktok: { url: "https://www.tiktok.com/@hassel_art", handle: "@hassel_art" },
-    messenger: { url: "https://m.me/YOUR_FACEBOOK_USERNAME" }
+    tiktok: { url: "https://www.tiktok.com/@hassel_art", handle: "@hassel_art" }
   },
 
   // Prices in DKK. Keep "ship" the same as in supabase-setup.sql.
@@ -50,23 +54,23 @@ const ARTWORKS = [
     image: "images/florere.jpg", w: 1300, h: 1752,
     size: "80 × 60 cm",
     year: "2025",
-    medium: { da: "Akryl med ægte tørrede blomster på lærred", en: "Acrylic with real dried flowers on canvas" },
+    medium: { da: "Akryl på lærred med ægte tørrede blomster", en: "Acrylic on canvas with real dried flowers" },
     description: {
       da: "Det kan nogle gange være svært at se, når man selv udvikler sig og blomstrer. Men for andre er du blomstret så smukt.",
       en: "Sometimes it can be hard to see when you are growing and blossoming yourself. But to others, you have blossomed so beautifully."
     }
   },
   {
-    id: "falling",
-    title: "FALLING",
-    image: "images/falling.jpg", w: 1300, h: 1629,
-    // PLACEHOLDER: replace size, year, medium and description with Laura's own details
-    size: "XX × XX cm",
-    year: "XXXX",
-    medium: { da: "Lorem ipsum dolor sit amet", en: "Lorem ipsum dolor sit amet" },
+    id: "will-you-catch-me",
+    title: "WILL YOU CATCH ME?",
+    image: "images/will-you-catch-me.jpg", w: 1300, h: 1629,
+    size: "80 × 60 cm",
+    year: "", // leave empty until the year is known; the site then just hides it
+    medium: { da: "Akryl på lærred", en: "Acrylic on canvas" },
+    // Description of what the painting shows. Laura can replace it with her own story behind the piece.
     description: {
-      da: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
-      en: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+      da: "En kvinde falder ned mod en by i skumringen med armene strakt ud mod beskueren. Under hende glimter gadelygter og billygter.",
+      en: "A woman falls towards a city at dusk, her arms reaching out to the viewer. Below her, street lights and car headlights glitter."
     }
   }
 ];
@@ -95,5 +99,7 @@ const COMING_SOON = [
     text: { da: "Mindre og større formater, når 50 × 70 cm-oplagene har fundet deres hjem.", en: "Smaller and larger formats, once the 50 × 70 cm editions have found their homes." } },
   { topic: "new-work",
     title: { da: "Nye originaler", en: "New originals" },
-    text: { da: "Der står nye malerier på staffeliet. Bliv den første, der hører, når det næste kommer på auktion.", en: "New paintings are on the easel. Be the first to know when the next one goes up for auction." } }
+    text: { da: "Der står nye malerier på staffeliet. Bliv den første, der hører, når det næste kommer på auktion.", en: "New paintings are on the easel. Be the first to know when the next one goes up for auction." },
+    // used while the auction is hidden (showAuction: false)
+    textNoAuction: { da: "Der står nye malerier på staffeliet. Bliv den første, der hører, når det næste er færdigt.", en: "New paintings are on the easel. Be the first to know when the next one is finished." } }
 ];

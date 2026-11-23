@@ -22,6 +22,118 @@ const I18N = {
     "da": "Kontakt | Laura Kruuse",
     "en": "Contact | Laura Kruuse"
   },
+  "meta.museum": {
+    "da": "Virtuelt museum | Laura Kruuse",
+    "en": "Virtual museum | Laura Kruuse"
+  },
+  "nav.museum": {
+    "da": "Museum",
+    "en": "Museum"
+  },
+  "museum.region": {
+    "da": "Virtuelt museum. Rul sidelæns for at gå gennem udstillingen.",
+    "en": "Virtual museum. Scroll sideways to walk through the exhibition."
+  },
+  "museum.welcome": {
+    "da": "Velkommen til udstillingen",
+    "en": "Welcome to the exhibition"
+  },
+  "museum.hint": {
+    "da": "Swipe, rul eller brug pilene for at gå videre",
+    "en": "Swipe, scroll or use the arrows to walk on"
+  },
+  "museum.prev": {
+    "da": "Forrige værk",
+    "en": "Previous piece"
+  },
+  "museum.next": {
+    "da": "Næste værk",
+    "en": "Next piece"
+  },
+  "museum.open": {
+    "da": "Se værket",
+    "en": "View the piece"
+  },
+  "museum.size": {
+    "da": "Størrelse",
+    "en": "Size"
+  },
+  "museum.medium": {
+    "da": "Teknik",
+    "en": "Medium"
+  },
+  "museum.year": {
+    "da": "År",
+    "en": "Year"
+  },
+  "museum.bts": {
+    "da": "Bag kulisserne",
+    "en": "Behind the scenes"
+  },
+  "museum.btsP": {
+    "da": "Skitser og studier, der viser, hvordan Laura arbejder",
+    "en": "Sketches and studies that show how Laura works"
+  },
+  "museum.thanksH": {
+    "da": "Tak for besøget",
+    "en": "Thank you for visiting"
+  },
+  "museum.thanksP": {
+    "da": "Tak, fordi du gik en tur gennem udstillingen. Alle malerierne kan købes som print, og originalerne kommer på auktion.",
+    "en": "Thank you for walking through the exhibition. Every painting is available as a print, and the originals go up for auction."
+  },
+  "museum.end": {
+    "da": "Udstillingen slutter her",
+    "en": "End of the exhibition"
+  },
+  "museum.restart": {
+    "da": "Gå tilbage til start",
+    "en": "Back to the start"
+  },
+  "meta.home.noAuction": {
+    "da": "Laura Kruuse | Malerier og prints",
+    "en": "Laura Kruuse | Paintings and prints"
+  },
+  "home.sub.noAuction": {
+    "da": "Naturinspirerede malerier med tørrede blomster og bladguld. Køb dem som signerede og nummererede prints, sendt direkte hjem til dig.",
+    "en": "Nature-inspired paintings with dried flowers and gold leaf. Buy them as signed and numbered prints, sent straight to your door."
+  },
+  "home.aboutP2.noAuction": {
+    "da": "Hvert værk begynder som et originalt maleri, og maleriet fås også som print i et lille oplag, som Laura signerer og nummererer i hånden.",
+    "en": "Every piece begins as an original painting, and the painting is also available as a print in a small edition that Laura signs and numbers by hand."
+  },
+  "home.paintP.noAuction": {
+    "da": "Tryk på et maleri for at se detaljer eller købe et print.",
+    "en": "Tap a painting to see details or buy a print."
+  },
+  "museum.thanksP.noAuction": {
+    "da": "Tak, fordi du gik en tur gennem udstillingen. Alle malerierne kan købes som signerede og nummererede print.",
+    "en": "Thank you for walking through the exhibition. Every painting is available as a signed and numbered print."
+  },
+  "contact.p.noAuction": {
+    "da": "Har du et spørgsmål om et print eller en bestilling, eller vil du bare sige hej? Jeg vil meget gerne høre fra dig.",
+    "en": "Whether you have a question about a print or a commission, or just want to say hello, I’d love to hear from you."
+  },
+  "home.ctaMuseum": {
+    "da": "Gå ind i museet",
+    "en": "Enter the museum"
+  },
+  "hero.price": {
+    "da": "Signerede og nummererede prints i 50 × 70 cm fra {p}",
+    "en": "Signed and numbered prints at 50 × 70 cm from {p}"
+  },
+  "shop.eyebrow": {
+    "da": "Køb et print",
+    "en": "Buy a print"
+  },
+  "shop.p": {
+    "da": "Hvert print er 50 × 70 cm og bliver signeret og nummereret i hånden af Laura. {p} pr. print. Levering koster {s}, eller du kan hente det gratis.",
+    "en": "Every print is 50 × 70 cm and signed and numbered by hand by Laura. {p} per print. Delivery costs {s}, or you can pick it up for free."
+  },
+  "viewer.printLine": {
+    "da": "Print i 50 × 70 cm, signeret og nummereret: {p}",
+    "en": "Print at 50 × 70 cm, signed and numbered: {p}"
+  },
   "nav.home": {
     "da": "Forside",
     "en": "Home"
@@ -85,6 +197,10 @@ const I18N = {
   "demo.text": {
     "da": "Demotilstand. Bud og ordrer gemmes kun i denne browser, indtil databasen er koblet på.",
     "en": "Demo mode. Bids and orders are only saved in this browser until the database is connected."
+  },
+  "demo.text.noAuction": {
+    "da": "Demotilstand. Ordrer gemmes kun i denne browser, indtil databasen er koblet på.",
+    "en": "Demo mode. Orders are only saved in this browser until the database is connected."
   },
   "demo.reset": {
     "da": "Nulstil demo",
@@ -215,8 +331,8 @@ const I18N = {
     "en": "Please confirm that your bid is binding."
   },
   "basket.empty": {
-    "da": "Din kurv er tom. Printene er 50 × 70 cm, med eller uden signatur.",
-    "en": "Your basket is empty. The prints are 50 × 70 cm, signed or unsigned."
+    "da": "Din kurv er tom. Printene er 50 × 70 cm, signeret og nummereret i hånden.",
+    "en": "Your basket is empty. The prints are 50 × 70 cm, signed and numbered by hand."
   },
   "basket.see": {
     "da": "Se printene",
@@ -387,8 +503,8 @@ const I18N = {
     "en": "No bids yet"
   },
   "home.eyebrow": {
-    "da": "Originale malerier og prints",
-    "en": "Original paintings and prints"
+    "da": "Malerier og signerede prints",
+    "en": "Paintings and signed prints"
   },
   "home.sub": {
     "da": "Naturinspirerede malerier med tørrede blomster og bladguld. Byd på originalerne, eller tag et print med hjem.",
@@ -483,8 +599,8 @@ const I18N = {
     "en": "The original painting. One of one."
   },
   "auction.meta": {
-    "da": "{m}. {s}, {y}. Original, ét eksemplar.",
-    "en": "{m}. {s}, {y}. Original, one of one."
+    "da": "{m}. {s}. Original, ét eksemplar.",
+    "en": "{m}. {s}. Original, one of one."
   },
   "auction.yourBid": {
     "da": "Dit bud",
@@ -595,8 +711,8 @@ const I18N = {
     "en": "Prints, <em>50 × 70 cm</em>"
   },
   "prints.p": {
-    "da": "Hvert maleri trykkes i små oplag på 10 ad gangen. Vælg et usigneret print eller et, som Laura signerer og nummererer i hånden.",
-    "en": "Each painting is printed in small batches of 10 at a time. Choose an unsigned print, or one that Laura signs and numbers by hand."
+    "da": "Hvert maleri trykkes i små oplag på 10 ad gangen, og hvert print bliver signeret og nummereret i hånden af Laura.",
+    "en": "Each painting is printed in small batches of 10 at a time, and every print is signed and numbered by hand by Laura."
   },
   "prints.unsigned": {
     "da": "Usigneret",
@@ -731,8 +847,8 @@ const I18N = {
     "en": "The print"
   },
   "process.3p": {
-    "da": "Færdige malerier bliver digitaliseret og trykt i 50 × 70 cm i små oplag. Du kan vælge et usigneret print eller et, jeg signerer og nummererer i hånden.",
-    "en": "Finished paintings are digitised and printed at 50 × 70 cm in small batches. You can choose an unsigned print, or one I sign and number by hand."
+    "da": "Færdige malerier bliver digitaliseret og trykt i 50 × 70 cm i små oplag. Hvert print signerer og nummererer jeg i hånden.",
+    "en": "Finished paintings are digitised and printed at 50 × 70 cm in small batches. I sign and number every print by hand."
   },
   "contact.eyebrow": {
     "da": "Kontakt",

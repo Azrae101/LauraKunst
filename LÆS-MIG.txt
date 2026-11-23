@@ -1,7 +1,11 @@
-LAURA KRUUSE: WEBSITE
+﻿LAURA KRUUSE: WEBSITE
 
 Folders
-  index.html, auction.html, gallery.html, about.html, contact.html   the pages
+  index.html         the whole website on one page: prints shop, about me, sketches, coming soon and contact (last)
+  museum.html        the only separate page
+  auction.html       the auction (hidden for now, see showAuction in js/config.js)
+  gallery.html, contact.html, about.html   only send old links on to the right part of the front page
+  museum.html        the virtual museum. It hangs every painting in ARTWORKS and every sketch in SKETCHES automatically
   css/style.css      all styling
   js/config.js       settings: MobilePay number, e-mail, links, paintings, prices for shipping
   js/i18n.js         all text in Danish and English
@@ -11,7 +15,7 @@ Folders
 
 Getting it live
   1. Make a free project on supabase.com. Open the SQL Editor, paste supabase-setup.sql,
-     change the dates, prices and stock at the bottom, and click Run.
+     change the dates and prices at the bottom, and click Run.
   2. In Supabase, open Project settings, then API. Copy the Project URL and the anon key
      into js/config.js.
   3. Make a free form on formspree.io and paste its address into js/config.js.

@@ -8,8 +8,17 @@ const $$ = (s, r = document) => Array.from(r.querySelectorAll(s));
 /* ---------- Language: Danish by default, English as an option ---------- */
 let LANG = (() => { try { return localStorage.getItem("lk-lang") || CONFIG.defaultLanguage || "da"; } catch { return "da"; } })();
 const locale = () => LANG === "en" ? "en-GB" : "da-DK";
+/* Auction switch (CONFIG.showAuction). While it is off, anything marked data-auction is hidden,
+   the auction page sends visitors to the front page, and texts that have a "<key>.noAuction"
+   version in i18n.js use that version instead. */
+const AUCTION = CONFIG.showAuction !== false;
+if (!AUCTION && /auction\.html$/i.test(location.pathname)) location.replace("index.html");
+// site.js loads at the end of <body>, so the page is already there to hide parts of
+if (!AUCTION) $$("[data-auction]").forEach(el => { el.hidden = true; });
+
 /* t("key", {n: 3}) returns the text for the current language */
 function t(key, vars = {}) {
+  if (!AUCTION && I18N[key + ".noAuction"]) key += ".noAuction";
   const entry = I18N[key];
   const text = entry ? (entry[LANG] ?? entry.da) : key;
   return text.replace(/\{(\w+)\}/g, (m, k) => (vars[k] ?? m));
@@ -48,6 +57,7 @@ const fmt = (n) => new Intl.NumberFormat(locale()).format(n);
 const kr = (n) => fmt(n) + " DKK";
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const artById = (id) => ARTWORKS.find(a => a.id === id);
+const sizeYear = (a) => [a.size, a.year].filter(Boolean).join(", ");
 const validEmail = (e) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e || "");
 const fmtDate = (d) => new Intl.DateTimeFormat(locale(), { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Copenhagen" }).format(new Date(d));
 
@@ -191,6 +201,12 @@ function demoApi() {
     db.scheduleVersion = SCHEDULE_VERSION;
     local.set(KEY, db);
   }
+  // Paintings added to ARTWORKS after the demo was first opened still get a print row
+  const missing = ARTWORKS.filter(a => !db.prints.some(p => p.artwork_id === a.id));
+  if (missing.length) {
+    missing.forEach(a => db.prints.push({ artwork_id: a.id, stock: 10, edition_size: 50, sold: 0, price_unsigned: 450, price_signed: 750 }));
+    local.set(KEY, db);
+  }
   const save = () => local.set(KEY, db);
   const ok = (v) => new Promise(r => setTimeout(() => r(JSON.parse(JSON.stringify(v))), 200));
   const fail = (m) => new Promise((_, rej) => setTimeout(() => rej(new Error(m)), 200));
@@ -225,14 +241,12 @@ function demoApi() {
       if (!validEmail(email)) return fail("EMAIL");
       if (delivery === "ship" && (address || "").trim().length < 8) return fail("ADDRESS");
       if (!items.length) return fail("EMPTY");
-      for (const it of items) {
-        const p = db.prints.find(x => x.artwork_id === it.artwork_id);
-        if (!p || p.stock < it.qty) return fail("STOCK:" + (p ? p.stock : 0) + ":" + artById(it.artwork_id)?.title);
-      }
+      // No stock limit: only check that every print is still for sale
+      if (items.some(it => !db.prints.find(x => x.artwork_id === it.artwork_id))) return fail("UNAVAILABLE");
       let total = 0;
       for (const it of items) {
         const p = db.prints.find(x => x.artwork_id === it.artwork_id);
-        p.stock -= it.qty; p.sold += it.qty; total += it.qty * (it.signed ? p.price_signed : p.price_unsigned);
+        p.sold += it.qty; total += it.qty * (it.signed ? p.price_signed : p.price_unsigned);
       }
       if (delivery === "ship") total += CONFIG.shipping.ship;
       const order_code = "LK-" + (10000 + Math.floor(Math.random() * 90000));
@@ -251,6 +265,12 @@ const api = LIVE ? remoteApi() : demoApi();
 /* ---------- Basket ---------- */
 let printsCache = [];
 let basket = local.get("lk-basket", []);           // [{ artwork_id, signed, qty }]
+// Prints are only sold signed and numbered now. Turn any older unsigned basket lines into signed ones.
+basket = basket.reduce((list, i) => {
+  const ex = list.find(x => x.artwork_id === i.artwork_id);
+  if (ex) ex.qty = Math.min(99, ex.qty + i.qty); else list.push({ artwork_id: i.artwork_id, signed: true, qty: i.qty });
+  return list;
+}, []);
 const basketQty = () => basket.reduce((s, i) => s + i.qty, 0);
 const inBasket = (id) => basket.filter(i => i.artwork_id === id).reduce((s, i) => s + i.qty, 0);
 const printFor = (id) => printsCache.find(p => p.artwork_id === id);
@@ -274,11 +294,10 @@ function saveBasket() {
 async function loadPrints() { printsCache = await api.prints(); return printsCache; }
 
 function addToBasket(artwork_id, signed, qty) {
-  const p = printFor(artwork_id);
-  const room = p ? p.stock - inBasket(artwork_id) : 0;
-  if (qty > room) { toast(room > 0 ? t("toast.onlyLeft", { n: room }) : t("toast.none")); return false; }
+  signed = true; // only signed and numbered prints are sold
+  if (!printFor(artwork_id)) { toast(t("err.UNAVAILABLE")); return false; }   // no stock limit, only that the print exists
   const ex = basket.find(i => i.artwork_id === artwork_id && i.signed === signed);
-  if (ex) ex.qty = Math.min(5, ex.qty + qty); else basket.push({ artwork_id, signed, qty });
+  if (ex) ex.qty = Math.min(99, ex.qty + qty); else basket.push({ artwork_id, signed, qty });
   saveBasket(); bumpBasket();
   toast(t("toast.added", { t: artById(artwork_id).title }), { label: t("toast.view"), onClick: openBasket });
   return true;
@@ -309,7 +328,7 @@ function renderBasket() {
   $("#drawer-title").textContent = t("nav.basket");
   const body = $("#drawer-body");
   if (!basket.length) {
-    body.innerHTML = `<p class="lede">${t("basket.empty")}</p><a class="btn line" href="gallery.html">${t("basket.see")}</a>`;
+    body.innerHTML = `<p class="lede">${t("basket.empty")}</p><a class="btn line" href="index.html#prints" onclick="this.closest('dialog').close()">${t("basket.see")}</a>`;
     return;
   }
   const ship = delivery === "ship" ? CONFIG.shipping.ship : CONFIG.shipping.pickup;
@@ -421,13 +440,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   $$(".year").forEach(y => y.textContent = new Date().getFullYear());
 
-  if (!LIVE) {
-    const bar = document.createElement("div");
-    bar.className = "demo-bar";
-    bar.innerHTML = `<div class="wrap"><span></span><button type="button"></button></div>`;
-    bar.querySelector("button").addEventListener("click", () => { api.reset(); local.set("lk-mybids", {}); local.set("lk-basket", []); location.reload(); });
-    document.body.appendChild(bar);
-  }
 
   fillSocialRows();
   $$(".lang-btn").forEach(b => b.addEventListener("click", () => setLang(LANG === "da" ? "en" : "da")));

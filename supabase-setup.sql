@@ -28,7 +28,7 @@ create table if not exists bids (
 create table if not exists prints (
   artwork_id     text primary key,           -- must match the id in js/config.js
   title          text not null,
-  stock          integer not null default 0, -- prints printed and ready to ship (e.g. a batch of 10)
+  stock          integer not null default 0, -- not used any more (no stock limit), kept so old data still loads
   edition_size   integer not null default 50,
   sold           integer not null default 0,
   price_unsigned integer not null,           -- DKK
@@ -124,7 +124,7 @@ begin
   return json_build_object('id', new_id, 'amount', p_amount);
 end $$;
 
--- ---------- Order prints (stock is checked and reserved on the server) ----------
+-- ---------- Order prints (no stock limit: prints are made to order; all prints are signed and numbered) ----------
 create or replace function place_order(p_name text, p_email text, p_phone text, p_address text,
                                        p_delivery text, p_items jsonb)
 returns json language plpgsql security definer set search_path = public as $$
@@ -139,14 +139,11 @@ begin
 
   for item in select * from jsonb_array_elements(p_items) loop
     qty := (item->>'qty')::int;
-    signed := coalesce((item->>'signed')::boolean, false);
-    if qty < 1 or qty > 5 then raise exception 'QTY'; end if;
+    signed := true;  -- only signed and numbered prints are sold
+    if qty is null or qty < 1 or qty > 99 then raise exception 'QTY'; end if;
     select * into p from prints where artwork_id = item->>'artwork_id' and active for update;
     if not found then raise exception 'UNAVAILABLE'; end if;
-    if p.stock < qty then
-      raise exception 'STOCK:%:%', p.stock, p.title;
-    end if;
-    update prints set stock = stock - qty, sold = sold + qty where artwork_id = p.artwork_id;
+    update prints set sold = sold + qty where artwork_id = p.artwork_id;
     total := total + qty * (case when signed then p.price_signed else p.price_unsigned end);
     lines := lines || jsonb_build_object('artwork_id', p.artwork_id, 'title', p.title, 'signed', signed, 'qty', qty,
                                          'unit_price', case when signed then p.price_signed else p.price_unsigned end);
@@ -193,6 +190,6 @@ on conflict (artwork_id) do update set starts_at = excluded.starts_at, ends_at =
 insert into prints (artwork_id, title, stock, edition_size, price_unsigned, price_signed) values
   ('vestige', 'VESTIGE', 10, 50, 450, 750),
   ('florere', 'FLORERE', 10, 50, 450, 750),
-  ('falling', 'FALLING', 10, 50, 450, 750)
+  ('will-you-catch-me', 'WILL YOU CATCH ME?', 10, 50, 450, 750)
 on conflict (artwork_id) do update set stock = excluded.stock,
   price_unsigned = excluded.price_unsigned, price_signed = excluded.price_signed;

@@ -252,9 +252,21 @@ section.block { padding: 4rem 0; }
 .paint-card p { font-size: 0.9rem; color: var(--text-muted); }
 
 /* Sketches keep their own shapes, stacked like a pinboard */
-.sketch-grid { columns: 2; column-gap: 1rem; }
-@media (min-width: 900px) { .sketch-grid { columns: 4; column-gap: 1.6rem; } }
-.sketch-card { background: none; border: 0; text-align: left; cursor: pointer; padding: 0; display: grid; gap: 0.6rem; width: 100%; break-inside: avoid; margin-bottom: 1.6rem; }
+/* Sketches keep their own shape (--ar = width / height, set in index.html); nothing is cropped.
+   Phones and tablets: two columns, each sketch as wide as its column.
+   Desktop: justified rows. Pictures in a row share one height and together fill the width,
+   so none ends up tiny. A row that can't fill the width (e.g. tall portraits) stops at
+   1.25 x the row height and is centred. */
+.sketch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem 0.9rem; align-items: start; }
+.sketch-card { min-width: 0; background: none; border: 0; text-align: left; cursor: zoom-in; padding: 0; display: grid; align-content: start; gap: 0.7rem; }
+@media (min-width: 900px) {
+  .sketch-grid { --row-h: 330px; max-width: 900px; margin-inline: auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 2.2rem 1.25rem; }
+  .sketch-card { flex: calc(var(--ar) * 100) 1 calc(var(--ar) * var(--row-h)); max-width: calc(var(--ar) * var(--row-h) * 1.25); }
+}
+@media (min-width: 1100px) { .sketch-grid { --row-h: 370px; max-width: 980px; gap: 2.4rem 1.5rem; } }
+.sketch-card .art { aspect-ratio: var(--ar) !important; box-shadow: 0 18px 40px -26px rgba(45, 61, 46, 0.55); transition: transform 0.4s, box-shadow 0.4s; }
+.sketch-card:hover .art, .sketch-card:focus-visible .art { transform: translateY(-4px); box-shadow: 0 24px 48px -24px rgba(45, 61, 46, 0.6); }
+.sketch-card .art img { object-fit: contain; }
 .sketch-card .art { background: var(--ivory-deep); }
 .sketch-card .art .ph { background: var(--ivory-deep); color: var(--text-muted); font-size: 1rem; }
 .sketch-card h4 { font-family: var(--serif); font-weight: 400; font-size: 1.15rem; color: var(--green-dark); line-height: 1.2; }
@@ -482,3 +494,28 @@ legend { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; c
 /* Laura's photo on the contact page */
 .avatar { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; margin-bottom: 1.2rem; box-shadow: 0 0 0 4px var(--white), 0 0 0 5px var(--green-pale); }
 @media (min-width: 900px) { .avatar { width: 112px; height: 112px; } }
+
+/* Six menu items: keep them on one line on smaller desktops */
+.nav-links a { white-space: nowrap; }
+@media (min-width: 900px) and (max-width: 1199px) {
+  .nav-links { gap: 1.25rem; margin-right: 0.5rem; }
+  .nav-links a { letter-spacing: 0.1em; }
+  .lang-btn .lang-long { display: none; }
+  .lang-btn .lang-short { display: inline; }
+}
+
+[hidden] { display: none !important; }
+/* Only one print type (signed and numbered): shown as a price line, not a choice */
+.variant.single { grid-template-columns: 1fr auto; align-items: center; gap: 1rem; padding: 0.8rem 0.9rem; min-height: 64px; font-size: 0.85rem; }
+
+/* ---------- One-page front page ---------- */
+.hero-price { margin-top: 1.1rem; font-size: 0.85rem; letter-spacing: 0.08em; color: rgba(247, 244, 238, 0.85); animation: fadeUp 0.8s 0.75s both; }
+.print-card h3 { font-family: var(--serif); font-weight: 400; font-size: 2rem; letter-spacing: 0.05em; color: var(--green-dark); line-height: 1.1; }
+.print-card .print-desc { font-size: 0.92rem; color: var(--text-muted); line-height: 1.7; margin: 0.5rem 0 1.1rem; }
+.print-card .frame-btn { display: block; width: 100%; border: 0; cursor: zoom-in; font: inherit; color: inherit; }
+.print-card .frame-btn:focus-visible { outline-offset: -4px; }
+.variant.single span { display: grid; gap: 0.1rem; }
+.variant.single small { font-size: 0.78rem; color: var(--text-muted); }
+.contact-form .form-title { font-family: var(--serif); font-weight: 400; font-size: 1.9rem; color: var(--green-dark); }
+#prints, #kontakt { scroll-margin-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); }
+@media (min-width: 1100px) { .sketch-card h4 { font-size: 1.35rem; } .sketch-card p { font-size: 0.88rem; } }
