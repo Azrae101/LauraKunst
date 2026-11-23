@@ -619,8 +619,8 @@ const I18N = {
     "en": "Coming <em>soon</em>"
   },
   "soon.p": {
-    "da": "Skriv din e-mail ved det, du gerne vil høre om først.",
-    "en": "Leave your e-mail on anything you’d like to hear about first."
+    "da": "Det arbejder jeg på lige nu. Følg med på Instagram for at se, hvornår det er klar.",
+    "en": "This is what I’m working on right now. Follow along on Instagram to see when it’s ready."
   },
   "soon.tag": {
     "da": "Kommer snart",

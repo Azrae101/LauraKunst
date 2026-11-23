@@ -11,14 +11,15 @@ Alt herunder kan slås til igen uden at skrive ny kode, medmindre andet står.
    Når auction.net er klar, kan deres indlejringskode sættes ind i auction.html.
 
 
-2. "KOMMER SNART" (slået fra)
-   En sektion på forsiden, hvor besøgende kan skrive deres e-mail ved det, de vil høre om først.
+2. "KOMMER SNART": E-MAIL-TILMELDING (slået fra)
+   Sektionen "Kommer snart" vises på forsiden, men kun som information (uden e-mail-felt).
+   Idé til senere: lade besøgende skrive deres e-mail ved det, de vil høre om først.
    De tre punkter står i js/config.js under COMING_SOON:
      - Klistermærker og småting: klistermærker med malerierne, til salg eller som lille gave i printordren.
      - Flere printstørrelser: mindre og større formater end 50 × 70 cm.
      - Nye originaler: besked, når næste maleri er færdigt.
-   Slå til igen: i index.html, fjern kommentar-linjerne omkring sektionen med id="soon"
-   (linjen der starter med  <!-- "Kommer snart"  og linjen med  -->  lige efter sektionen).
+   Slå e-mail-feltet til igen: i index.html, i funktionen renderSoon(), sæt formularen
+   <form class="inline-form" data-notify="..."> tilbage under teksten (den findes i git-historikken).
 
    Vigtigt om e-mails: tilmeldingerne bliver først gemt rigtigt, når en database er sat op:
    Supabase (se LÆS-MIG.txt) eller Firebase (se punkt 5). Så havner de i "waitlist",

@@ -110,7 +110,7 @@ const COMING_SOON = [
     text: { da: "Mindre og større formater, når 50 × 70 cm-oplagene har fundet deres hjem.", en: "Smaller and larger formats, once the 50 × 70 cm editions have found their homes." } },
   { topic: "new-work",
     title: { da: "Nye originaler", en: "New originals" },
-    text: { da: "Der står nye malerier på staffeliet. Bliv den første, der hører, når det næste kommer på auktion.", en: "New paintings are on the easel. Be the first to know when the next one goes up for auction." },
+    text: { da: "Der står nye malerier på staffeliet, og det næste kommer på auktion, når det er færdigt.", en: "New paintings are on the easel, and the next one goes up for auction when it’s finished." },
     // used while the auction is hidden (showAuction: false)
-    textNoAuction: { da: "Der står nye malerier på staffeliet. Bliv den første, der hører, når det næste er færdigt.", en: "New paintings are on the easel. Be the first to know when the next one is finished." } }
+    textNoAuction: { da: "Der står nye malerier på staffeliet, og de næste kommer snart på siden.", en: "New paintings are on the easel, and the next ones will be on the site soon." } }
 ];
