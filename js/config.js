@@ -18,7 +18,17 @@ const CONFIG = {
   // the auction page, the "bid" buttons and the auction texts.
   showAuction: false,
 
-  mobilepay: { number: "12 34 56 78", name: "Laura Kruuse" },
+  // MobilePay: the number buyers pay to. The message they must write is made automatically
+  // from the order (order number + what they bought), so each payment can be matched to its order.
+  mobilepay: { number: "+45 93 96 30 60", name: "Laura Kruuse" },
+
+  // Most prints of the same painting one person (same e-mail or phone) can buy in total.
+  // Keep the same as max_per_person in supabase-setup.sql.
+  maxPerPerson: 10,
+
+  // With pickup, the buyer may pay this share (%) now with MobilePay and the rest in person at pickup.
+  // Set to 0 to turn the option off. Keep the same as deposit_percent in supabase-setup.sql.
+  depositPercent: 50,
 
   contact: {
     email: "laur723kru@gmail.com",

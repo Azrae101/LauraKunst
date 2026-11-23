@@ -59,6 +59,24 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<"
 const artById = (id) => ARTWORKS.find(a => a.id === id);
 const sizeYear = (a) => [a.size, a.year].filter(Boolean).join(", ");
 const validEmail = (e) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e || "");
+/* Most prints of one painting a person may buy (also checked on the server) */
+const MAX_PER_PERSON = CONFIG.maxPerPerson || 10;
+/* The last 8 digits of a phone number, so "+45 12 34 56 78" and "12345678" are the same person */
+const phoneKey = (p) => { const d = String(p || "").replace(/\D/g, "").slice(-8); return d.length === 8 ? d : ""; };
+/* Deposit at pickup: pay DEPOSIT_PCT % now (rounded up to whole kroner), the rest at pickup.
+   Same rule as place_order() in supabase-setup.sql. 0 turns the option off. */
+const DEPOSIT_PCT = Math.max(0, Math.min(100, CONFIG.depositPercent || 0));
+function splitPayment(total, plan) {
+  if (plan !== "deposit") return { pay_now: total, pay_later: 0 };
+  const pay_now = Math.ceil(total * DEPOSIT_PCT / 100);
+  return { pay_now, pay_later: total - pay_now };
+}
+/* The text to write in MobilePay: order number and what was bought, e.g. "LK-12345 2x VESTIGE, 1x FLORERE".
+   Same format as place_order() in supabase-setup.sql. MobilePay allows 60 characters. */
+function payMessage(code, lines) {
+  const msg = code + " " + lines.map(l => `${l.qty}x ${l.title}`).join(", ");
+  return msg.length > 60 ? msg.slice(0, 57) + "..." : msg;
+}
 const fmtDate = (d) => new Intl.DateTimeFormat(locale(), { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Copenhagen" }).format(new Date(d));
 
 /* Errors arrive as codes like "BID_TOO_LOW:5250" and are shown in the visitor's language */
@@ -171,7 +189,8 @@ function remoteApi() {
     auctions: () => rpc("auction_state"),
     prints: () => call("/rest/v1/prints?select=artwork_id,stock,edition_size,sold,price_unsigned,price_signed&active=eq.true"),
     bid: (b) => rpc("place_bid", { p_artwork: b.artwork, p_name: b.name, p_email: b.email, p_phone: b.phone, p_amount: b.amount }),
-    order: (o) => rpc("place_order", { p_name: o.name, p_email: o.email, p_phone: o.phone, p_address: o.address, p_delivery: o.delivery, p_items: o.items }),
+    order: (o) => rpc("place_order", { p_name: o.name, p_email: o.email, p_phone: o.phone, p_address: o.address, p_delivery: o.delivery, p_items: o.items, p_plan: o.plan || "full" }),
+    status: (code, email) => rpc("order_status", { p_code: code, p_email: email }),
     notify: (email, topic) => rpc("join_waitlist", { p_email: email, p_topic: topic })
   };
 }
@@ -236,22 +255,50 @@ function demoApi() {
       if (Date.parse(a.ends_at) - now < a.extend_minutes * 6e4) a.ends_at = new Date(now + a.extend_minutes * 6e4).toISOString();
       save(); return ok({ id, amount });
     },
-    order({ name, email, phone, address, delivery, items }) {
+    order({ name, email, phone, address, delivery, items, plan = "full" }) {
       if ((name || "").trim().length < 2) return fail("NAME");
+      if (!["full", "deposit"].includes(plan) || (plan === "deposit" && (delivery !== "pickup" || !DEPOSIT_PCT))) return fail("PLAN");
       if (!validEmail(email)) return fail("EMAIL");
       if (delivery === "ship" && (address || "").trim().length < 8) return fail("ADDRESS");
       if (!items.length) return fail("EMPTY");
-      // No stock limit: only check that every print is still for sale
-      if (items.some(it => !db.prints.find(x => x.artwork_id === it.artwork_id))) return fail("UNAVAILABLE");
-      let total = 0;
+      // Same rules as place_order() in supabase-setup.sql
+      const wanted = {};
       for (const it of items) {
-        const p = db.prints.find(x => x.artwork_id === it.artwork_id);
-        p.sold += it.qty; total += it.qty * (it.signed ? p.price_signed : p.price_unsigned);
+        if (!(it.qty >= 1 && it.qty <= MAX_PER_PERSON)) return fail("QTY");
+        wanted[it.artwork_id] = (wanted[it.artwork_id] || 0) + it.qty;
+      }
+      const em = email.trim().toLowerCase(), ph = phoneKey(phone);
+      const counts = (o) => o.status === "paid" || o.status === "shipped" ||
+        (o.status === "awaiting_payment" && Date.now() - Date.parse(o.created_at) < CONFIG.reserveHours * 36e5);
+      const mine = db.orders.filter(o => counts(o) && (o.email === em || (ph && phoneKey(o.phone) === ph)));
+      let total = 0; const lines = [];
+      for (const [id, qty] of Object.entries(wanted)) {
+        const p = db.prints.find(x => x.artwork_id === id);
+        if (!p) return fail("UNAVAILABLE");
+        const already = mine.reduce((s, o) => s + o.items.filter(l => l.artwork_id === id).reduce((n, l) => n + l.qty, 0), 0);
+        if (already + qty > MAX_PER_PERSON) return fail(`LIMIT:${Math.max(0, MAX_PER_PERSON - already)}:${artById(id).title}`);
+        total += qty * p.price_signed;
+        lines.push({ artwork_id: id, title: artById(id).title, signed: true, qty, unit_price: p.price_signed });
       }
       if (delivery === "ship") total += CONFIG.shipping.ship;
       const order_code = "LK-" + (10000 + Math.floor(Math.random() * 90000));
-      db.orders.push({ order_code, name, email, phone, address, delivery, items, total, created_at: new Date().toISOString() });
-      save(); return ok({ order_code, total });
+      const message = payMessage(order_code, lines);
+      const { pay_now, pay_later } = splitPayment(total, plan);
+      db.orders.push({ order_code, name, email: em, phone, address, delivery, items: lines, total, message, payment_plan: plan, pay_now, pay_later, status: "awaiting_payment", created_at: new Date().toISOString() });
+      save(); return ok({ order_code, total, message, items: lines, payment_plan: plan, pay_now, pay_later });
+    },
+    status(code, email) {
+      const o = db.orders.find(x => x.order_code === code && x.email === email.trim().toLowerCase());
+      if (!o) return ok(null);
+      const expired = o.status === "awaiting_payment" && Date.now() - Date.parse(o.created_at) > CONFIG.reserveHours * 36e5;
+      return ok({ order_code: o.order_code, total: o.total, message: o.message, items: o.items, payment_plan: o.payment_plan || "full",
+                  pay_now: o.pay_now ?? o.total, pay_later: o.pay_later || 0, status: expired ? "expired" : (o.status || "awaiting_payment") });
+    },
+    // Demo only: try the approval in the browser console with  api.markPaid("LK-12345")
+    markPaid(code) {
+      const o = db.orders.find(x => x.order_code === code); if (!o) return "no such order";
+      o.status = "paid"; o.items.forEach(l => { const p = db.prints.find(x => x.artwork_id === l.artwork_id); if (p) p.sold += l.qty; });
+      save(); return "paid";
     },
     notify(email, topic) {
       if (!validEmail(email)) return fail("EMAIL");
@@ -268,7 +315,7 @@ let basket = local.get("lk-basket", []);           // [{ artwork_id, signed, qty
 // Prints are only sold signed and numbered now. Turn any older unsigned basket lines into signed ones.
 basket = basket.reduce((list, i) => {
   const ex = list.find(x => x.artwork_id === i.artwork_id);
-  if (ex) ex.qty = Math.min(99, ex.qty + i.qty); else list.push({ artwork_id: i.artwork_id, signed: true, qty: i.qty });
+  if (ex) ex.qty = Math.min(MAX_PER_PERSON, ex.qty + i.qty); else list.push({ artwork_id: i.artwork_id, signed: true, qty: Math.min(MAX_PER_PERSON, i.qty) });
   return list;
 }, []);
 const basketQty = () => basket.reduce((s, i) => s + i.qty, 0);
@@ -296,15 +343,21 @@ async function loadPrints() { printsCache = await api.prints(); return printsCac
 function addToBasket(artwork_id, signed, qty) {
   signed = true; // only signed and numbered prints are sold
   if (!printFor(artwork_id)) { toast(t("err.UNAVAILABLE")); return false; }   // no stock limit, only that the print exists
+  // At most MAX_PER_PERSON of each print per person (the server also counts earlier orders)
+  const room = MAX_PER_PERSON - inBasket(artwork_id);
+  if (room <= 0) { toast(t("err.LIMIT_BASKET", { n: MAX_PER_PERSON, t: artById(artwork_id).title })); return false; }
+  const capped = qty > room;
+  if (capped) qty = room;
   const ex = basket.find(i => i.artwork_id === artwork_id && i.signed === signed);
-  if (ex) ex.qty = Math.min(99, ex.qty + qty); else basket.push({ artwork_id, signed, qty });
+  if (ex) ex.qty += qty; else basket.push({ artwork_id, signed, qty });
   saveBasket(); bumpBasket();
-  toast(t("toast.added", { t: artById(artwork_id).title }), { label: t("toast.view"), onClick: openBasket });
+  toast(capped ? t("err.LIMIT_BASKET", { n: MAX_PER_PERSON, t: artById(artwork_id).title }) : t("toast.added", { t: artById(artwork_id).title }),
+        { label: t("toast.view"), onClick: openBasket });
   return true;
 }
 
 /* Basket drawer, built once and shared by every page */
-let drawer, delivery = "ship";
+let drawer, delivery = "ship", payPlan = "full";   // payPlan: "full" or "deposit" (deposit only with pickup)
 function buildDrawer() {
   drawer = document.createElement("dialog");
   drawer.className = "drawer";
@@ -328,10 +381,20 @@ function renderBasket() {
   $("#drawer-title").textContent = t("nav.basket");
   const body = $("#drawer-body");
   if (!basket.length) {
-    body.innerHTML = `<p class="lede">${t("basket.empty")}</p><a class="btn line" href="index.html#prints" onclick="this.closest('dialog').close()">${t("basket.see")}</a>`;
+    // Orders placed from this browser, so the buyer can find the payment details and the status again
+    const mine = myOrders();
+    body.innerHTML = `<p class="lede">${t("basket.empty")}</p><a class="btn line" href="index.html#prints" onclick="this.closest('dialog').close()">${t("basket.see")}</a>
+      ${mine.length ? `<div class="my-orders"><h3>${t("orders.head")}</h3>${mine.map(o => `
+        <div class="line-item order-item"><div><b>${esc(o.order_code)}</b><small>${esc(o.items.map(l => `${l.qty}× ${l.title}`).join(", "))}</small><small>${kr(o.total)}</small></div>
+          <span class="order-status ${esc(o.status)}">${orderStatusText(o)}</span>
+          <button class="link-btn" type="button" data-order="${esc(o.order_code)}">${t("orders.show")}</button></div>`).join("")}</div>` : ""}`;
+    $$("[data-order]", body).forEach(b => b.addEventListener("click", () => showPayment(mine.find(o => o.order_code === b.dataset.order))));
     return;
   }
   const ship = delivery === "ship" ? CONFIG.shipping.ship : CONFIG.shipping.pickup;
+  const canDeposit = delivery === "pickup" && DEPOSIT_PCT > 0 && DEPOSIT_PCT < 100;
+  if (!canDeposit) payPlan = "full";
+  const split = splitPayment(subtotal() + ship, payPlan);
   const me = local.get("lk-me", {});
   const keep = $("#checkout") ? Object.fromEntries(new FormData($("#checkout"))) : {};
   body.innerHTML = `
@@ -345,6 +408,10 @@ function renderBasket() {
         <label class="radio"><input type="radio" name="delivery" value="ship" ${delivery === "ship" ? "checked" : ""}>${t("basket.ship")}<span class="price">${kr(CONFIG.shipping.ship)}</span></label>
         <label class="radio"><input type="radio" name="delivery" value="pickup" ${delivery === "pickup" ? "checked" : ""}>${esc(L(CONFIG.pickupText))}<span class="price">${t("basket.free")}</span></label>
       </fieldset>
+      ${canDeposit ? `<fieldset><legend>${t("basket.payment")}</legend>
+        <label class="radio"><input type="radio" name="plan" value="full" ${payPlan === "full" ? "checked" : ""}>${t("basket.planFull")}</label>
+        <label class="radio"><input type="radio" name="plan" value="deposit" ${payPlan === "deposit" ? "checked" : ""}>${t("basket.planDeposit", { p: DEPOSIT_PCT })}</label>
+      </fieldset>` : ""}
       <div class="row-2">
         <label class="field"><span>${t("basket.name")}</span><input name="name" autocomplete="name" value="${esc(keep.name ?? me.name ?? "")}" required></label>
         <label class="field"><span>${t("email.label")}</span><input name="email" type="email" inputmode="email" autocomplete="email" value="${esc(keep.email ?? me.email ?? "")}" required></label>
@@ -355,6 +422,8 @@ function renderBasket() {
         <div><span>${t("basket.prints")}</span><span>${kr(subtotal())}</span></div>
         <div><span>${t(delivery === "ship" ? "basket.shipping" : "basket.pickup")}</span><span>${kr(ship)}</span></div>
         <div class="grand"><span>${t("basket.total")}</span><span>${kr(subtotal() + ship)}</span></div>
+        ${payPlan === "deposit" ? `<div class="split"><span>${t("basket.payNow")}</span><span>${kr(split.pay_now)}</span></div>
+        <div class="split"><span>${t("basket.payLater")}</span><span>${kr(split.pay_later)}</span></div>` : ""}
       </div>
       <button class="btn block" type="submit">${t("basket.submit")}</button>
       <p class="msg" id="co-msg" role="status"></p>
@@ -363,6 +432,7 @@ function renderBasket() {
   $$("[data-rm]", body).forEach(b => b.addEventListener("click", () => { basket.splice(+b.dataset.rm, 1); saveBasket(); renderBasket(); }));
   const form = $("#checkout");
   $$("input[name=delivery]", form).forEach(r => r.addEventListener("change", () => { delivery = r.value; renderBasket(); }));
+  $$("input[name=plan]", form).forEach(r => r.addEventListener("change", () => { payPlan = r.value; renderBasket(); }));
   form.addEventListener("submit", submitOrder);
 }
 
@@ -376,39 +446,80 @@ async function submitOrder(e) {
   btn.disabled = true; msg.className = "msg"; msg.textContent = t("basket.reserving");
   try {
     const items = basket.map(i => ({ artwork_id: i.artwork_id, signed: i.signed, qty: i.qty }));
-    const r = await api.order({ name: f.name.trim(), email: f.email.trim(), phone: (f.phone || "").trim(), address: f.address || "", delivery: f.delivery, items });
+    const plan = f.delivery === "pickup" && f.plan === "deposit" ? "deposit" : "full";
+    const r = await api.order({ name: f.name.trim(), email: f.email.trim(), phone: (f.phone || "").trim(), address: f.address || "", delivery: f.delivery, items, plan });
     local.set("lk-me", { ...local.get("lk-me", {}), name: f.name.trim(), email: f.email.trim(), phone: (f.phone || "").trim() });
+    const order = { order_code: r.order_code, total: r.total, items: r.items || [], email: f.email.trim().toLowerCase(),
+                    message: r.message || payMessage(r.order_code, r.items || []), status: "awaiting_payment", created_at: new Date().toISOString(),
+                    payment_plan: r.payment_plan || plan, pay_now: r.pay_now ?? r.total, pay_later: r.pay_later || 0 };
+    saveMyOrder(order);
     basket = []; saveBasket();
     try { await loadPrints(); } catch {}
     document.dispatchEvent(new CustomEvent("prints:change"));
-    showPayment(r.order_code, r.total, f.email.trim());
+    showPayment(order);
   } catch (err) {
     msg.className = "msg err"; msg.textContent = errText(err); btn.disabled = false;
     try { await loadPrints(); document.dispatchEvent(new CustomEvent("prints:change")); } catch {}
   }
 }
 
-function showPayment(code, total, email) {
+/* "Paid" on a deposit order means the deposit is paid and the rest is owed at pickup */
+const orderStatusText = (o) => t(o.status === "paid" && o.pay_later ? "order.depositPaid" : "order." + o.status);
+/* Orders placed from this browser (newest first, at most 5) */
+const myOrders = () => local.get("lk-orders", []);
+function saveMyOrder(o) {
+  local.set("lk-orders", [o, ...myOrders().filter(x => x.order_code !== o.order_code)].slice(0, 5));
+}
+
+/* After ordering: how to pay with MobilePay, and whether Laura has approved the payment yet.
+   The order is only approved (status "paid") once Laura has seen the payment arrive. */
+function showPayment(order) {
+  if (!drawer) buildDrawer();
+  if (!drawer.open) { drawer.querySelector(".close-x").setAttribute("aria-label", t("close")); drawer.showModal(); document.body.classList.add("menu-locked"); }
   drawer.dataset.paid = "1";
-  $("#drawer-title").textContent = t("pay.head");
   const mp = CONFIG.mobilepay;
+  const number = mp.number.replace(/^\+45/, "").replace(/\D/g, "");   // MobilePay wants the 8 digits
+  const paid = order.status === "paid" || order.status === "shipped";
+  const now = order.pay_now ?? order.total, later = order.pay_later || 0;
+  $("#drawer-title").textContent = t(paid ? "pay.headPaid" : "pay.head");
   $("#drawer-body").innerHTML = `
     <div class="pay-box">
-      <h3>${t("pay.title")}</h3>
-      <p>${t("pay.text", { h: CONFIG.reserveHours })}</p>
+      <p class="order-status big ${esc(order.status)}">${orderStatusText(order)}</p>
+      <h3>${t(paid ? "pay.titlePaid" : order.status === "expired" || order.status === "cancelled" ? "pay.titleExpired" : later ? "pay.titleDeposit" : "pay.title")}</h3>
+      <p>${t(paid ? "pay.textPaid" : "pay.text", { h: CONFIG.reserveHours })}</p>
+      ${later && order.status !== "shipped" ? `<p class="pay-rest">${t("pay.rest", { n: kr(later), t: kr(order.total) })}</p>` : ""}
+      <ul class="pay-items">${order.items.map(l => `<li>${l.qty} × ${esc(l.title)}, 50 × 70 cm</li>`).join("")}</ul>
+      ${paid ? "" : `<ol class="pay-steps">
+        <li>${t("pay.step1")}</li><li>${t("pay.step2")}</li><li>${t("pay.step3")}</li></ol>
       <dl>
-        <div class="pay-row"><dt>${t("pay.amount")}</dt><dd>${kr(total)}</dd><button class="copy" type="button" data-copy="${total}">${t("pay.copy")}</button></div>
-        <div class="pay-row"><dt>${t("pay.to")}</dt><dd>${esc(mp.number)}</dd><button class="copy" type="button" data-copy="${esc(mp.number.replace(/\s/g, ""))}">${t("pay.copy")}</button></div>
+        <div class="pay-row"><dt>${t("pay.to")}</dt><dd>${esc(mp.number)}</dd><button class="copy" type="button" data-copy="${esc(number)}">${t("pay.copy")}</button></div>
         <div class="pay-row"><dt>${t("pay.name")}</dt><dd>${esc(mp.name)}</dd></div>
-        <div class="pay-row"><dt>${t("pay.msg")}</dt><dd>${esc(code)}</dd><button class="copy" type="button" data-copy="${esc(code)}">${t("pay.copy")}</button></div>
+        <div class="pay-row"><dt>${t(later ? "pay.amountNow" : "pay.amount")}</dt><dd>${kr(now)}</dd><button class="copy" type="button" data-copy="${now}">${t("pay.copy")}</button></div>
+        <div class="pay-row"><dt>${t("pay.msg")}</dt><dd class="pay-msg">${esc(order.message)}</dd><button class="copy" type="button" data-copy="${esc(order.message)}">${t("pay.copy")}</button></div>
       </dl>
-      <p class="fineprint">${t("pay.after", { e: esc(email) })}</p>
+      <p class="fineprint">${t("pay.msgWhy")}</p>`}
+      <p class="fineprint">${t(paid ? "pay.afterPaid" : "pay.after", { e: esc(order.email) })}</p>
     </div>
+    ${paid ? "" : `<button class="btn block" type="button" id="pay-check">${t("pay.check")}</button><p class="msg" id="pay-msg" role="status"></p>`}
     <button class="btn line block" type="button" id="pay-done">${t("close")}</button>`;
   $$("[data-copy]").forEach(b => b.addEventListener("click", async () => {
     try { await navigator.clipboard.writeText(b.dataset.copy); toast(t("toast.copied")); } catch { toast(t("toast.copyFail")); }
   }));
   $("#pay-done").addEventListener("click", () => drawer.close());
+  const check = $("#pay-check");
+  if (check) check.addEventListener("click", async () => {
+    check.disabled = true;
+    const msg = $("#pay-msg"); msg.className = "msg"; msg.textContent = t("pay.checking");
+    try {
+      const s = await api.status(order.order_code, order.email);
+      if (!s) throw new Error("GENERIC");
+      const next = { ...order, status: s.status, pay_now: s.pay_now ?? order.pay_now, pay_later: s.pay_later ?? order.pay_later };
+      saveMyOrder(next);
+      if (s.status !== order.status) { showPayment(next); return; }
+      msg.textContent = t("pay.stillWaiting");
+    } catch (err) { msg.className = "msg err"; msg.textContent = errText(err); }
+    check.disabled = false;
+  });
 }
 
 /* ---------- Waitlist forms: any <form data-notify="topic"> ---------- */

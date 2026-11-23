@@ -50,6 +50,14 @@ const I18N = {
     "da": "Næste værk",
     "en": "Next piece"
   },
+  "museum.japper": {
+    "da": "Se Japper",
+    "en": "Meet Japper"
+  },
+  "museum.japperText": {
+    "da": "Japper er kaninbamsen, der har fulgt mig siden jeg var helt lille, og som nu har en fast plads på hylden i mit atelier.",
+    "en": "Japper is the stuffed bunny who has been with me since I was very small, and who now has a permanent spot on the shelf in my studio."
+  },
   "museum.open": {
     "da": "Se værket",
     "en": "View the piece"
@@ -387,8 +395,84 @@ const I18N = {
     "en": "Your basket is empty."
   },
   "err.QTY": {
-    "da": "Du kan bestille 1 til 5 af hvert print.",
-    "en": "You can order 1 to 5 of each print."
+    "da": "Du kan bestille 1 til 10 af hvert print.",
+    "en": "You can order 1 to 10 of each print."
+  },
+  "err.LIMIT": {
+    "da": "Man kan højst købe 10 af hvert print pr. person. Du kan købe {n} mere af {t}.",
+    "en": "Each person can buy at most 10 of each print. You can buy {n} more of {t}."
+  },
+  "err.LIMIT_BASKET": {
+    "da": "Højst {n} af {t} pr. person. Din kurv har nu det maksimale antal.",
+    "en": "At most {n} of {t} per person. Your basket now has the maximum."
+  },
+  "orders.head": {
+    "da": "Dine ordrer",
+    "en": "Your orders"
+  },
+  "orders.show": {
+    "da": "Vis",
+    "en": "Show"
+  },
+  "order.awaiting_payment": {
+    "da": "Venter på betaling",
+    "en": "Waiting for payment"
+  },
+  "order.paid": {
+    "da": "Betalt og godkendt",
+    "en": "Paid and approved"
+  },
+  "order.shipped": {
+    "da": "Sendt",
+    "en": "Sent"
+  },
+  "order.depositPaid": {
+    "da": "Depositum betalt",
+    "en": "Deposit paid"
+  },
+  "err.PLAN": {
+    "da": "Delvis betaling kan kun vælges ved afhentning.",
+    "en": "Part payment is only possible with pickup."
+  },
+  "basket.payment": {
+    "da": "Betaling",
+    "en": "Payment"
+  },
+  "basket.planFull": {
+    "da": "Betal hele beløbet nu med MobilePay",
+    "en": "Pay the full amount now with MobilePay"
+  },
+  "basket.planDeposit": {
+    "da": "Betal {p} % nu med MobilePay, resten ved afhentning",
+    "en": "Pay {p}% now with MobilePay, the rest at pickup"
+  },
+  "basket.payNow": {
+    "da": "Betal nu",
+    "en": "Pay now"
+  },
+  "basket.payLater": {
+    "da": "Betal ved afhentning",
+    "en": "Pay at pickup"
+  },
+  "pay.titleDeposit": {
+    "da": "Betal depositum med MobilePay for at gennemføre ordren",
+    "en": "Pay the deposit with MobilePay to complete your order"
+  },
+  "pay.amountNow": {
+    "da": "Depositum nu",
+    "en": "Deposit now"
+  },
+  "pay.rest": {
+    "da": "Resten, {n}, betaler du ved afhentning med MobilePay eller kontant. Hele ordren koster {t}.",
+    "en": "You pay the rest, {n}, at pickup with MobilePay or cash. The whole order is {t}."
+  },
+  "order.cancelled": {
+    "da": "Annulleret",
+    "en": "Cancelled"
+  },
+  "order.expired": {
+    "da": "Udløbet",
+    "en": "Expired"
   },
   "err.UNAVAILABLE": {
     "da": "Et af printene er ikke længere til salg.",
@@ -479,20 +563,68 @@ const I18N = {
     "en": "Reserving your prints…"
   },
   "basket.held": {
-    "da": "Dine prints holdes i {h} timer, mens du betaler. Dine oplysninger bruges kun til at sende din ordre.",
-    "en": "Your prints are held for {h} hours while you pay. Your details are only used to send your order."
+    "da": "Dine prints holdes i {h} timer, mens du betaler. Højst 10 af hvert print pr. person. Dine oplysninger bruges kun til at sende din ordre.",
+    "en": "Your prints are held for {h} hours while you pay. At most 10 of each print per person. Your details are only used to send your order."
   },
   "pay.head": {
     "da": "Næsten færdig",
     "en": "Almost done"
   },
+  "pay.headPaid": {
+    "da": "Tak for din ordre",
+    "en": "Thank you for your order"
+  },
   "pay.title": {
-    "da": "Dine prints er reserveret",
-    "en": "Your prints are reserved"
+    "da": "Betal med MobilePay for at gennemføre ordren",
+    "en": "Pay with MobilePay to complete your order"
+  },
+  "pay.titlePaid": {
+    "da": "Betalingen er modtaget",
+    "en": "Your payment has arrived"
+  },
+  "pay.titleExpired": {
+    "da": "Ordren blev ikke betalt i tide",
+    "en": "The order was not paid in time"
   },
   "pay.text": {
-    "da": "Betal med MobilePay inden for {h} timer. Skriv dit ordrenummer i beskeden, så Laura kan matche betalingen med din ordre.",
-    "en": "Pay with MobilePay within {h} hours. Write your order number in the message so Laura can match the payment to your order."
+    "da": "Dine prints er reserveret i {h} timer. Ordren er først godkendt, når betalingen er modtaget.",
+    "en": "Your prints are held for {h} hours. The order is only approved once the payment has arrived."
+  },
+  "pay.textPaid": {
+    "da": "Laura har godkendt din ordre, og dine prints bliver gjort klar.",
+    "en": "Laura has approved your order, and your prints are being made ready."
+  },
+  "pay.step1": {
+    "da": "Åbn MobilePay og vælg Send penge.",
+    "en": "Open MobilePay and choose Send money."
+  },
+  "pay.step2": {
+    "da": "Send beløbet til nummeret herunder.",
+    "en": "Send the amount to the number below."
+  },
+  "pay.step3": {
+    "da": "Kopiér beskeden herunder og sæt den ind i MobilePay præcis som den står.",
+    "en": "Copy the message below and paste it into MobilePay exactly as it is."
+  },
+  "pay.msgWhy": {
+    "da": "Beskeden viser dit ordrenummer og hvad du har købt, så betalingen kan matches med din ordre.",
+    "en": "The message shows your order number and what you bought, so the payment can be matched to your order."
+  },
+  "pay.check": {
+    "da": "Jeg har betalt: tjek status",
+    "en": "I have paid: check status"
+  },
+  "pay.checking": {
+    "da": "Tjekker…",
+    "en": "Checking…"
+  },
+  "pay.stillWaiting": {
+    "da": "Betalingen er ikke godkendt endnu. Laura tjekker MobilePay i hånden, så det kan tage nogle timer. Du får også en e-mail.",
+    "en": "The payment is not approved yet. Laura checks MobilePay by hand, so it can take a few hours. You will also get an e-mail."
+  },
+  "pay.afterPaid": {
+    "da": "Du får besked på e-mail til {e}, når dine prints er sendt eller klar til afhentning.",
+    "en": "You will hear by e-mail at {e} when your prints are sent or ready to pick up."
   },
   "pay.amount": {
     "da": "Beløb",
@@ -515,8 +647,8 @@ const I18N = {
     "en": "Copy"
   },
   "pay.after": {
-    "da": "Laura bekræfter på e-mail til {e}, når betalingen er modtaget, og sender eller afleverer derefter dine prints. Kan du ikke bruge MobilePay? Svar på mailen, så sender hun bankoplysninger.",
-    "en": "Laura confirms by e-mail to {e} when the payment has arrived, and then sends or hands over your prints. Can’t use MobilePay? Reply to that e-mail and she’ll send bank details."
+    "da": "Laura bekræfter på e-mail til {e}, når betalingen er modtaget, og sender eller afleverer derefter dine prints. Bliver ordren ikke betalt inden for fristen, annulleres den. Kan du ikke bruge MobilePay? Skriv via kontaktformularen, så sender hun bankoplysninger.",
+    "en": "Laura confirms by e-mail to {e} when the payment has arrived, and then sends or hands over your prints. Orders not paid in time are cancelled. Can’t use MobilePay? Write via the contact form and she’ll send bank details."
   },
   "status.live": {
     "da": "Auktionen er åben",

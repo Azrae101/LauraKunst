@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
   <link rel="apple-touch-icon" href="images/general/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20261200">
+  <link rel="stylesheet" href="css/style.css?v=20261203">
   <style>
     /* ---------- Virtual museum ----------
        The hall is a horizontal scroller. Paintings, visitors (the shadow people),
@@ -34,6 +34,7 @@
       --m-cream: #efe8da;
       --m-cream-dim: rgba(239, 232, 218, 0.72);
       --m-rule: rgba(239, 232, 218, 0.28);
+      --m-frame: #1c271c;   /* dark green frame around the wall texts and their buttons */
     }
     body.museum-page {
       height: 100vh; height: 100dvh;
@@ -128,8 +129,9 @@
        with a fine double rule like a framed label. Laid out like a real exhibition label. */
     .placard {
       width: clamp(240px, 25vw, 330px); max-height: 60cqh; overflow-y: auto;
-      background: rgba(20, 28, 20, 0.28); color: var(--m-cream);
-      border: 1px solid var(--m-rule); outline: 1px solid rgba(239,232,218,0.10); outline-offset: 5px;
+      background: rgba(20, 28, 20, 0.34); color: var(--m-cream);
+      /* thick dark green frame for contrast against the wall (no light lines) */
+      border: 6px solid var(--m-frame);
       padding: clamp(1.1rem, 3cqh, 1.9rem) clamp(1.1rem, 2.4vw, 1.8rem);
       box-shadow: 0 1cqh 2.5cqh rgba(0,0,0,0.22);
       line-height: 1.7; overflow-wrap: break-word;
@@ -141,18 +143,22 @@
     .placard h2 .work { font-style: italic; }
     .placard h2 .yr { font-size: 0.8em; color: var(--m-cream-dim); }
     .placard h2:last-child { margin-bottom: 0; }
-    .placard .tech { font-size: 0.8rem; line-height: 1.6; color: var(--m-cream-dim); padding-bottom: 0.9rem; margin-bottom: 0.9rem; border-bottom: 1px solid var(--m-rule); }
+    .placard .tech { font-size: 0.8rem; line-height: 1.6; color: var(--m-cream-dim); padding-bottom: 0.9rem; margin-bottom: 0.9rem; }
     .placard p { font-size: 0.92rem; margin-bottom: 0.8rem; color: var(--m-cream); }
     .placard .story { font-family: var(--serif); font-size: 1.08rem; line-height: 1.6; }
     .placard .open { margin-top: 0; }
     .label-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.6rem; }
-    .label-actions .m-btn { padding-inline: 1rem; }
+    /* "Buy a print" and "View the piece": rounded pills in normal text, side by side when there is room */
+    .label-actions .m-btn {
+      border-radius: 999px; padding-inline: 1rem; white-space: nowrap; flex: 0 1 auto;
+      text-transform: none; letter-spacing: 0.02em; font-size: 0.88rem;
+    }
     .m-btn svg { width: 17px; height: 17px; flex: none; }
     .m-btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 44px;
       padding: 0 1.2rem; border-radius: 0; cursor: pointer; text-decoration: none;
       font: 400 0.76rem/1 var(--sans); letter-spacing: 0.14em; text-transform: uppercase;
-      color: var(--m-cream); background: transparent; border: 1px solid var(--m-rule);
+      color: var(--m-cream); background: transparent; border: 2px solid var(--m-frame);
       transition: background 0.25s, color 0.25s, border-color 0.25s;
     }
     .m-btn.solid { background: var(--m-cream); color: #2e392e; border-color: var(--m-cream); }
@@ -160,9 +166,22 @@
     /* Artist / welcome */
     .welcome .placard { width: clamp(260px, 30vw, 420px); }
     .welcome h1 { font-family: var(--serif); font-weight: 400; color: var(--m-cream); font-size: clamp(1.8rem, 3.2vw, 2.6rem); line-height: 1.1; margin-bottom: 0.9rem; }
-    .welcome .social-pill { color: var(--m-cream); border-color: var(--m-rule); }
-    .ending .social-pill { color: var(--m-cream); border-color: var(--m-rule); }
+    /* Instagram / TikTok in the portfolio: filled cream pills with dark green text, dark green on hover */
+    .museum .social-pill {
+      border-radius: 999px; padding: 0.5rem 1.2rem 0.5rem 0.6rem; gap: 0.55rem;
+      background: var(--m-cream); color: var(--m-frame); border: 2px solid var(--m-cream);
+      font-weight: 500; letter-spacing: 0.02em;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.25);
+      transition: background 0.25s, color 0.25s, border-color 0.25s, transform 0.25s;
+    }
+    .museum .social-pill svg {
+      width: 30px; height: 30px; padding: 6px; border-radius: 50%;
+      background: var(--m-frame); color: var(--m-cream); transition: background 0.25s, color 0.25s;
+    }
     .welcome .social-row { margin-top: 1rem; }
+    /* The Japper logo next to the studio name */
+    .welcome h1 { display: flex; align-items: center; gap: 0.6rem; }
+    .welcome-logo { width: 1.5em; height: 1.5em; flex: none; }
 
     /* Behind the scenes: a cork board with notes */
     .board {
@@ -259,8 +278,10 @@
     .np-card:focus { outline: none; }
     .note:focus-visible { outline: 2px solid var(--m-cream); outline-offset: 3px; z-index: 2; }
     .note img { width: 100%; height: clamp(70px, 20cqh, 220px); object-fit: cover; margin-bottom: 0.6rem; }
-    .note h3 { font-family: var(--serif); color: var(--m-ink); font-size: 1.1rem; font-weight: 500; line-height: 1.2; margin-bottom: 0.3rem; }
-    .note p { font-family: "Patrick Hand", cursive; font-size: 1rem; line-height: 1.3; color: #3d3630; }
+    /* Text scales down a little on narrow notes and breaks long words, so it never runs past the paper */
+    .note h3 { font-family: var(--serif); color: var(--m-ink); font-size: clamp(0.92rem, 1.2vw, 1.1rem); font-weight: 500; line-height: 1.2; margin-bottom: 0.3rem; overflow-wrap: break-word; hyphens: auto; }
+    .note p { font-family: "Patrick Hand", cursive; font-size: clamp(0.85rem, 1.1vw, 1rem); line-height: 1.3; color: #3d3630; overflow-wrap: break-word; hyphens: auto; }
+    .note { min-width: 0; overflow: hidden; }
 
     /* Ending */
     .ending .placard { width: min(520px, 80vw); text-align: center; }
@@ -298,7 +319,8 @@
     .hall-fs.on .fs-off { display: block; }
     .hall-fs[hidden] { display: none; }
     /* No hover effects in the portfolio (the site-wide social pills too) */
-    .museum .social-pill:hover { background: transparent; color: var(--m-cream); border-color: var(--m-rule); }
+    .museum .social-pill:hover { background: var(--m-frame); color: var(--m-cream); border-color: var(--m-cream); transform: translateY(-2px); }
+    .museum .social-pill:hover svg { background: var(--m-cream); color: var(--m-frame); }
     /* Full screen: only the gallery, no menu */
     body.museum-page.is-fs { padding-top: env(safe-area-inset-top, 0px); }
     body.museum-page.is-fs .site-nav { display: none; }
@@ -329,6 +351,8 @@
       animation: mv-rise 0.55s cubic-bezier(.2,.8,.2,1) both;
     }
     .mv-frame img { display: block; width: var(--fw); height: auto; max-width: none; background: #2b2622; }
+    .mv-frame.logo { padding: 0; background: none; box-shadow: none; }
+    .mv-frame.logo img { background: none; filter: drop-shadow(0 12px 24px rgba(0,0,0,0.35)); }
     @keyframes mv-rise { from { transform: translateY(18px) scale(0.96); opacity: 0; } to { transform: none; opacity: 1; } }
     .mv-info.placard { width: min(100%, 520px); max-height: none; overflow: visible; animation: mv-rise 0.55s 0.08s cubic-bezier(.2,.8,.2,1) both; }
     .mv-info .label-actions { margin-top: 0.4rem; }
@@ -487,9 +511,9 @@
   <div class="mv-inner" id="mvInner" tabindex="-1" autofocus></div>
 </dialog>
 
-<script src="js/config.js?v=20261200"></script>
-<script src="js/i18n.js?v=20261200"></script>
-<script src="js/site.js?v=20261200"></script>
+<script src="js/config.js?v=20261203"></script>
+<script src="js/i18n.js?v=20261203"></script>
+<script src="js/site.js?v=20261203"></script>
 <script>
 /* The museum is built from ARTWORKS and SKETCHES in js/config.js,
    so a new painting added there also gets hung here automatically. */
@@ -543,9 +567,10 @@
       <div class="frame photo" style="--ar:${ratio({ w: 1400, h: 1230 })}"><img src="images/general/laura.jpg" width="1400" height="1230" alt="Laura Kruuse"></div>
       <div class="placard">
         <p class="kicker">${t("museum.welcome")}</p>
-        <h1 id="m-welcome">Japper studio</h1>
+        <h1 id="m-welcome"><img class="welcome-logo" src="images/general/favicon-192.png" width="192" height="192" alt="">Japper studio</h1>
         <p>${esc(t("about.p1"))}</p>
         <p>${esc(t("about.p2"))}</p>
+        <div class="label-actions"><button class="m-btn" type="button" data-logo>${t("museum.japper")}</button></div>
       </div>
     </section>`);
     VISITORS[0].forEach(p => parts.push(person(p)));
@@ -607,7 +632,6 @@
           ${AUCTION ? `<a class="m-btn" href="auction.html">${t("viewer.bid")}</a>` : ""}
         </div>
         <div class="social-row" data-auto></div>
-        <p class="fin">~ ${t("museum.end")} ~</p>
         <button class="m-btn" type="button" id="m-restart" style="margin-top:0.8rem">${t("museum.restart")}</button>
       </div>
     </section>`);
@@ -692,11 +716,23 @@
     else if (sk) openNote(sk, SKETCHES[+sk.dataset.sketch]);
     else if (e.target.closest("[data-nature]")) { const n = e.target.closest("[data-nature]"); openNote(n, NATURE[+n.dataset.nature]); }
     else if (e.target.closest("#m-restart")) goTo(0);
+    else if (e.target.closest("[data-logo]")) openViewer({ type: "logo" });
   });
 
   /* ---------- Viewer ---------- */
   let shown = null;
   function renderViewer() {
+    // "Se Japper": the logo, large, straight on the wall (no frame, no background)
+    if (shown.type === "logo") {
+      mvInner.innerHTML = `
+        <div class="mv-art"><div class="mv-frame logo" style="--ar:${(900 / 1024).toFixed(4)}"><img src="images/general/japper-logo.png" width="900" height="1024" alt="Japper studio logo"></div></div>
+        <div class="mv-info placard">
+          <h2 id="mv-title"><span class="work">Japper</span></h2>
+          <p class="story">${esc(t("museum.japperText"))}</p>
+        </div>`;
+      $(".mv-step.prev", mv).hidden = true; $(".mv-step.next", mv).hidden = true;
+      return;
+    }
     const isArt = shown.type === "art";
     const o = isArt ? ARTWORKS[shown.i] : SKETCHES[shown.i];
     const title = isArt ? o.title : L(o.title);

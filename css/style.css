@@ -415,6 +415,19 @@ legend { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; c
 .pay-row dt { grid-column: 1 / -1; font-size: 0.75rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
 .pay-row dd { font-family: var(--serif); font-size: 1.4rem; color: var(--green-dark); }
 .copy { min-height: 36px; padding: 0 0.9rem; border: 1px solid var(--line); background: var(--ivory); cursor: pointer; font-size: 0.82rem; }
+.pay-row dd.pay-msg { font-family: var(--sans); font-size: 1rem; line-height: 1.4; overflow-wrap: anywhere; }
+.pay-items { list-style: none; display: grid; gap: 0.2rem; font-size: 0.95rem; }
+.pay-steps { padding-left: 1.2rem; display: grid; gap: 0.3rem; font-size: 0.95rem; }
+.order-status { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.55rem; border: 1px solid currentColor; color: var(--warm-brown); white-space: nowrap; justify-self: start; }
+.order-status.paid, .order-status.shipped { color: var(--ok); }
+.order-status.expired, .order-status.cancelled { color: var(--err); }
+#pay-msg:empty { display: none; }
+.totals .split { font-size: 0.95rem; color: var(--green-dark); }
+.totals .split:last-child { color: var(--text-muted); }
+.pay-rest { padding: 0.7rem 0.9rem; background: var(--ivory); border-left: 3px solid var(--green-mid); font-size: 0.95rem; }
+.my-orders { display: grid; gap: 1rem; margin-top: 2rem; }
+.my-orders h3 { font-family: var(--serif); font-weight: 400; font-size: 1.4rem; color: var(--green-dark); }
+.line-item.order-item { grid-template-columns: 1fr auto auto; }
 
 /* ---------- Contact page ---------- */
 .contact-grid { display: grid; gap: 3rem; padding-bottom: 4rem; }

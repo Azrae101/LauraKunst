@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
   <link rel="apple-touch-icon" href="images/general/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20261200">
+  <link rel="stylesheet" href="css/style.css?v=20261203">
 </head>
 <body data-title="meta.home">
 
@@ -257,13 +257,13 @@
   </div>
 </footer>
 
-<script src="js/config.js?v=20261200"></script>
-<script src="js/i18n.js?v=20261200"></script>
-<script src="js/site.js?v=20261200"></script>
+<script src="js/config.js?v=20261203"></script>
+<script src="js/i18n.js?v=20261203"></script>
+<script src="js/site.js?v=20261203"></script>
 <script>
 let auctions = [];
 let shown = null;   // what the viewer is showing
-const MAX_QTY = 99;
+const MAX_QTY = CONFIG.maxPerPerson || 10;
 
 /* ---------- Auction teaser (only while CONFIG.showAuction is on) ---------- */
 async function loadAuctions() {

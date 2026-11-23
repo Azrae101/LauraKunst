@@ -46,9 +46,16 @@ create table if not exists orders (
   delivery    text not null,                 -- 'ship' or 'pickup'
   items       jsonb not null,
   total       integer not null,
-  status      text not null default 'awaiting_payment',  -- change to 'paid' / 'shipped' in the table editor
+  status      text not null default 'awaiting_payment',  -- see "Order status" further down
   created_at  timestamptz not null default now()
 );
+-- Added later: safe to run again on a database made with an older version of this file
+alter table orders add column if not exists mobilepay_message text;   -- the exact text the buyer writes in MobilePay
+alter table orders add column if not exists paid_at timestamptz;
+-- Payment plan: 'full' = everything with MobilePay now; 'deposit' = part now, the rest at pickup (pickup only)
+alter table orders add column if not exists payment_plan text not null default 'full';
+alter table orders add column if not exists pay_now integer;               -- what to MobilePay now
+alter table orders add column if not exists pay_later integer not null default 0;  -- what to pay at pickup
 
 create table if not exists waitlist (
   id          bigserial primary key,
@@ -124,44 +131,142 @@ begin
   return json_build_object('id', new_id, 'amount', p_amount);
 end $$;
 
--- ---------- Order prints (no stock limit: prints are made to order; all prints are signed and numbered) ----------
+-- ---------- Order prints ----------
+-- Prints are made to order (no stock limit) and are all signed and numbered.
+-- These rules are checked here on the server, so nobody can get around them in the browser:
+--   * the price comes from the prints table, never from the browser
+--   * one person (same e-mail or same phone number) can buy at most 10 of each print in total.
+--     Paid orders count, and so do unpaid orders that are still inside the 48 hour payment window.
+--   * an order is NOT approved when it is placed. It waits as 'awaiting_payment' until Laura
+--     has seen the MobilePay payment and sets the status to 'paid' (see "Order status" below).
+--   * with pickup, the buyer may pay a deposit now (deposit_percent of the total, rounded up to
+--     whole kroner) and the rest in person at pickup. With shipping, everything is paid now.
+-- Keep these numbers the same as in js/config.js (maxPerPerson, reserveHours, shipping.ship, depositPercent).
+drop function if exists place_order(text, text, text, text, text, jsonb);   -- the older version without p_plan
 create or replace function place_order(p_name text, p_email text, p_phone text, p_address text,
-                                       p_delivery text, p_items jsonb)
+                                       p_delivery text, p_items jsonb, p_plan text default 'full')
 returns json language plpgsql security definer set search_path = public as $$
-declare item jsonb; p prints; qty integer; signed boolean; total integer := 0;
-        lines jsonb := '[]'::jsonb; code text;
+declare
+  max_per_person  constant integer := 10;
+  hold_hours      constant integer := 48;
+  ship_price      constant integer := 59;
+  deposit_percent constant integer := 50;
+  v_plan text := coalesce(p_plan, 'full'); v_now integer; v_later integer := 0;
+  v_email text := lower(trim(coalesce(p_email, '')));
+  v_phone text := right(regexp_replace(coalesce(p_phone, ''), '\D', '', 'g'), 8);
+  item jsonb; p prints; v_art text; qty integer; already integer; total integer := 0;
+  wanted jsonb := '{}'::jsonb; lines jsonb := '[]'::jsonb; code text; msg text := '';
 begin
   if length(trim(coalesce(p_name,''))) < 2 then raise exception 'NAME'; end if;
-  if p_email !~* '^[^@\s]+@[^@\s]+\.[^@\s]+$' then raise exception 'EMAIL'; end if;
+  if v_email !~* '^[^@\s]+@[^@\s]+\.[^@\s]+$' then raise exception 'EMAIL'; end if;
   if p_delivery not in ('ship','pickup') then raise exception 'DELIVERY'; end if;
   if p_delivery = 'ship' and length(trim(coalesce(p_address,''))) < 8 then raise exception 'ADDRESS'; end if;
-  if jsonb_array_length(p_items) = 0 then raise exception 'EMPTY'; end if;
+  if p_items is null or jsonb_typeof(p_items) <> 'array' or jsonb_array_length(p_items) = 0 then raise exception 'EMPTY'; end if;
+  if v_plan not in ('full', 'deposit') or (v_plan = 'deposit' and p_delivery <> 'pickup') then raise exception 'PLAN'; end if;
+  if length(v_phone) < 8 then v_phone := null; end if;
 
+  -- One order per person at a time, so two orders sent at the same moment cannot both slip under the limit
+  perform pg_advisory_xact_lock(hashtext('order:' || v_email));
+  if v_phone is not null then perform pg_advisory_xact_lock(hashtext('order:' || v_phone)); end if;
+
+  -- Add up the quantity per print (the same print could be listed twice)
   for item in select * from jsonb_array_elements(p_items) loop
-    qty := (item->>'qty')::int;
-    signed := true;  -- only signed and numbered prints are sold
-    if qty is null or qty < 1 or qty > 99 then raise exception 'QTY'; end if;
-    select * into p from prints where artwork_id = item->>'artwork_id' and active for update;
-    if not found then raise exception 'UNAVAILABLE'; end if;
-    update prints set sold = sold + qty where artwork_id = p.artwork_id;
-    total := total + qty * (case when signed then p.price_signed else p.price_unsigned end);
-    lines := lines || jsonb_build_object('artwork_id', p.artwork_id, 'title', p.title, 'signed', signed, 'qty', qty,
-                                         'unit_price', case when signed then p.price_signed else p.price_unsigned end);
+    begin qty := (item->>'qty')::int; exception when others then raise exception 'QTY'; end;
+    if qty is null or qty < 1 or qty > max_per_person then raise exception 'QTY'; end if;
+    v_art := coalesce(item->>'artwork_id', '');
+    wanted := jsonb_set(wanted, array[v_art], to_jsonb(coalesce((wanted->>v_art)::int, 0) + qty));
   end loop;
 
-  -- shipping price: keep in sync with CONFIG.shipping in js/config.js
-  if p_delivery = 'ship' then total := total + 59; end if;
+  for v_art, qty in select key, value::int from jsonb_each_text(wanted) loop
+    select * into p from prints where artwork_id = v_art and active;
+    if not found then raise exception 'UNAVAILABLE'; end if;
+
+    -- How many of this print the same person already has: paid, or ordered and still inside the payment window
+    select coalesce(sum((li->>'qty')::int), 0) into already
+    from orders o, jsonb_array_elements(o.items) li
+    where li->>'artwork_id' = v_art
+      and (o.email = v_email
+           or (v_phone is not null and right(regexp_replace(coalesce(o.phone, ''), '\D', '', 'g'), 8) = v_phone))
+      and (o.status in ('paid', 'shipped')
+           or (o.status = 'awaiting_payment' and o.created_at > now() - make_interval(hours => hold_hours)));
+    if already + qty > max_per_person then
+      raise exception 'LIMIT:%:%', greatest(max_per_person - already, 0), p.title;
+    end if;
+
+    total := total + qty * p.price_signed;
+    lines := lines || jsonb_build_object('artwork_id', p.artwork_id, 'title', p.title, 'signed', true,
+                                         'qty', qty, 'unit_price', p.price_signed);
+    msg := msg || case when msg = '' then '' else ', ' end || qty || 'x ' || p.title;
+  end loop;
+
+  if p_delivery = 'ship' then total := total + ship_price; end if;
+
+  v_now := total;
+  if v_plan = 'deposit' then
+    v_now := ceil(total * deposit_percent / 100.0)::int;
+    v_later := total - v_now;
+  end if;
 
   code := 'LK-' || lpad((floor(random() * 90000) + 10000)::text, 5, '0');
   while exists (select 1 from orders where order_code = code) loop
     code := 'LK-' || lpad((floor(random() * 90000) + 10000)::text, 5, '0');
   end loop;
 
-  insert into orders (order_code, name, email, phone, address, delivery, items, total)
-  values (code, trim(p_name), lower(trim(p_email)), nullif(trim(coalesce(p_phone,'')), ''), p_address, p_delivery, lines, total);
+  -- The MobilePay message: order number first, then what was bought. MobilePay allows 60 characters.
+  msg := code || ' ' || msg;
+  if length(msg) > 60 then msg := left(msg, 57) || '...'; end if;
 
-  return json_build_object('order_code', code, 'total', total);
+  insert into orders (order_code, name, email, phone, address, delivery, items, total, mobilepay_message,
+                      payment_plan, pay_now, pay_later)
+  values (code, trim(p_name), v_email, nullif(trim(coalesce(p_phone,'')), ''), p_address, p_delivery, lines, total, msg,
+          v_plan, v_now, v_later);
+
+  return json_build_object('order_code', code, 'total', total, 'message', msg, 'items', lines,
+                           'payment_plan', v_plan, 'pay_now', v_now, 'pay_later', v_later);
 end $$;
+
+-- ---------- Order status ----------
+-- Laura approves an order in Supabase → Table editor → orders, by changing "status":
+--   awaiting_payment  placed, not paid yet (every order starts here)
+--   paid              Laura has seen the MobilePay payment (pay_now): the order is approved.
+--                     For a deposit order, the rest (pay_later) is still owed at pickup.
+--   shipped           sent or handed over (and for a deposit order: the rest has been paid at pickup)
+--   cancelled         never paid, or refunded
+-- Only paid and shipped orders count as sold (prints.sold). This trigger keeps that number right
+-- and notes when the order was paid.
+create or replace function orders_status_change()
+returns trigger language plpgsql security definer set search_path = public as $$
+declare was_sold boolean; is_sold boolean; li jsonb;
+begin
+  if new.status not in ('awaiting_payment', 'paid', 'shipped', 'cancelled') then
+    raise exception 'status must be awaiting_payment, paid, shipped or cancelled';
+  end if;
+  was_sold := tg_op = 'UPDATE' and old.status in ('paid', 'shipped');
+  is_sold  := new.status in ('paid', 'shipped');
+  if is_sold and new.paid_at is null then new.paid_at := now(); end if;
+  if is_sold <> was_sold then
+    for li in select * from jsonb_array_elements(new.items) loop
+      update prints set sold = greatest(0, sold + (case when is_sold then 1 else -1 end) * (li->>'qty')::int)
+      where artwork_id = li->>'artwork_id';
+    end loop;
+  end if;
+  return new;
+end $$;
+drop trigger if exists orders_status_change on orders;
+create trigger orders_status_change before insert or update of status on orders
+  for each row execute function orders_status_change();
+
+-- The buyer can look up their own order, but only with both the order number and the e-mail.
+create or replace function order_status(p_code text, p_email text)
+returns json language sql security definer set search_path = public as $$
+  select json_build_object(
+    'order_code', order_code, 'total', total, 'message', mobilepay_message, 'items', items, 'paid_at', paid_at,
+    'payment_plan', payment_plan, 'pay_now', coalesce(pay_now, total), 'pay_later', pay_later,
+    'status', case when status = 'awaiting_payment' and created_at < now() - interval '48 hours'
+                   then 'expired' else status end)
+  from orders
+  where order_code = upper(trim(p_code)) and email = lower(trim(p_email));
+$$;
 
 -- ---------- "Notify me" sign-ups ----------
 create or replace function join_waitlist(p_email text, p_topic text)
@@ -174,8 +279,10 @@ end $$;
 
 grant execute on function auction_state() to anon;
 grant execute on function place_bid(text, text, text, text, integer) to anon;
-grant execute on function place_order(text, text, text, text, text, jsonb) to anon;
+grant execute on function place_order(text, text, text, text, text, jsonb, text) to anon;
 grant execute on function join_waitlist(text, text) to anon;
+grant execute on function order_status(text, text) to anon;
+revoke execute on function orders_status_change() from public, anon;
 
 -- ============================================================
 --  SEED: edit dates, prices and stock, then run.

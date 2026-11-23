@@ -23,7 +23,32 @@ Getting it live
   4. Fill in the MobilePay number, e-mail and Messenger link in js/config.js.
   5. Upload the whole folder to Netlify or GitHub Pages.
 
-Until step 3 is done, the site runs in demo mode and only saves bids and orders in your own browser.
+Until step 2 is done, the site runs in demo mode and only saves bids and orders in your own browser.
+
+Selling prints with MobilePay
+  1. The buyer puts prints in the basket and fills in name, e-mail, delivery.
+  2. The site makes an order with an order number and shows how to pay:
+     MobilePay to +45 93 96 30 60, the amount, and the exact message to write,
+     for example  "LK-48213 2x VESTIGE, 1x WILL YOU CATCH ME?"
+     (order number + what they bought, so each payment matches its order).
+  3. The order is NOT approved yet. It waits as "awaiting_payment".
+  4. When the payment shows up in MobilePay, open Supabase, then Table editor, then orders.
+     Find the order number from the MobilePay message, check the amount matches "total",
+     and change "status" to  paid . Only now does the order count as sold.
+     The buyer can press "I have paid: check status" on the site and will see it approved.
+     Send them a short e-mail too.
+  5. When the prints are sent or handed over, change "status" to  shipped .
+     If an order is never paid, change it to  cancelled  (after 48 hours the site shows it as expired).
+  Part payment (pickup only): the buyer can choose to pay 50 % now and the rest at pickup.
+     The orders table then shows payment_plan = deposit, pay_now (what MobilePay should show)
+     and pay_later (what to collect at pickup, by MobilePay or cash).
+     Set status to  paid  when the deposit arrives, and to  shipped  when they have picked up and paid the rest.
+     Change the 50: js/config.js (depositPercent, 0 turns it off) AND deposit_percent in supabase-setup.sql.
+  Limit: one person (same e-mail or same phone number) can buy at most 10 of each print in total.
+  Paid orders and unpaid orders from the last 48 hours count. The limit is checked on the server.
+  To change the number 10 or the 48 hours: js/config.js (maxPerPerson, reserveHours) AND
+  supabase-setup.sql (max_per_person, hold_hours, and '48 hours' in order_status), then run the SQL again.
+  Already have the database? Just paste supabase-setup.sql again and Run: it updates it safely.
 
 Changing text
   Fixed text is in js/i18n.js. Every line has a Danish (da) and an English (en) version.
