@@ -257,7 +257,7 @@ section.block { padding: 4rem 0; }
    Desktop: justified rows. Pictures in a row share one height and together fill the width,
    so none ends up tiny. A row that can't fill the width (e.g. tall portraits) stops at
    1.25 x the row height and is centred. */
-.sketch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem 0.9rem; align-items: start; }
+.sketch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem 0.9rem; align-items: start; max-width: 640px; margin-inline: auto; }
 .sketch-card { min-width: 0; background: none; border: 0; text-align: left; cursor: zoom-in; padding: 0; display: grid; align-content: start; gap: 0.7rem; }
 @media (min-width: 900px) {
   .sketch-grid { --row-h: 330px; max-width: 900px; margin-inline: auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 2.2rem 1.25rem; }
