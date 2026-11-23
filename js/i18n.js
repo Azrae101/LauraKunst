@@ -851,7 +851,7 @@ const I18N = {
     "en": "Why am I so damn scared of what people think of me??"
   },
   "story.p2": {
-    "da": "I mit arbejde med musikken gik det op for mig hvor meget kontrol tab jeg havde og hvor afhængig af andre jeg var. Selv om jeg elsker musik og det at skabe det, altid vil have en særlig plads i mit hjerte, glemte jeg hvad der gav mig ro, hvad der gave mening og hvad jeg faktisk var bedst til, som er at lave kunst.",
+    "da": "I mit arbejde med musikken gik det op for mig hvor meget kontrol tab jeg havde og hvor afhængig af andre jeg var. Selv om jeg elsker musik og det at skabe det, altid vil have en særlig plads i mit hjerte, glemte jeg hvad der gav mig ro, hvad der gav mening og hvad jeg faktisk var bedst til, som er at lave kunst.",
     "en": "Working with music, I realised how much control I had lost and how dependent on others I was. Even though I love music and creating it, and it will always have a special place in my heart, I forgot what gave me peace, what gave meaning, and what I was actually best at, which is making art."
   },
   "story.p3": {
