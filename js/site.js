@@ -191,7 +191,7 @@ function demoApi() {
         artwork_id, ...dates, start_price: 5000, min_increment: 250, extend_minutes: 5
       })),
       bids: [],
-      prints: ARTWORKS.map(a => ({ artwork_id: a.id, stock: 10, edition_size: 50, sold: 0, price_unsigned: 450, price_signed: 750 })),
+      prints: ARTWORKS.filter(forSale).map(a => ({ artwork_id: a.id, stock: 10, edition_size: 50, sold: 0, price_unsigned: 450, price_signed: 750 })),
       orders: [], waitlist: []
     };
   }
@@ -202,7 +202,7 @@ function demoApi() {
     local.set(KEY, db);
   }
   // Paintings added to ARTWORKS after the demo was first opened still get a print row
-  const missing = ARTWORKS.filter(a => !db.prints.some(p => p.artwork_id === a.id));
+  const missing = ARTWORKS.filter(a => forSale(a) && !db.prints.some(p => p.artwork_id === a.id));
   if (missing.length) {
     missing.forEach(a => db.prints.push({ artwork_id: a.id, stock: 10, edition_size: 50, sold: 0, price_unsigned: 450, price_signed: 750 }));
     local.set(KEY, db);
@@ -421,6 +421,12 @@ document.addEventListener("submit", async e => {
 });
 
 /* ---------- Page chrome: menu, language, basket button, reveal, demo bar ---------- */
+/* ---------- Protect the pictures ----------
+   No right-click "Save image", no dragging pictures to the desktop, and no long-press save on phones.
+   This stops casual copying; a determined person can still take a screenshot. */
+document.addEventListener("contextmenu", e => { if (e.target.closest("img, .art, .mock, .frame, .sketch-mat, .np-img, .mv-frame, .note")) e.preventDefault(); });
+document.addEventListener("dragstart", e => { if (e.target.closest && e.target.closest("img")) e.preventDefault(); });
+
 document.addEventListener("DOMContentLoaded", () => {
   const nav = $(".site-nav"), toggle = $(".nav-toggle");
   if (toggle) toggle.addEventListener("click", () => {

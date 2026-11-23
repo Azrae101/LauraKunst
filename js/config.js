@@ -44,8 +44,8 @@ const ARTWORKS = [
     year: "2025",
     medium: { da: "Akryl med tørrede blomster og guldfarvede ginkgoblade på lærred", en: "Acrylic with dried flowers and gold ginkgo leaves on canvas" },
     description: {
-      da: "Et pigeansigt i klare farver mod en intens blå baggrund. Tørrede blomster og fine, guldfarvede ginkgoblade er presset ind i den teksturerede overflade og giver hele værket en lysende kvalitet.",
-      en: "A girl’s face in vibrant colour against an intense blue background. Dried flowers and delicate gold ginkgo leaves are pressed into the textured surface, adding a luminous quality to the whole piece."
+      da: "Et pigeansigt i klare farver mod en intens blå baggrund. Tørrede blomster og fine, guldfarvede ginkgoblade er presset ind i den teksturerede overflade.",
+      en: "A girl’s face in vibrant colour against an intense blue background. Dried flowers and delicate gold ginkgo leaves are pressed into the textured surface."
     }
   },
   {
@@ -69,25 +69,98 @@ const ARTWORKS = [
     medium: { da: "Akryl på lærred", en: "Acrylic on canvas" },
     // Description of what the painting shows. Laura can replace it with her own story behind the piece.
     description: {
-      da: "En kvinde falder ned mod en by i skumringen med armene strakt ud mod beskueren. Under hende glimter gadelygter og billygter.",
-      en: "A woman falls towards a city at dusk, her arms reaching out to the viewer. Below her, street lights and car headlights glitter."
+      da: "En kvinde falder ned mod en by i skumringen med armene strakt ud mod beskueren.",
+      en: "A woman falls towards a city at dusk, her arms reaching out to the viewer."
     }
+  },
+
+  /* Only in the portfolio, not for sale as prints (shop: false).
+     Fill in medium, size, year and description when known. Anything left empty is simply hidden. */
+  {
+    id: "lunar-solitude",
+    title: "LUNAR SOLITUDE",
+    shop: false,
+    image: "images/paintings/lunar-solitude.jpg", w: 1300, h: 1391,
+    size: "40 × 40 cm",
+    year: "",
+    medium: { da: "", en: "" },
+    description: { da: "", en: "" }
+  },
+  {
+    id: "marasme",
+    title: "MARASME",
+    shop: false,
+    image: "images/paintings/marasme.jpg", w: 1300, h: 1388,
+    size: "40 × 40 cm",
+    year: "",
+    medium: { da: "", en: "" },
+    description: { da: "", en: "" }
+  },
+  {
+    id: "flicker",
+    title: "FLICKER",
+    shop: false,
+    image: "images/paintings/flicker-web.jpg", w: 1300, h: 1397,
+    size: "40 × 40 cm",
+    year: "",
+    medium: { da: "", en: "" },
+    description: { da: "", en: "" }
+  },
+  {
+    id: "eurowoman-illy",
+    title: "EUROWOMAN × ILLY",
+    shop: false,
+    image: "images/paintings/eurowoman-illy.jpg", w: 1300, h: 1838,
+    size: "",
+    year: "",
+    medium: { da: "", en: "" },
+    description: { da: "", en: "" }
+  },
+  {
+    id: "midt-om-natten",
+    title: "MIDT OM NATTEN",
+    shop: false,
+    image: "images/paintings/midt-om-natten.jpg", w: 437, h: 1300,
+    size: "",
+    year: "",
+    medium: { da: "", en: "" },
+    description: { da: "", en: "" }
   }
 ];
+/* Paintings that are for sale as prints */
+const forSale = (a) => a.shop !== false;
 
 const SKETCHES = [
   { title: { da: "Håndstudie", en: "Hand Study" }, image: "images/paintings/hand_sketch.jpg", w: 613, h: 574,
     medium: { da: "Maling på lærred", en: "Paint on canvas" },
     desc: { da: "Et studie af hænder og perler, med fokus på form, lys og proportioner.", en: "A study of hands and pearls, focusing on form, light and proportion." } },
-  { title: { da: "Projekt undervejs", en: "Art Project in Progress" }, image: "images/paintings/sketch.jpg", w: 889, h: 891,
-    medium: { da: "Maling på lærred, undervejs", en: "Paint on canvas, in progress" },
-    desc: { da: "Et igangværende værk, der undersøger, hvordan man gengiver stoffets tekstur i en gylden kjole.", en: "Work in progress, exploring how to render the texture of fabric in a golden dress." } },
+  { title: { da: "Skitse til Eurowoman × illy", en: "Sketch for Eurowoman × illy" }, image: "images/paintings/illy-sketch.jpg", w: 975, h: 1300,
+    medium: { da: "Blyant på papir", en: "Pencil on paper" },
+    desc: { da: "Den første blyantskitse til maleriet til Eurowoman × illy-konkurrencen.", en: "The first pencil sketch for the painting for the Eurowoman × illy competition." } },
   { title: { da: "Portræt i kul", en: "Portrait in Charcoal" }, image: "images/paintings/sketch1.jpg", w: 236, h: 367,
     medium: { da: "Kul på papir", en: "Charcoal on paper" },
     desc: { da: "Tegning bygget op af skygger, der undersøger dybde og kontrast.", en: "Shadow-based drawing, exploring depth and contrast." } },
   { title: { da: "Billie Eilish-skitse", en: "Billie Eilish Sketch" }, image: "images/paintings/sketch2.jpg", w: 239, h: 360,
     medium: { da: "Grafit på papir", en: "Graphite on paper" },
-    desc: { da: "Et detaljeret portrætstudie med omhyggelig skyggelægning og sans for proportioner.", en: "A detailed portrait study with careful shading and attention to proportion." } }
+    desc: { da: "Et detaljeret portrætstudie med omhyggelig skyggelægning og sans for proportioner.", en: "A detailed portrait study with careful shading and attention to proportion." } },
+
+  /* Only on the board in the portfolio (home: false keeps them out of "Fra atelieret" on the front page) */
+  { home: false, title: { da: "Hånd med perler", en: "Hand with Pearls" }, image: "images/paintings/haand.jpg", w: 975, h: 1300,
+    medium: { da: "Maling på lærred", en: "Paint on canvas" },
+    desc: { da: "En hånd der holder en perlekæde, malet mod en dyb grøn baggrund.", en: "A hand holding a string of pearls, painted against a deep green background." } },
+  { home: false, title: { da: "Daydream", en: "Daydream" }, image: "images/paintings/tegning-af-pige.jpg", w: 975, h: 1300,
+    medium: { da: "Blyant på papir", en: "Pencil on paper" },
+    desc: { da: "En pige med blomster i håret, tegnet i skitsebogen en stille dag.", en: "A girl with flowers in her hair, drawn in the sketchbook on a quiet day." } }
+];
+
+/* Watercolours of animals and nature, shown in their own corner of the portfolio after the sketch board */
+const NATURE = [
+  { title: { da: "Fuglen i vindueskarmen", en: "Bird on the Windowsill" }, image: "images/paintings/fugl.jpg", w: 1300, h: 975,
+    medium: { da: "Akvarel på papir", en: "Watercolour on paper" },
+    desc: { da: "En lille fugl hviler i vindueskarmen mellem grønne grene og røde blomster.", en: "A small bird resting on the windowsill between green branches and red flowers." } },
+  { title: { da: "Koen i engen", en: "Cow in the Meadow" }, image: "images/paintings/ko.jpg", w: 1300, h: 903,
+    medium: { da: "Akvarel på papir", en: "Watercolour on paper" },
+    desc: { da: "En nysgerrig ko kigger frem mellem højt græs og vilde blomster.", en: "A curious cow peeking out from tall grass and wild flowers." } }
 ];
 
 /* Instagram posts shown in the carousel on the front page. Picture posts only (no videos/reels).

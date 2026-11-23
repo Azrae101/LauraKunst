@@ -13,24 +13,27 @@
   <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
   <link rel="apple-touch-icon" href="images/general/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20261158">
+  <link rel="stylesheet" href="css/style.css?v=20261200">
   <style>
     /* ---------- Virtual museum ----------
        The hall is a horizontal scroller. Paintings, visitors (the shadow people),
        the sketch board and the ending sit side by side as flex items, so a visitor
        can never be drawn on top of a painting. Sizes use cqh (1% of the hall's height),
        so everything scales with the screen. */
-    /* Colours: a calm, natural gallery. Warm grey walls, oak floor, dark wooden frames,
-       off-white museum labels with dark text. No gold, no neon. */
+    /* Colours: a calm, natural gallery. Deep muted forest-green walls, oak floor, dark wooden frames,
+       museum wall labels in cream on a thin mounted panel. No gold, no neon. */
     :root {
-      --m-wall-1: #615b53;
-      --m-wall-2: #57524b;
-      --m-wall-3: #4d4943;
+      --m-wall-1: #3f4c3e;
+      --m-wall-2: #364235;
+      --m-wall-3: #2e392e;
       --m-ink: #2a2520;
       --m-muted: #6b6157;
       --m-paper: #f4f0e8;
       --m-line: #d8d0c2;
       --m-light: #f4f0e8;
+      --m-cream: #efe8da;
+      --m-cream-dim: rgba(239, 232, 218, 0.72);
+      --m-rule: rgba(239, 232, 218, 0.28);
     }
     body.museum-page {
       height: 100vh; height: 100dvh;
@@ -62,14 +65,24 @@
       padding-inline: 6vw;
       background:
         /* skirting board and its soft shadow on the floor */
-        linear-gradient(to bottom, transparent calc(var(--wall) - 1.2cqh), #3a3632 calc(var(--wall) - 1.2cqh), #3a3632 var(--wall), rgba(0,0,0,0.28) var(--wall), transparent calc(var(--wall) + 3cqh)),
-        /* oak floor: plank seams */
-        repeating-linear-gradient(to bottom, transparent 0 calc(var(--floor) / 4 - 1px), rgba(60,40,25,0.35) calc(var(--floor) / 4 - 1px) calc(var(--floor) / 4)) left bottom / 100% var(--floor) no-repeat,
-        /* oak floor: grain */
-        repeating-linear-gradient(90deg, rgba(255,255,255,0.03) 0 3px, transparent 3px 11px, rgba(0,0,0,0.04) 11px 13px, transparent 13px 29px) left bottom / 100% var(--floor) no-repeat,
-        /* warm grey wall, then the oak floor */
-        linear-gradient(to bottom, var(--m-wall-1) 0, var(--m-wall-2) 55%, var(--m-wall-3) var(--wall), #8d6c4d var(--wall), #7a5c41 100%);
+        linear-gradient(to bottom, transparent calc(var(--wall) - 1.2cqh), #242d24 calc(var(--wall) - 1.2cqh), #242d24 var(--wall), rgba(0,0,0,0.28) var(--wall), transparent calc(var(--wall) + 3cqh)),
+        /* green wall (the floor is its own layer below, with the oak photo in perspective) */
+        linear-gradient(to bottom, var(--m-wall-1) 0, var(--m-wall-2) 55%, var(--m-wall-3) var(--wall), #5a4330 var(--wall));
     }
+    /* Oak floor: a real photo (images/general/floor-oak.jpg), laid flat so the planks keep their natural shape.
+       Depth comes from the shading below, not from stretching the wood. */
+    .floor {
+      position: absolute; left: 0; right: 0; bottom: 0; height: var(--floor); z-index: 0; pointer-events: none;
+      background: url("images/general/floor-oak.jpg?v=5") 0 0 / auto 100% repeat-x;
+    }
+    /* soft light from the room, darker towards you, plus the skirting-board shadow */
+    .floor::after {
+      content: ""; position: absolute; inset: 0;
+      background:
+        linear-gradient(to bottom, rgba(0,0,0,0.38), rgba(0,0,0,0) 18%),
+        linear-gradient(to bottom, rgba(40,28,18,0.08), rgba(30,20,12,0.38));
+    }
+    .stop, .visitor { z-index: 1; }
 
     /* Every stop the arrows move between */
     .stop {
@@ -107,46 +120,53 @@
       box-shadow: 0 2.5cqh 4.5cqh rgba(0,0,0,0.42), 0 0.6cqh 1cqh rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.12);
       transition: transform 0.4s, box-shadow 0.4s;
     }
-    .frame:hover { transform: translateY(-2px); box-shadow: 0 3cqh 5.5cqh rgba(0,0,0,0.45), 0 0.6cqh 1cqh rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.12); }
     .frame:focus-visible { outline: 2px solid var(--m-light); outline-offset: 6px; }
     .frame img { display: block; width: var(--pw); height: auto; max-width: none; background: #2b2622; }
     .frame.photo { cursor: default; }
-    .frame.photo:hover { transform: none; }
 
-    /* Museum label next to each painting: off-white card, dark text */
+    /* Museum wall label: cream text on a thin mounted panel, a shade darker than the wall,
+       with a fine double rule like a framed label. Laid out like a real exhibition label. */
     .placard {
-      width: clamp(240px, 26vw, 340px); max-height: 60cqh; overflow-y: auto;
-      background: var(--m-paper); color: var(--m-ink); border-radius: 1px;
-      padding: clamp(1rem, 2.6cqh, 1.7rem);
-      box-shadow: 0 1.5cqh 3cqh rgba(0,0,0,0.25);
-      line-height: 1.65; overflow-wrap: break-word;
-      scrollbar-width: thin; scrollbar-color: var(--m-line) transparent;
+      width: clamp(240px, 25vw, 330px); max-height: 60cqh; overflow-y: auto;
+      background: rgba(20, 28, 20, 0.28); color: var(--m-cream);
+      border: 1px solid var(--m-rule); outline: 1px solid rgba(239,232,218,0.10); outline-offset: 5px;
+      padding: clamp(1.1rem, 3cqh, 1.9rem) clamp(1.1rem, 2.4vw, 1.8rem);
+      box-shadow: 0 1cqh 2.5cqh rgba(0,0,0,0.22);
+      line-height: 1.7; overflow-wrap: break-word;
+      scrollbar-width: thin; scrollbar-color: var(--m-rule) transparent;
+      overscroll-behavior: contain; /* scrolling the text never carries on into the hall */
     }
-    .placard .kicker { font-size: 0.7rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--m-muted); margin-bottom: 0.35rem; }
-    .placard h2 { font-family: var(--serif); font-weight: 500; color: var(--m-ink); font-size: clamp(1.4rem, 2.4vw, 1.8rem); line-height: 1.15; letter-spacing: 0.02em; margin-bottom: 0.7rem; }
-    .placard p { font-size: 0.92rem; margin-bottom: 0.8rem; color: #3d3630; }
-    .placard dl { font-size: 0.8rem; color: var(--m-muted); border-top: 1px solid var(--m-line); padding-top: 0.7rem; display: grid; grid-template-columns: auto 1fr; gap: 0.15rem 0.8rem; }
-    .placard dt { color: var(--m-ink); }
-    .placard .open { margin-top: 1rem; }
+    .placard .kicker, .placard .artist { font-size: 0.7rem; letter-spacing: 0.24em; text-transform: uppercase; color: var(--m-cream-dim); margin-bottom: 0.5rem; }
+    .placard h2 { font-family: var(--serif); font-weight: 400; color: var(--m-cream); font-size: clamp(1.5rem, 2.5vw, 2rem); line-height: 1.15; margin-bottom: 0.6rem; }
+    .placard h2 .work { font-style: italic; }
+    .placard h2 .yr { font-size: 0.8em; color: var(--m-cream-dim); }
+    .placard h2:last-child { margin-bottom: 0; }
+    .placard .tech { font-size: 0.8rem; line-height: 1.6; color: var(--m-cream-dim); padding-bottom: 0.9rem; margin-bottom: 0.9rem; border-bottom: 1px solid var(--m-rule); }
+    .placard p { font-size: 0.92rem; margin-bottom: 0.8rem; color: var(--m-cream); }
+    .placard .story { font-family: var(--serif); font-size: 1.08rem; line-height: 1.6; }
+    .placard .open { margin-top: 0; }
+    .label-actions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 0.6rem; }
+    .label-actions .m-btn { padding-inline: 1rem; }
+    .m-btn svg { width: 17px; height: 17px; flex: none; }
     .m-btn {
       display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem; min-height: 44px;
       padding: 0 1.2rem; border-radius: 0; cursor: pointer; text-decoration: none;
-      font: 400 0.78rem/1 var(--sans); letter-spacing: 0.12em; text-transform: uppercase;
-      color: var(--m-ink); background: transparent; border: 1px solid var(--m-ink);
-      transition: background 0.25s, color 0.25s;
+      font: 400 0.76rem/1 var(--sans); letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--m-cream); background: transparent; border: 1px solid var(--m-rule);
+      transition: background 0.25s, color 0.25s, border-color 0.25s;
     }
-    .m-btn:hover { background: var(--m-ink); color: var(--m-paper); }
-    .m-btn.solid { background: var(--m-ink); color: var(--m-paper); }
-    .m-btn.solid:hover { background: #4a423a; }
+    .m-btn.solid { background: var(--m-cream); color: #2e392e; border-color: var(--m-cream); }
 
     /* Artist / welcome */
     .welcome .placard { width: clamp(260px, 30vw, 420px); }
-    .welcome h1 { font-family: var(--serif); font-weight: 400; color: var(--m-ink); font-size: clamp(1.8rem, 3.2vw, 2.6rem); line-height: 1.1; margin-bottom: 0.9rem; }
+    .welcome h1 { font-family: var(--serif); font-weight: 400; color: var(--m-cream); font-size: clamp(1.8rem, 3.2vw, 2.6rem); line-height: 1.1; margin-bottom: 0.9rem; }
+    .welcome .social-pill { color: var(--m-cream); border-color: var(--m-rule); }
+    .ending .social-pill { color: var(--m-cream); border-color: var(--m-rule); }
     .welcome .social-row { margin-top: 1rem; }
 
     /* Behind the scenes: a cork board with notes */
     .board {
-      width: min(980px, 70vw); max-height: 70cqh; overflow-y: auto;
+      width: min(calc(var(--n, 4) * 215px + 4rem), 90vw); max-height: 76cqh; overflow-y: auto;
       padding: clamp(1rem, 3cqh, 2rem);
       border: clamp(6px, 1.2cqh, 12px) solid #4a3728; border-radius: 1px;
       background:
@@ -154,10 +174,11 @@
         radial-gradient(circle at 30% 40%, #c9a77f, #b38f66);
       box-shadow: 0 2.5cqh 4.5cqh rgba(0,0,0,0.38);
       scrollbar-width: thin; scrollbar-color: #4a3728 transparent;
+      overscroll-behavior: contain;
     }
     .board h2 { font-family: var(--serif); font-weight: 500; text-align: center; color: var(--m-ink); letter-spacing: 0.03em; font-size: clamp(1.4rem, 2.6vw, 2rem); }
     .board .sub { text-align: center; color: #3d3630; font-family: "Patrick Hand", cursive; font-size: 1.05rem; margin-bottom: clamp(0.8rem, 2.5cqh, 1.6rem); }
-    .notes { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(0.8rem, 2vw, 1.6rem); align-items: start; }
+    .notes { display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); gap: clamp(0.8rem, 1.6vw, 1.4rem); align-items: start; }
     .note {
       position: relative; display: block; width: 100%; text-align: left; cursor: pointer;
       background: #fbf7ec; color: var(--m-ink); border: 0; border-radius: 1px;
@@ -165,11 +186,78 @@
       transition: transform 0.3s, box-shadow 0.3s;
     }
     .note::before { content: ""; position: absolute; top: 6px; left: 50%; transform: translateX(-50%); width: 10px; height: 10px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #8a7f72, #4f4840); box-shadow: 0 1px 2px rgba(0,0,0,0.35); }
-    .note:nth-child(4n+1) { transform: rotate(-1.5deg); }
-    .note:nth-child(4n+2) { transform: rotate(1deg) translateY(-6px); }
-    .note:nth-child(4n+3) { transform: rotate(-0.6deg) translateY(8px); }
-    .note:nth-child(4n+4) { transform: rotate(1.4deg); }
-    .note:hover, .note:focus-visible { transform: rotate(0) scale(1.03); box-shadow: 0 12px 24px rgba(0,0,0,0.3); z-index: 2; }
+    .note { --r: 0deg; --y: 0px; transform: rotate(var(--r)) translateY(var(--y)); transform-origin: 50% 0; }
+    .note:nth-child(4n+1) { --r: -1.5deg; }
+    .note:nth-child(4n+2) { --r: 1deg; --y: -6px; }
+    .note:nth-child(4n+3) { --r: -0.6deg; --y: 8px; }
+    .note:nth-child(4n+4) { --r: 1.4deg; }
+    /* Hover: the note sways gently on its pin */
+    @keyframes note-sway {
+      0%, 100% { transform: rotate(var(--r)) translateY(var(--y)); }
+      25% { transform: rotate(calc(var(--r) + 2.2deg)) translateY(var(--y)); }
+      75% { transform: rotate(calc(var(--r) - 2.2deg)) translateY(var(--y)); }
+    }
+    @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+      .note:hover { animation: note-sway 1.6s ease-in-out infinite; }
+    }
+    .note.lifted { visibility: hidden; }
+
+    /* Nature corner: watercolours hung to dry on a line of twine with wooden clothes pegs */
+    .line-wall { width: min(1000px, 72vw); text-align: center; color: var(--m-cream); }
+    .line-wall h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(1.6rem, 2.8vw, 2.3rem); line-height: 1.1; }
+    .line-wall .sub { font-family: "Patrick Hand", cursive; font-size: 1.1rem; color: var(--m-cream-dim); margin: 0.3rem 0 4cqh; }
+    .line { position: relative; display: flex; justify-content: center; align-items: flex-start; gap: clamp(1.5rem, 4vw, 3.5rem); padding-top: 1.2cqh; }
+    .line::before {
+      content: ""; position: absolute; top: 0; left: -6%; right: -6%; height: 2px;
+      background: repeating-linear-gradient(90deg, #cdb88f 0 5px, #a8915f 5px 9px);
+      box-shadow: 0 2px 3px rgba(0,0,0,0.35);
+    }
+    .sheet {
+      --r: -2deg; --y: 0px;
+      position: relative; display: flex; flex-direction: column; align-items: center; cursor: pointer;
+      background: #fbf9f3; border: 0; padding: 1.4cqh 1.4cqh 0.4cqh; border-radius: 1px;
+      box-shadow: 0 1.6cqh 3cqh rgba(0,0,0,0.35);
+      transform: rotate(var(--r)) translateY(var(--y)); transform-origin: 50% 0;
+    }
+    .sheet:nth-child(2) { --r: 1.6deg; --y: 1.2cqh; }
+    .sheet img { display: block; height: 27cqh; width: auto; max-width: none; }
+    .sheet-label { font-family: "Patrick Hand", cursive; font-size: 1.1rem; color: var(--m-ink); padding: 0.8cqh 0 0.6cqh; }
+    .peg {
+      position: absolute; top: -2.2cqh; width: 9px; height: 4.4cqh; border-radius: 2px;
+      background: linear-gradient(90deg, #d2ad83, #a9825c); box-shadow: 0 2px 3px rgba(0,0,0,0.35);
+    }
+    .peg:first-child { left: 16%; transform: rotate(-3deg); }
+    .peg:nth-child(2) { right: 16%; transform: rotate(4deg); }
+    @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+      .sheet:hover { animation: note-sway 1.8s ease-in-out infinite; }
+    }
+    .sheet.lifted { visibility: hidden; }
+    .sheet:focus-visible { outline: 2px solid var(--m-cream); outline-offset: 4px; }
+
+    /* A note lifted off the board: the same paper note, large, in the middle of the screen */
+    .note-pop { border: 0; padding: 0; margin: auto; background: transparent; overflow: visible; max-width: none; max-height: none; }
+    .note-pop::backdrop { background: rgba(20, 26, 20, 0.72); }
+    .note-pop.closing::backdrop { background: transparent; transition: background 0.35s; }
+    .np-card {
+      position: relative; width: min(560px, 90vw); max-height: calc(100dvh - 2rem); overflow-y: auto;
+      background: #fbf7ec; color: var(--m-ink); padding: 3rem 1.6rem 1.6rem; border-radius: 1px;
+      box-shadow: 0 30px 70px rgba(0,0,0,0.5), 0 6px 14px rgba(0,0,0,0.25);
+      transform: rotate(-0.8deg); transform-origin: 50% 0;
+    }
+    .np-card::before { content: ""; position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 14px; height: 14px; border-radius: 50%; background: radial-gradient(circle at 30% 30%, #8a7f72, #4f4840); box-shadow: 0 2px 3px rgba(0,0,0,0.35); }
+    .np-img { display: grid; place-items: center; background: #f1ebdd; }
+    .np-img img { display: block; max-width: 100%; max-height: 60dvh; width: auto; height: auto; object-fit: contain; }
+    .np-card h3 { font-family: var(--serif); font-weight: 500; font-size: clamp(1.5rem, 4vw, 2rem); line-height: 1.15; margin: 1rem 0 0.2rem; }
+    .np-medium { font-size: 0.75rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--m-muted); }
+    .np-desc { font-family: "Patrick Hand", cursive; font-size: 1.25rem; line-height: 1.35; color: #3d3630; margin-top: 0.6rem; }
+    .np-close {
+      position: absolute; top: 0.25rem; right: 0.35rem; width: 46px; height: 46px; border: 0; background: transparent;
+      display: grid; place-items: center; padding: 0; cursor: pointer; border-radius: 50%;
+    }
+    .np-close svg { width: 40px; height: 40px; display: block; transform: rotate(-4deg); }
+    .np-close:focus-visible { outline: 2px solid var(--m-ink); }
+    .np-card:focus { outline: none; }
+    .note:focus-visible { outline: 2px solid var(--m-cream); outline-offset: 3px; z-index: 2; }
     .note img { width: 100%; height: clamp(70px, 20cqh, 220px); object-fit: cover; margin-bottom: 0.6rem; }
     .note h3 { font-family: var(--serif); color: var(--m-ink); font-size: 1.1rem; font-weight: 500; line-height: 1.2; margin-bottom: 0.3rem; }
     .note p { font-family: "Patrick Hand", cursive; font-size: 1rem; line-height: 1.3; color: #3d3630; }
@@ -179,7 +267,7 @@
     .ending h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); }
     .ending .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-top: 1.2rem; }
     .ending .social-row { justify-content: center; }
-    .ending .fin { margin-top: 1.2rem; font-style: italic; color: var(--m-muted); font-family: var(--serif); font-size: 1rem; }
+    .ending .fin { margin-top: 1.2rem; font-style: italic; color: var(--m-cream-dim); font-family: var(--serif); font-size: 1rem; }
 
     /* Arrows and hint over the hall */
     .hall-nav {
@@ -189,7 +277,6 @@
       box-shadow: 0 4px 14px rgba(0,0,0,0.25);
       transition: background 0.25s, opacity 0.25s;
     }
-    .hall-nav:hover { background: #fff; }
     .hall-nav[disabled] { opacity: 0; pointer-events: none; }
     .hall-nav svg { width: 22px; height: 22px; }
     .hall-nav.prev { left: max(10px, env(safe-area-inset-left, 0px)); }
@@ -201,58 +288,115 @@
       pointer-events: none; transition: opacity 0.6s;
     }
     .hall-hint.gone { opacity: 0; }
-
-    /* Viewer: like a page in an exhibition catalogue */
-    .m-viewer {
-      width: min(1100px, 100% - 1.5rem); max-height: calc(100dvh - 1.5rem); margin: auto; padding: 0;
-      border: 0; border-radius: 2px;
-      background: var(--m-paper); color: var(--m-ink); overflow: hidden;
-      box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+    .hall-fs {
+      position: absolute; right: max(12px, env(safe-area-inset-right, 0px)); bottom: 0.9rem; z-index: 5;
+      width: 40px; height: 40px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
+      background: rgba(244, 240, 232, 0.92); color: var(--m-ink); border: 0; box-shadow: 0 4px 14px rgba(0,0,0,0.25);
     }
-    .m-viewer::backdrop { background: rgba(35, 32, 28, 0.82); }
-    .mv-inner { display: grid; max-height: calc(100dvh - 1.5rem); overflow-y: auto; }
-    .mv-art { background: #48443e; display: grid; place-items: center; padding: 1.5rem; }
-    .mv-art img { max-height: 60dvh; width: auto; object-fit: contain; box-shadow: 0 12px 30px rgba(0,0,0,0.35); }
-    .mv-info { padding: 1.5rem 1.4rem 2rem; line-height: 1.75; }
-    .mv-info h2 { font-family: var(--serif); font-weight: 500; color: var(--m-ink); font-size: clamp(1.7rem, 4vw, 2.4rem); line-height: 1.1; margin: 0 2.5rem 1rem 0; border-bottom: 1px solid var(--m-line); padding-bottom: 0.7rem; }
-    .mv-info p { margin-bottom: 1rem; color: #3d3630; }
-    .mv-info dl { font-size: 0.86rem; color: var(--m-muted); display: grid; grid-template-columns: auto 1fr; gap: 0.2rem 1rem; border-top: 1px solid var(--m-line); padding-top: 0.9rem; }
-    .mv-info dt { color: var(--m-ink); }
-    .mv-actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.4rem; }
+    .hall-fs svg { width: 18px; height: 18px; }
+    .hall-fs .fs-off, .hall-fs.on .fs-on { display: none; }
+    .hall-fs.on .fs-off { display: block; }
+    .hall-fs[hidden] { display: none; }
+    /* No hover effects in the portfolio (the site-wide social pills too) */
+    .museum .social-pill:hover { background: transparent; color: var(--m-cream); border-color: var(--m-rule); }
+    /* Full screen: only the gallery, no menu */
+    body.museum-page.is-fs { padding-top: env(safe-area-inset-top, 0px); }
+    body.museum-page.is-fs .site-nav { display: none; }
+
+    /* Viewer: the painting brought close, as if you stepped up to it in the gallery.
+       Same green wall and soft light, the painting large in its wooden frame, the wall label beside it. */
+    .m-viewer {
+      width: 100%; height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; border: 0;
+      color: var(--m-cream); overflow: hidden;
+      background:
+        radial-gradient(ellipse 55% 60% at 40% 18%, rgba(255, 250, 240, 0.12), transparent 70%),
+        linear-gradient(to bottom, var(--m-wall-1), var(--m-wall-3));
+    }
+    .m-viewer::backdrop { background: rgba(20, 26, 20, 0.6); }
+    .m-viewer[open] { animation: mv-in 0.45s ease both; }
+    @keyframes mv-in { from { opacity: 0; } to { opacity: 1; } }
+    .mv-inner {
+      height: 100%; overflow-y: auto; overscroll-behavior: contain;
+      display: grid; align-items: center; justify-items: center; gap: 1.6rem;
+      padding: 4.2rem max(1rem, env(safe-area-inset-right, 0px)) 2rem max(1rem, env(safe-area-inset-left, 0px));
+    }
+    .mv-art { display: grid; place-items: center; width: 100%; }
+    .mv-frame {
+      --fw: min(calc(52dvh * var(--ar)), 88vw);
+      padding: clamp(8px, 1.4vw, 14px);
+      background: linear-gradient(180deg, #4a3728, #33261c);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.45), 0 8px 16px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.12);
+      animation: mv-rise 0.55s cubic-bezier(.2,.8,.2,1) both;
+    }
+    .mv-frame img { display: block; width: var(--fw); height: auto; max-width: none; background: #2b2622; }
+    @keyframes mv-rise { from { transform: translateY(18px) scale(0.96); opacity: 0; } to { transform: none; opacity: 1; } }
+    .mv-info.placard { width: min(100%, 520px); max-height: none; overflow: visible; animation: mv-rise 0.55s 0.08s cubic-bezier(.2,.8,.2,1) both; }
+    .mv-info .label-actions { margin-top: 0.4rem; }
+    .mv-inner:focus { outline: none; }
     .mv-close, .mv-step {
       position: absolute; z-index: 2; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; cursor: pointer;
       background: rgba(244, 240, 232, 0.92); color: var(--m-ink); border: 0; font-size: 1.5rem; line-height: 1;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
     }
     .mv-step[hidden] { display: none; }
-    .mv-close { top: 0.6rem; right: 0.6rem; }
-    .mv-step { top: 30dvh; transform: translateY(-50%); }
-    .mv-step.prev { left: 0.6rem; }
-    .mv-step.next { right: 0.6rem; }
+    .mv-close { top: max(0.8rem, env(safe-area-inset-top, 0px)); right: max(0.8rem, env(safe-area-inset-right, 0px)); }
+    .mv-step { top: 36dvh; transform: translateY(-50%); }
+    .mv-step.prev { left: max(0.6rem, env(safe-area-inset-left, 0px)); }
+    .mv-step.next { right: max(0.6rem, env(safe-area-inset-right, 0px)); }
     .mv-step svg { width: 20px; height: 20px; }
-    .mv-close:hover, .mv-step:hover { background: #fff; }
-    @media (min-width: 800px) {
-      .mv-inner { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); }
-      .mv-art { min-height: 70dvh; }
-      .mv-art img { max-height: calc(100dvh - 5rem); }
-      .mv-info { padding: 3rem 2.4rem; align-self: center; }
+    .mv-close svg { width: 18px; height: 18px; display: block; }
+    .mv-close { padding: 0; }
+    @media (min-width: 900px) {
+      .mv-inner { grid-template-columns: auto minmax(260px, 380px); justify-content: center; gap: clamp(2rem, 5vw, 5rem); padding: 3rem 5.5rem; }
+      .mv-frame { --fw: min(calc(80dvh * var(--ar)), 52vw); }
       .mv-step { top: 50%; }
-      .mv-step.next { right: calc(100% / 2.2 + 0.6rem); }
+      .mv-step.prev { left: 1.4rem; }
+      .mv-step.next { right: 1.4rem; }
     }
+    @media (prefers-reduced-motion: reduce) { .m-viewer[open], .mv-frame, .mv-info.placard { animation: none; } }
 
-    /* ---------- Portrait screens (phones): stack the placard under the painting ---------- */
+    /* ---------- Portrait screens (phones): the gallery runs top to bottom ----------
+       Each work gets its own bay of green wall with a strip of oak floor, the label sits under the
+       painting with all its text, and one visitor stands on the floor between the works. */
+    body.museum-page.is-vertical .hall { overflow-x: hidden; overflow-y: auto; scroll-snap-type: none; overscroll-behavior-y: contain; }
+    body.museum-page.is-vertical .hall-nav { display: none; }
     @container hall (orientation: portrait) {
-      .track { --floor: 15cqh; padding-inline: 4vw; }
-      .stop { flex-direction: column; justify-content: center; gap: 2cqh; width: 84vw; padding: 1.5cqh 0 calc(var(--floor) + 1cqh); }
-      .frame { --pw: min(calc(42cqh * var(--ar)), 74vw); }
-      .welcome .frame { --pw: min(calc(32cqh * var(--ar)), 74vw); }
-      .placard, .welcome .placard { width: 100%; max-height: 34cqh; }
-      .welcome .placard { max-height: 44cqh; }
-      .visitor { height: 32cqh; margin-inline: 0; }
-      .board { width: 100%; max-height: 80cqh; }
+      .track {
+        --floor: 8cqh;
+        width: 100%; height: auto; flex-direction: column; align-items: stretch; padding: 0; background: none;
+      }
+      .floor { display: none; }
+      /* the wall runs on from each work down to the floor the visitor stands on */
+      .stop { background: linear-gradient(to bottom, var(--m-wall-1), var(--m-wall-2)); }
+      .visitor, .stop.ending {
+        background:
+          linear-gradient(to bottom, transparent calc(100% - var(--floor) - 6px), #242d24 calc(100% - var(--floor) - 6px), #242d24 calc(100% - var(--floor)), rgba(0,0,0,0.3) calc(100% - var(--floor)), transparent calc(100% - var(--floor) + 2cqh)),
+          linear-gradient(to bottom, rgba(30,20,12,0.05), rgba(30,20,12,0.32)) left bottom / 100% var(--floor) no-repeat,
+          url("images/general/floor-oak.jpg?v=5") left bottom / auto var(--floor) repeat-x,
+          linear-gradient(to bottom, var(--m-wall-2), var(--m-wall-3)) left top / 100% calc(100% - var(--floor)) no-repeat;
+      }
+      .stop { width: 100%; flex-direction: column; justify-content: flex-start; gap: 3cqh; padding: 6cqh 6vw 3cqh; scroll-snap-align: none; }
+      .stop.ending { padding-bottom: calc(var(--floor) + 5cqh); }
+      .stop::before { inset: 0; }
+      .frame { --pw: min(calc(56cqh * var(--ar)), 84vw); }
+      .welcome .frame { --pw: min(calc(40cqh * var(--ar)), 84vw); }
+      .placard, .welcome .placard, .ending .placard { width: 100%; max-height: none; overflow: visible; }
+      .visitor { width: 100%; height: 34cqh; margin: 0; padding: 4cqh 0 calc(var(--floor) * 0.3); display: flex; justify-content: center; align-items: flex-end; filter: none; opacity: 1; }
+      .visitor img { height: 100%; filter: drop-shadow(0 1.2cqh 1.4cqh rgba(0,0,0,0.45)); opacity: 0.9; }
+      .visitor + .visitor { display: none; }
+      .board { width: 100%; max-height: none; overflow: visible; }
       .notes { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .note img { height: clamp(60px, 13cqh, 160px); }
-      .ending .placard { max-height: 80cqh; }
+      .note img { height: clamp(90px, 16cqh, 180px); }
+      /* Phones: no visitors, no floor, and no "view the piece" (the painting is already as large as it gets) */
+      .stop, .stop.ending { background: var(--m-wall-2); padding-bottom: 6cqh; }
+      .visitor { display: none !important; }
+      .label-actions .m-btn.open { display: none; }
+      .frame { cursor: default; pointer-events: none; }
+      .line-wall { width: 100%; }
+      .line { flex-direction: column; align-items: center; gap: 7cqh; }
+      .line::before { display: none; }
+      .sheet img { height: auto; width: 76vw; }
+      .sheet:nth-child(2) { --y: 0px; }
     }
     /* Short, wide screens (phones held sideways) */
     @container hall (orientation: landscape) and (max-height: 460px) {
@@ -262,7 +406,8 @@
       .visitor { height: 58cqh; }
       .board { max-height: 84cqh; }
       .note img { height: 26cqh; }
-      .notes { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .sheet img { height: 48cqh; }
+      .notes { grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); }
     }
     @media (max-width: 599px) {
       .hall-nav { width: 40px; height: 40px; }
@@ -302,18 +447,49 @@
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg>
   </button>
   <p class="hall-hint" id="hallHint" data-i18n="museum.hint">Swipe, rul eller brug pilene for at gå videre</p>
+  <button class="hall-fs" id="hallFs" type="button" data-i18n-aria="museum.fsOn" aria-label="Fuld skærm" hidden>
+    <svg class="fs-on" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    <svg class="fs-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>
+  </button>
 </main>
 
-<dialog class="m-viewer" id="mViewer" aria-labelledby="mv-title">
-  <button class="mv-close" type="button" data-i18n-aria="close" aria-label="Luk">×</button>
-  <button class="mv-step prev" type="button" data-i18n-aria="museum.prev" aria-label="Forrige værk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
-  <button class="mv-step next" type="button" data-i18n-aria="museum.next" aria-label="Næste værk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
-  <div class="mv-inner" id="mvInner"></div>
+<!-- A sketch note lifted off the board -->
+<dialog class="note-pop" id="notePop" aria-labelledby="np-title">
+  <div class="np-card" id="npCard" tabindex="-1" autofocus>
+    <button class="np-close" type="button" data-i18n-aria="close" aria-label="Luk">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <defs>
+          <!-- roughens the edges so the strokes look painted / drawn with a red pencil -->
+          <filter id="np-rough" x="-20%" y="-20%" width="140%" height="140%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="7" result="n"/>
+            <feDisplacementMap in="SourceGraphic" in2="n" scale="1.6"/>
+          </filter>
+        </defs>
+        <g filter="url(#np-rough)" fill="none" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9.5 10.2c3.4 3.1 7 6.6 10.6 10.1 3.2 3.1 6.4 6.3 9.8 9.4" stroke="#b5372b" stroke-width="3.1" opacity="0.92"/>
+          <path d="M10.6 11.4c3.1 2.9 6.6 6.2 9.9 9.6 3.1 3.2 6 6.1 8.6 8.4" stroke="#c9483a" stroke-width="1.4" opacity="0.55"/>
+          <path d="M29.8 9.6c-3.6 3.6-6.6 6.9-9.9 10.4-3.3 3.5-6.6 6.7-10.1 10.3" stroke="#b5372b" stroke-width="2.9" opacity="0.9"/>
+          <path d="M28.6 11c-3.2 3.3-6.2 6.5-9.3 9.8-3 3.2-5.9 6.1-8.8 8.9" stroke="#c9483a" stroke-width="1.3" opacity="0.5"/>
+        </g>
+      </svg>
+    </button>
+    <div class="np-img"><img id="npImg" src="" alt=""></div>
+    <h3 id="np-title"></h3>
+    <p class="np-medium" id="npMedium"></p>
+    <p class="np-desc" id="npDesc"></p>
+  </div>
 </dialog>
 
-<script src="js/config.js?v=20261158"></script>
-<script src="js/i18n.js?v=20261158"></script>
-<script src="js/site.js?v=20261158"></script>
+<dialog class="m-viewer" id="mViewer" aria-labelledby="mv-title">
+  <button class="mv-close" type="button" data-i18n-aria="close" aria-label="Luk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg></button>
+  <button class="mv-step prev" type="button" data-i18n-aria="museum.prev" aria-label="Forrige værk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+  <button class="mv-step next" type="button" data-i18n-aria="museum.next" aria-label="Næste værk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+  <div class="mv-inner" id="mvInner" tabindex="-1" autofocus></div>
+</dialog>
+
+<script src="js/config.js?v=20261200"></script>
+<script src="js/i18n.js?v=20261200"></script>
+<script src="js/site.js?v=20261200"></script>
 <script>
 /* The museum is built from ARTWORKS and SKETCHES in js/config.js,
    so a new painting added there also gets hung here automatically. */
@@ -325,9 +501,27 @@
 
   /* The shadow people. Sizes are the pictures' pixel sizes, so their column
      is the right width before the picture has loaded. */
-  const PEOPLE = { p1: [992, 992], p2: [241, 686], p3: [188, 615], p4: [291, 858], p5: [900, 1800], p6: [433, 1497] };
-  // Who stands after each painting, in order. Repeats if more paintings are added.
-  const AFTER_PAINTING = [["p1"], ["p2", "p5:flip"], ["p4"]];
+  const PEOPLE = { p1: [115, 558], p2: [233, 674], p3: [188, 561], p4: [291, 773], p5: [519, 1800], p6: [420, 1475] };
+  /* Who stands where: a new random mix on every visit. Each gap gets one visitor, sometimes two,
+     some face the other way, and the same visitor never stands twice in a row.
+     Picked once per visit, so the hall stays the same while you walk (and when the language changes). */
+  const GAPS = ARTWORKS.length + 2;   // after the welcome, after each painting, after the nature corner
+  const VISITORS = (() => {
+    const ids = Object.keys(PEOPLE), out = [];
+    let bag = [], last = null;
+    const next = () => {
+      if (!bag.length) bag = ids.slice().sort(() => Math.random() - 0.5);
+      let i = bag.findIndex(id => id !== last); if (i < 0) i = 0;
+      last = bag.splice(i, 1)[0];
+      return last + (Math.random() < 0.35 ? ":flip" : "");
+    };
+    for (let g = 0; g < GAPS; g++) {
+      const group = [next()];
+      if (g > 0 && g < GAPS - 1 && Math.random() < 0.3) group.push(next());
+      out.push(group);
+    }
+    return out;
+  })();
   const person = (spec) => {
     const [id, flip] = spec.split(":"); const [w, h] = PEOPLE[id];
     return `<div class="visitor${flip ? " flip" : ""}" aria-hidden="true"><img src="images/general/${id}.png" width="${w}" height="${h}" alt="" loading="lazy" decoding="async"></div>`;
@@ -336,48 +530,50 @@
 
   let auctionIds = new Set();
   const facts = (a) => `<dl>
-      <dt>${t("museum.medium")}</dt><dd>${esc(L(a.medium))}</dd>
-      <dt>${t("museum.size")}</dt><dd>${esc(a.size)}</dd>
+      ${L(a.medium) ? `<dt>${t("museum.medium")}</dt><dd>${esc(L(a.medium))}</dd>` : ""}
+      ${a.size ? `<dt>${t("museum.size")}</dt><dd>${esc(a.size)}</dd>` : ""}
       ${a.year ? `<dt>${t("museum.year")}</dt><dd>${esc(a.year)}</dd>` : ""}
     </dl>`;
 
   function render() {
-    const keep = hall.scrollLeft;
+    const keepX = hall.scrollLeft, keepY = hall.scrollTop;
     const parts = [];
 
     parts.push(`<section class="stop welcome" aria-labelledby="m-welcome">
       <div class="frame photo" style="--ar:${ratio({ w: 1400, h: 1230 })}"><img src="images/general/laura.jpg" width="1400" height="1230" alt="Laura Kruuse"></div>
       <div class="placard">
         <p class="kicker">${t("museum.welcome")}</p>
-        <h1 id="m-welcome">Laura Kruuse</h1>
+        <h1 id="m-welcome">Japper studio</h1>
         <p>${esc(t("about.p1"))}</p>
         <p>${esc(t("about.p2"))}</p>
-        <div class="social-row" data-auto></div>
       </div>
     </section>`);
-    parts.push(person("p3"));
+    VISITORS[0].forEach(p => parts.push(person(p)));
 
     ARTWORKS.forEach((a, i) => {
       parts.push(`<section class="stop exhibit" aria-labelledby="m-${esc(a.id)}">
         <button class="frame" type="button" data-open="${i}" style="--ar:${ratio(a)}" aria-label="${t("museum.open")}: ${esc(a.title)}">
           <img src="${esc(a.image)}" width="${a.w}" height="${a.h}" alt="${esc(a.title)}" loading="${i ? "lazy" : "eager"}" decoding="async">
         </button>
-        <div class="placard">
-          <p class="kicker">Laura Kruuse${a.year ? ", " + esc(a.year) : ""}</p>
-          <h2 id="m-${esc(a.id)}">${esc(a.title)}</h2>
-          <p>${esc(L(a.description))}</p>
-          ${facts(a)}
-          <button class="m-btn open" type="button" data-open="${i}">${t("museum.open")}</button>
+        <div class="placard label">
+          <p class="artist">Laura Kruuse</p>
+          <h2 id="m-${esc(a.id)}"><span class="work">${esc(a.title)}</span>${a.year ? `<span class="yr">, ${esc(a.year)}</span>` : ""}</h2>
+          ${(L(a.medium) || a.size) ? `<p class="tech">${[esc(L(a.medium)), esc(a.size)].filter(Boolean).join("<br>")}</p>` : ""}
+          ${L(a.description) ? `<p class="story">${esc(L(a.description))}</p>` : ""}
+          <div class="label-actions">
+            ${forSale(a) ? `<a class="m-btn solid" href="index.html#print-${esc(a.id)}">${t("viewer.print")}</a>` : ""}
+            <button class="m-btn open" type="button" data-open="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5M10.5 8v5M8 10.5h5"/></svg>${t("museum.open")}</button>
+          </div>
         </div>
       </section>`);
-      AFTER_PAINTING[i % AFTER_PAINTING.length].forEach(p => parts.push(person(p)));
+      VISITORS[i + 1].forEach(p => parts.push(person(p)));
     });
 
     parts.push(`<section class="stop bts" aria-labelledby="m-bts">
-      <div class="board">
+      <div class="board" style="--n:${SKETCHES.length}">
         <h2 id="m-bts">${t("museum.bts")}</h2>
         <p class="sub">${t("museum.btsP")}</p>
-        <div class="notes">${SKETCHES.map((s, i) => `
+        <div class="notes" style="--n:${SKETCHES.length}">${SKETCHES.map((s, i) => `
           <button class="note" type="button" data-sketch="${i}">
             <img src="${esc(s.image)}" width="${s.w}" height="${s.h}" alt="" loading="lazy" decoding="async">
             <h3>${esc(L(s.title))}</h3>
@@ -386,7 +582,21 @@
         </div>
       </div>
     </section>`);
-    parts.push(person("p6"));
+    parts.push(`<section class="stop nature" aria-labelledby="m-nature">
+      <div class="line-wall">
+        <h2 id="m-nature">${t("museum.nature")}</h2>
+        <p class="sub">${t("museum.natureP")}</p>
+        <div class="line">
+          ${NATURE.map((s, i) => `
+          <button class="sheet" type="button" data-nature="${i}" style="--ar:${(s.w / s.h).toFixed(4)}">
+            <span class="peg" aria-hidden="true"></span><span class="peg" aria-hidden="true"></span>
+            <img src="${esc(s.image)}" width="${s.w}" height="${s.h}" alt="${esc(L(s.title))}" loading="lazy" decoding="async">
+            <span class="sheet-label">${esc(L(s.title))}</span>
+          </button>`).join("")}
+        </div>
+      </div>
+    </section>`);
+    VISITORS[GAPS - 1].forEach(p => parts.push(person(p)));
 
     parts.push(`<section class="stop ending" aria-labelledby="m-end">
       <div class="placard">
@@ -402,25 +612,34 @@
       </div>
     </section>`);
 
-    track.innerHTML = parts.join("");
+    track.innerHTML = `<div class="floor" aria-hidden="true"></div>` + parts.join("");
     fillSocialRows();
-    hall.scrollLeft = keep;
+    hall.scrollLeft = keepX; hall.scrollTop = keepY;
     updateArrows();
     if (mv.open) renderViewer();
   }
 
   /* ---------- Moving between stops ---------- */
   const stops = () => $$(".stop", track);
-  const centerOf = (el) => el.offsetLeft + el.offsetWidth / 2 - hall.clientWidth / 2;
+  // Phones held upright: the gallery runs top to bottom; otherwise left to right
+  const vert = () => document.body.classList.contains("is-vertical");
+  const pos = () => vert() ? hall.scrollTop : hall.scrollLeft;
+  const centerOf = (el) => vert() ? el.offsetTop : el.offsetLeft + el.offsetWidth / 2 - hall.clientWidth / 2;
+  function setMode() {
+    const v = hall.clientHeight > hall.clientWidth;
+    document.body.classList.toggle("is-vertical", v);
+    hint.dataset.i18n = v ? "museum.hintV" : "museum.hint";
+    hint.textContent = t(hint.dataset.i18n);
+  }
   function currentStop() {
-    const mid = hall.scrollLeft + hall.clientWidth / 2;
+    const mid = vert() ? hall.scrollTop + hall.clientHeight / 3 : hall.scrollLeft + hall.clientWidth / 2;
     let best = 0, dist = Infinity;
-    stops().forEach((s, i) => { const d = Math.abs(s.offsetLeft + s.offsetWidth / 2 - mid); if (d < dist) { dist = d; best = i; } });
+    stops().forEach((s, i) => { const c = vert() ? s.offsetTop : s.offsetLeft + s.offsetWidth / 2; const d = Math.abs(c - mid); if (d < dist) { dist = d; best = i; } });
     return best;
   }
   function goTo(i) {
     const list = stops(); const s = list[Math.max(0, Math.min(list.length - 1, i))];
-    if (s) hall.scrollTo({ left: centerOf(s), behavior: smooth() });
+    if (s) hall.scrollTo(vert() ? { top: centerOf(s), behavior: smooth() } : { left: centerOf(s), behavior: smooth() });
   }
   function updateArrows() {
     const max = hall.scrollWidth - hall.clientWidth - 2;
@@ -430,28 +649,31 @@
   prevBtn.addEventListener("click", () => {
     const i = currentStop(), s = stops()[i];
     // If we are past the middle of this stop, go back to its centre first
-    goTo(s && hall.scrollLeft > centerOf(s) + 4 ? i : i - 1);
+    goTo(s && pos() > centerOf(s) + 4 ? i : i - 1);
   });
   nextBtn.addEventListener("click", () => {
     const i = currentStop(), s = stops()[i];
-    goTo(s && hall.scrollLeft < centerOf(s) - 4 ? i : i + 1);
+    goTo(s && pos() < centerOf(s) - 4 ? i : i + 1);
   });
 
   let scrolled = false;
   hall.addEventListener("scroll", () => {
     updateArrows();
-    if (!scrolled && hall.scrollLeft > 40) { scrolled = true; hint.classList.add("gone"); }
+    if (!scrolled && pos() > 40) { scrolled = true; hint.classList.add("gone"); }
   }, { passive: true });
-  window.addEventListener("resize", updateArrows);
+  window.addEventListener("resize", () => { const was = vert(); setMode(); if (was !== vert()) render(); updateArrows(); });
 
-  // A mouse wheel moves sideways through the hall, except inside a card that can still scroll
+  // A mouse wheel moves sideways through the hall. Over a sign or the sketch board it only
+  // scrolls that text (or does nothing), and never moves the hall.
   hall.addEventListener("wheel", (e) => {
-    if (e.ctrlKey || Math.abs(e.deltaX) >= Math.abs(e.deltaY)) return;
+    if (e.ctrlKey || vert()) return;   // upright phones scroll normally
     const box = e.target.closest(".placard, .board");
-    if (box && box.scrollHeight > box.clientHeight + 1) {
-      const atTop = box.scrollTop <= 0, atEnd = box.scrollTop + box.clientHeight >= box.scrollHeight - 1;
-      if ((e.deltaY < 0 && !atTop) || (e.deltaY > 0 && !atEnd)) return;
+    if (box) {
+      const canScroll = box.scrollHeight > box.clientHeight + 1;
+      if (!canScroll || Math.abs(e.deltaX) > Math.abs(e.deltaY)) e.preventDefault();
+      return;
     }
+    if (Math.abs(e.deltaX) >= Math.abs(e.deltaY)) return;
     e.preventDefault();
     hall.scrollLeft += e.deltaY * (e.deltaMode === 1 ? 40 : 1);
   }, { passive: false });
@@ -467,7 +689,8 @@
   track.addEventListener("click", (e) => {
     const art = e.target.closest("[data-open]"), sk = e.target.closest("[data-sketch]");
     if (art) openViewer({ type: "art", i: +art.dataset.open });
-    else if (sk) openViewer({ type: "sketch", i: +sk.dataset.sketch });
+    else if (sk) openNote(sk, SKETCHES[+sk.dataset.sketch]);
+    else if (e.target.closest("[data-nature]")) { const n = e.target.closest("[data-nature]"); openNote(n, NATURE[+n.dataset.nature]); }
     else if (e.target.closest("#m-restart")) goTo(0);
   });
 
@@ -477,14 +700,17 @@
     const isArt = shown.type === "art";
     const o = isArt ? ARTWORKS[shown.i] : SKETCHES[shown.i];
     const title = isArt ? o.title : L(o.title);
+    const desc = L(isArt ? o.description : o.desc), med = L(o.medium);
+    const tech = [esc(med), isArt ? esc(o.size) : ""].filter(Boolean).join("<br>");
     mvInner.innerHTML = `
-      <div class="mv-art"><img src="${esc(o.image)}" width="${o.w}" height="${o.h}" alt="${esc(title)}"></div>
-      <div class="mv-info">
-        <h2 id="mv-title">${esc(title)}</h2>
-        <p>${esc(L(isArt ? o.description : o.desc))}</p>
-        ${isArt ? facts(o) : `<dl><dt>${t("museum.medium")}</dt><dd>${esc(L(o.medium))}</dd></dl>`}
-        ${isArt ? `<div class="mv-actions">
-          <a class="m-btn solid" href="index.html#print-${esc(o.id)}">${t("viewer.print")}</a>
+      <div class="mv-art"><div class="mv-frame" style="--ar:${(o.w / o.h).toFixed(4)}"><img src="${esc(o.image)}" width="${o.w}" height="${o.h}" alt="${esc(title)}"></div></div>
+      <div class="mv-info placard">
+        <p class="artist">Laura Kruuse</p>
+        <h2 id="mv-title"><span class="work">${esc(title)}</span>${isArt && o.year ? `<span class="yr">, ${esc(o.year)}</span>` : ""}</h2>
+        ${tech ? `<p class="tech">${tech}</p>` : ""}
+        ${desc ? `<p class="story">${esc(desc)}</p>` : ""}
+        ${isArt && (forSale(o) || auctionIds.has(o.id)) ? `<div class="label-actions">
+          ${forSale(o) ? `<a class="m-btn solid" href="index.html#print-${esc(o.id)}">${t("viewer.print")}</a>` : ""}
           ${auctionIds.has(o.id) ? `<a class="m-btn" href="auction.html?id=${esc(o.id)}">${t("viewer.bid")}</a>` : ""}
         </div>` : ""}
       </div>`;
@@ -500,7 +726,7 @@
     if (i < 0 || i >= ARTWORKS.length) return;
     shown.i = i; renderViewer();
     // Walk the hall along with the viewer
-    const ex = $$(".exhibit", track)[i]; if (ex) hall.scrollTo({ left: centerOf(ex), behavior: "auto" });
+    const ex = $$(".exhibit", track)[i]; if (ex) hall.scrollTo(vert() ? { top: centerOf(ex), behavior: "auto" } : { left: centerOf(ex), behavior: "auto" });
   }
   $(".mv-close", mv).addEventListener("click", () => mv.close());
   $(".mv-step.prev", mv).addEventListener("click", () => step(-1));
@@ -513,7 +739,87 @@
     if (mv.open) renderViewer();
   }).catch(() => {});
 
-  document.addEventListener("lang:change", render);
+
+
+  /* ---------- A sketch note flies off the board and opens large ---------- */
+  const np = $("#notePop"), npCard = $("#npCard");
+  const calm = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let npFrom = null;
+  // Move the big card so it sits exactly where the small note is (FLIP), then let it glide to the middle
+  function fromNote(note) {
+    const a = note.getBoundingClientRect(), b = npCard.getBoundingClientRect();
+    const s = a.width / b.width;
+    return `translate(${a.left - b.left}px, ${a.top - b.top}px) scale(${s}) rotate(${getComputedStyle(note).getPropertyValue("--r").trim() || "0deg"})`;
+  }
+  function openNote(note, s) {
+    npFrom = note;
+    $("#npImg").src = s.image; $("#npImg").alt = L(s.title);
+    $("#np-title").textContent = L(s.title);
+    $("#npMedium").textContent = L(s.medium);
+    $("#npDesc").textContent = L(s.desc);
+    np.classList.remove("closing");
+    np.showModal();
+    if (calm()) return;
+    npCard.style.transformOrigin = "0 0";
+    npCard.style.transition = "none";
+    npCard.style.transform = fromNote(note);
+    note.classList.add("lifted");
+    npCard.getBoundingClientRect();   // apply the start position before animating
+    npCard.style.transition = "transform 0.55s cubic-bezier(.2,.8,.2,1)";
+    npCard.style.transform = "";
+    setTimeout(() => { npCard.style.transformOrigin = ""; }, 560);
+  }
+  function closeNote() {
+    if (!np.open) return;
+    const note = npFrom;
+    if (calm() || !note) { np.close(); return; }
+    np.classList.add("closing");
+    npCard.style.transformOrigin = "0 0";
+    npCard.style.transition = "transform 0.45s cubic-bezier(.4,0,.2,1)";
+    npCard.style.transform = fromNote(note);
+    setTimeout(() => np.close(), 450);
+  }
+  np.addEventListener("close", () => {
+    npCard.style.transition = "none"; npCard.style.transform = ""; npCard.style.transformOrigin = "";
+    np.classList.remove("closing");
+    if (npFrom) { npFrom.classList.remove("lifted"); npFrom.focus({ preventScroll: true }); }
+    npFrom = null;
+  });
+  np.addEventListener("cancel", (e) => { e.preventDefault(); closeNote(); });   // Esc flies it back too
+  np.addEventListener("click", (e) => { if (e.target === np || e.target.closest(".np-close")) closeNote(); });
+  /* ---------- Full screen: switches on at the first click, tap or arrow key ----------
+     Browsers only allow full screen after the visitor does something, so it can't start by itself. */
+  const fsBtn = $("#hallFs"), root = document.documentElement;
+  const fsSupported = !!(root.requestFullscreen || root.webkitRequestFullscreen);
+  const isFs = () => !!(document.fullscreenElement || document.webkitFullscreenElement);
+  const enterFs = () => { try { (root.requestFullscreen || root.webkitRequestFullscreen).call(root)?.catch?.(() => {}); } catch {} };
+  const exitFs = () => { try { (document.exitFullscreen || document.webkitExitFullscreen).call(document)?.catch?.(() => {}); } catch {} };
+  function updateFs() {
+    const on = isFs();
+    fsBtn.classList.toggle("on", on);
+    document.body.classList.toggle("is-fs", on);   // full screen hides the menu
+    requestAnimationFrame(updateArrows);
+    fsBtn.setAttribute("aria-label", t(on ? "museum.fsOff" : "museum.fsOn"));
+  }
+  if (fsSupported) {
+    fsBtn.hidden = false;
+    fsBtn.addEventListener("click", (e) => { e.stopPropagation(); isFs() ? exitFs() : enterFs(); });
+    document.addEventListener("fullscreenchange", updateFs);
+    document.addEventListener("webkitfullscreenchange", updateFs);
+    let asked = false;
+    const firstGesture = (e) => {
+      if (asked) return;
+      if (e.type === "keydown" && !["ArrowLeft", "ArrowRight", "Enter", " "].includes(e.key)) return;
+      if (e.target.closest && e.target.closest(".site-nav, #hallFs, a")) return;   // menu clicks and links stay normal
+      asked = true;
+      if (!isFs()) enterFs();
+    };
+    document.addEventListener("pointerdown", firstGesture, true);
+    document.addEventListener("keydown", firstGesture, true);
+    document.addEventListener("lang:change", updateFs);
+    updateFs();
+  }
+  document.addEventListener("lang:change", () => { setMode(); render(); });
 })();
 </script>
 </body>

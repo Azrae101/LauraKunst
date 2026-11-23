@@ -554,21 +554,39 @@ legend { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; c
 .museum-cta .h-section em { color: var(--green-mid); }
 .museum-cta .lede { margin: 1.1rem 0 1.8rem; }
 /* the wall: paintings and the visitor are side by side, so the visitor never covers a painting */
+/* A small copy of the real portfolio: green wall with ceiling light, dark wooden frames,
+   a cream-on-green wall label, a visitor, and the oak floor */
 .mcta-wall {
-  position: relative; display: flex; align-items: flex-end; justify-content: center; gap: clamp(0.6rem, 2vw, 1.2rem);
-  padding: 2.2rem clamp(1rem, 3vw, 2.2rem) 0; border-radius: 4px; text-decoration: none; overflow: hidden;
+  --floor: 24%;
+  position: relative; display: flex; align-items: flex-end; justify-content: center; gap: clamp(0.7rem, 2vw, 1.4rem);
+  padding: 2.4rem clamp(1rem, 3vw, 2.2rem) 0; text-decoration: none; overflow: hidden;
   background:
-    radial-gradient(ellipse 60% 55% at 50% 0%, rgba(255, 226, 170, 0.16), transparent 75%),
-    linear-gradient(to bottom, #2b241a 0, #3a3028 74%, #5d5b56 74%, #47453f 100%);
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.45);
+    radial-gradient(ellipse 60% 55% at 45% 0%, rgba(255, 250, 240, 0.13), transparent 72%),
+    linear-gradient(to bottom, #3f4c3e 0, #364235 55%, #2e392e 100%);
+  box-shadow: 0 24px 50px -30px rgba(30, 40, 30, 0.6);
 }
-.mcta-frames { display: flex; align-items: center; gap: clamp(0.6rem, 2vw, 1.2rem); margin-bottom: 18%; }
-.mcta-frame { display: block; padding: clamp(4px, 0.8vw, 7px); border-radius: 2px;
-  background: linear-gradient(135deg, #6e4520, #d4af37 28%, #8b5a2b 52%, #c9a24a 78%, #6e4520);
-  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.6); transition: transform 0.4s; }
-.mcta-frame img { display: block; height: clamp(90px, 12vw, 165px); width: auto; max-width: none; box-shadow: 0 0 0 2px #1a140c; }
-.mcta-wall:hover .mcta-frame { transform: translateY(-3px); }
-.mcta-visitor { height: clamp(140px, 20vw, 260px); width: auto; flex: none; opacity: 0.92; filter: drop-shadow(0 10px 14px rgba(0, 0, 0, 0.8)); margin-bottom: 0.6rem; }
+/* oak floor and the dark skirting board */
+.mcta-wall::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: var(--floor); z-index: 0;
+  background:
+    linear-gradient(to bottom, #242d24 0, #242d24 5px, rgba(0,0,0,0.3) 5px, rgba(0,0,0,0) 30%),
+    linear-gradient(to bottom, rgba(30,20,12,0.05), rgba(30,20,12,0.32)),
+    url("../images/general/floor-oak.jpg?v=5") 0 0 / auto 100% repeat-x;
+}
+.mcta-frames { position: relative; z-index: 1; display: flex; align-items: center; gap: clamp(0.7rem, 2vw, 1.4rem); margin-bottom: calc(var(--floor) + 1.6rem); }
+.mcta-frame { display: block; padding: clamp(4px, 0.7vw, 7px);
+  background: linear-gradient(180deg, #4a3728, #33261c);
+  box-shadow: 0 14px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255,255,255,0.12); }
+.mcta-frame img { display: block; height: clamp(90px, 12vw, 165px); width: auto; max-width: none; }
+.mcta-label {
+  align-self: center; display: grid; gap: 0.25rem; padding: 0.7rem 0.8rem; min-width: 0;
+  background: rgba(20, 28, 20, 0.28); border: 1px solid rgba(239,232,218,0.28);
+  color: #efe8da; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase;
+}
+.mcta-label b { font-family: var(--serif); font-style: italic; font-weight: 400; font-size: 1rem; letter-spacing: 0.02em; text-transform: none; }
+.mcta-label i { font-style: normal; opacity: 0.72; letter-spacing: 0.08em; text-transform: none; font-size: 0.7rem; }
+.mcta-visitor { position: relative; z-index: 1; height: clamp(150px, 21vw, 270px); width: auto; flex: none; opacity: 0.9; filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.45)); margin-bottom: calc(var(--floor) * 0.35); }
+@media (max-width: 599px) { .mcta-label { display: none; } }
 @media (max-width: 479px) { .mcta-wall { padding-inline: 0.6rem; } .mcta-frame img { height: 72px; } .mcta-visitor { height: 120px; } }
 
 /* Japper studio logo beside the title (above it on phones) */
@@ -626,8 +644,8 @@ legend { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; c
 .hero-bg { background: linear-gradient(165deg, #fffdf6 0%, #fbf5e2 50%, #f5ebcd 100%); }
 .hero::before { background: none; }
 .hero .eyebrow { color: var(--green-light); }
-.hero-title { color: var(--green-dark); }
-.hero-title em { color: var(--green-mid); }
+.hero-title { color: #3f5440; }
+.hero-title em { color: #6a8660; }
 .hero-sub { color: var(--text-muted); }
 .hero-price { color: var(--text-muted); }
 .hero-actions .btn.light { background: var(--green-dark); color: var(--ivory); border-color: var(--green-dark); }
@@ -640,3 +658,12 @@ legend { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; c
 .site-nav.on-hero:not(.scrolled):not(.menu-open) .nav-links a,
 .site-nav.on-hero:not(.scrolled):not(.menu-open) .lang-btn { color: var(--green-dark); }
 .site-nav.on-hero:not(.scrolled):not(.menu-open) .nav-toggle span { background: var(--green-dark); }
+
+/* Pictures can't be dragged out, selected or long-press saved (see "Protect the pictures" in js/site.js) */
+img { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+
+/* Phones: no logo in the top section, and pictures don't open larger (they already fill the screen) */
+@media (max-width: 699px) {
+  .hero-logo { display: none; }
+  .print-card .frame-btn, .sketch-card { cursor: default; }
+}

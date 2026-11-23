@@ -79,8 +79,8 @@ const I18N = {
     "en": "Thank you for visiting"
   },
   "museum.thanksP": {
-    "da": "Tak, fordi du gik en tur gennem udstillingen. Alle malerierne kan købes som print, og originalerne kommer på auktion.",
-    "en": "Thank you for walking through the exhibition. Every painting is available as a print, and the originals go up for auction."
+    "da": "Alle malerierne kan købes som print, og originalerne kommer på auktion.",
+    "en": "Every painting is available as a print, and the originals go up for auction."
   },
   "museum.end": {
     "da": "Udstillingen slutter her",
@@ -107,8 +107,8 @@ const I18N = {
     "en": "Tap a painting to see details or buy a print."
   },
   "museum.thanksP.noAuction": {
-    "da": "Tak, fordi du gik en tur gennem udstillingen. Alle malerierne kan købes som signerede og nummererede print.",
-    "en": "Thank you for walking through the exhibition. Every painting is available as a signed and numbered print."
+    "da": "Alle malerierne kan købes som signerede og nummererede print.",
+    "en": "Every painting is available as a signed and numbered print."
   },
   "contact.p.noAuction": {
     "da": "Har du et spørgsmål om et print eller en bestilling, eller vil du bare sige hej? Jeg vil meget gerne høre fra dig.",
@@ -185,6 +185,30 @@ const I18N = {
   "contact.role": {
     "da": "Kunstneren bag Japper studio",
     "en": "The artist behind Japper studio"
+  },
+  "museum.fsOn": {
+    "da": "Fuld skærm",
+    "en": "Full screen"
+  },
+  "museum.fsOff": {
+    "da": "Afslut fuld skærm",
+    "en": "Exit full screen"
+  },
+  "footer.credit": {
+    "da": "Udviklet med ❤️ af Clara Holst",
+    "en": "Developed with ❤️ by Clara Holst"
+  },
+  "museum.hintV": {
+    "da": "Rul ned for at gå videre",
+    "en": "Scroll down to walk on"
+  },
+  "museum.nature": {
+    "da": "Fra naturen",
+    "en": "From nature"
+  },
+  "museum.natureP": {
+    "da": "Akvareller af dyr og natur, hængt til tørre",
+    "en": "Watercolours of animals and nature, hung up to dry"
   },
   "nav.home": {
     "da": "Forside",
