@@ -23,16 +23,16 @@ const I18N = {
     "en": "Contact | Laura Kruuse"
   },
   "meta.museum": {
-    "da": "Virtuelt museum | Laura Kruuse",
-    "en": "Virtual museum | Laura Kruuse"
+    "da": "Portefølje | Laura Kruuse",
+    "en": "Portfolio | Laura Kruuse"
   },
   "nav.museum": {
-    "da": "Museum",
-    "en": "Museum"
+    "da": "Portefølje",
+    "en": "Portfolio"
   },
   "museum.region": {
-    "da": "Virtuelt museum. Rul sidelæns for at gå gennem udstillingen.",
-    "en": "Virtual museum. Scroll sideways to walk through the exhibition."
+    "da": "Portefølje. Rul sidelæns for at gå gennem værkerne.",
+    "en": "Portfolio. Scroll sideways to walk through the work."
   },
   "museum.welcome": {
     "da": "Velkommen til udstillingen",
@@ -115,8 +115,8 @@ const I18N = {
     "en": "Whether you have a question about a print or a commission, or just want to say hello, I’d love to hear from you."
   },
   "home.ctaMuseum": {
-    "da": "Gå ind i museet",
-    "en": "Enter the museum"
+    "da": "Se porteføljen",
+    "en": "View the portfolio"
   },
   "hero.price": {
     "da": "Signerede og nummererede prints i 50 × 70 cm fra {p}",
@@ -135,16 +135,52 @@ const I18N = {
     "en": "Print at 50 × 70 cm, signed and numbered: {p}"
   },
   "mcta.eyebrow": {
-    "da": "Virtuelt museum",
-    "en": "Virtual museum"
+    "da": "Portefølje",
+    "en": "Portfolio"
   },
   "mcta.h": {
-    "da": "Gå en tur i <em>museet</em>",
-    "en": "Take a walk through <em>the museum</em>"
+    "da": "Gå en tur i <em>porteføljen</em>",
+    "en": "Take a walk through <em>the portfolio</em>"
   },
   "mcta.p": {
     "da": "Se malerierne hænge på væggen, som i et rigtigt galleri. Gå fra værk til værk, læs historien bag hvert maleri, og kig med bag kulisserne i Lauras skitser.",
     "en": "See the paintings hanging on the wall, just like in a real gallery. Walk from piece to piece, read the story behind each painting, and take a look behind the scenes at Laura’s sketches."
+  },
+  "sketch.eyebrow": {
+    "da": "Skitser og studier",
+    "en": "Sketches and studies"
+  },
+  "sketch.more": {
+    "da": "Se skitserne hænge på opslagstavlen i porteføljen.",
+    "en": "See the sketches pinned to the board in the portfolio."
+  },
+  "ig.h": {
+    "da": "Følg med på <em>Instagram</em>",
+    "en": "Follow along on <em>Instagram</em>"
+  },
+  "ig.p": {
+    "da": "Nye værker, glimt fra atelieret og malerierne, mens de bliver til.",
+    "en": "New work, glimpses from the studio and paintings as they come to life."
+  },
+  "ig.gate": {
+    "da": "Opslagene hentes fra Instagram. Når du viser dem, deles din IP-adresse med Instagram (Meta), og de kan sætte cookies.",
+    "en": "The posts are loaded from Instagram. When you show them, your IP address is shared with Instagram (Meta), and they may set cookies."
+  },
+  "ig.load": {
+    "da": "Vis opslagene",
+    "en": "Show the posts"
+  },
+  "ig.view": {
+    "da": "Se opslaget på Instagram",
+    "en": "See the post on Instagram"
+  },
+  "ig.profile": {
+    "da": "Se mere på Instagram, {h}",
+    "en": "See more on Instagram, {h}"
+  },
+  "ig.cta": {
+    "da": "Se mere på Instagram",
+    "en": "See more on Instagram"
   },
   "nav.home": {
     "da": "Forside",
@@ -575,8 +611,8 @@ const I18N = {
     "en": "From the <em>studio</em>"
   },
   "home.sketchP": {
-    "da": "Studier, skitser og værker undervejs.",
-    "en": "Studies, sketches and work in progress."
+    "da": "Ikke alt bliver til et færdigt maleri. Her er studier, skitser og værker undervejs, hvor jeg øver mig og prøver idéer af. Tryk på en skitse for at se den større.",
+    "en": "Not everything becomes a finished painting. Here are studies, sketches and work in progress, where I practise and try out ideas. Tap a sketch to see it larger."
   },
   "soon.h": {
     "da": "Kommer <em>snart</em>",

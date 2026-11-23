@@ -5,15 +5,15 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="color-scheme" content="light only">
   <meta name="theme-color" content="#f7f4ee">
-  <title>Virtuelt museum | Laura Kruuse</title>
+  <title>Portefølje | Laura Kruuse</title>
   <meta name="description" content="Gå en tur gennem Laura Kruuses malerier i et virtuelt museum.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Cinzel:wght@400;700&family=Patrick+Hand&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192.png">
-  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20261132">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
+  <link rel="apple-touch-icon" href="images/general/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css?v=20261141">
   <style>
     /* ---------- Virtual museum ----------
        The hall is a horizontal scroller. Paintings, visitors (the shadow people),
@@ -267,14 +267,14 @@
 
 <header class="site-nav">
   <div class="nav-inner">
-    <a href="index.html#top" class="nav-logo"><img src="images/favicon-192.png" width="40" height="40" alt="">Japper studio</a>
+    <a href="index.html#top" class="nav-logo"><img src="images/general/favicon-192.png" width="40" height="40" alt="">Japper studio</a>
     <nav data-i18n-aria="nav.main" aria-label="Hovedmenu">
       <ul class="nav-links" id="navLinks">
         <li><a href="index.html#top" data-i18n="nav.home">Forside</a></li>
         <li data-auction><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
         <li><a href="index.html#prints" data-i18n="nav.prints">Prints</a></li>
         <li><a href="index.html#om-mig" data-i18n="nav.about">Om mig</a></li>
-        <li><a href="museum.html" aria-current="page" data-i18n="nav.museum">Museum</a></li>
+        <li><a href="museum.html" aria-current="page" data-i18n="nav.museum">Portefølje</a></li>
         <li><a href="index.html#kontakt" data-i18n="nav.contact">Kontakt</a></li>
       </ul>
     </nav>
@@ -304,9 +304,9 @@
   <div class="mv-inner" id="mvInner"></div>
 </dialog>
 
-<script src="js/config.js?v=20261132"></script>
-<script src="js/i18n.js?v=20261132"></script>
-<script src="js/site.js?v=20261132"></script>
+<script src="js/config.js?v=20261141"></script>
+<script src="js/i18n.js?v=20261141"></script>
+<script src="js/site.js?v=20261141"></script>
 <script>
 /* The museum is built from ARTWORKS and SKETCHES in js/config.js,
    so a new painting added there also gets hung here automatically. */
@@ -323,7 +323,7 @@
   const AFTER_PAINTING = [["p1"], ["p2", "p5:flip"], ["p4"]];
   const person = (spec) => {
     const [id, flip] = spec.split(":"); const [w, h] = PEOPLE[id];
-    return `<div class="visitor${flip ? " flip" : ""}" aria-hidden="true"><img src="${id}.png" width="${w}" height="${h}" alt="" loading="lazy" decoding="async"></div>`;
+    return `<div class="visitor${flip ? " flip" : ""}" aria-hidden="true"><img src="images/general/${id}.png" width="${w}" height="${h}" alt="" loading="lazy" decoding="async"></div>`;
   };
   const ratio = (o) => (o.w / o.h).toFixed(4);
 
@@ -339,7 +339,7 @@
     const parts = [];
 
     parts.push(`<section class="stop welcome" aria-labelledby="m-welcome">
-      <div class="frame photo" style="--ar:${ratio({ w: 1400, h: 1230 })}"><img src="images/laura.jpg" width="1400" height="1230" alt="Laura Kruuse"></div>
+      <div class="frame photo" style="--ar:${ratio({ w: 1400, h: 1230 })}"><img src="images/general/laura.jpg" width="1400" height="1230" alt="Laura Kruuse"></div>
       <div class="placard">
         <p class="kicker">${t("museum.welcome")}</p>
         <h1 id="m-welcome">Laura Kruuse</h1>

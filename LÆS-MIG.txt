@@ -10,7 +10,8 @@ Folders
   js/config.js       settings: MobilePay number, e-mail, links, paintings, prices for shipping
   js/i18n.js         all text in Danish and English
   js/site.js         basket, checkout, auction and language logic
-  images/            the pictures, already resized and compressed for phones
+  images/general/    photos of Laura, the Japper studio logo, favicons, the print frame and the museum guests
+  images/paintings/  the paintings and sketches
   supabase-setup.sql the database
 
 Getting it live
@@ -29,7 +30,8 @@ Changing text
   Painting descriptions and the coming soon items are in js/config.js.
 
 Adding a new painting
-  1. Save the picture as a .jpg in the images folder, around 1200 to 1600 pixels tall.
+  1. Save the picture as a .jpg in images/paintings, around 1200 to 1600 pixels tall.
+     In js/config.js its image is then "images/paintings/name.jpg".
   2. Add it to ARTWORKS in js/config.js with its width (w) and height (h) in pixels.
      The site uses those numbers to show the picture at its own shape without cropping.
   3. Add a row for it in Supabase (auctions and prints tables) with the same id.

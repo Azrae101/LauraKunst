@@ -253,26 +253,30 @@ section.block { padding: 4rem 0; }
 .paint-card h3 { font-family: var(--serif); font-weight: 400; font-size: 1.8rem; letter-spacing: 0.05em; color: var(--green-dark); line-height: 1.1; }
 .paint-card p { font-size: 0.9rem; color: var(--text-muted); }
 
-/* Sketches keep their own shapes, stacked like a pinboard */
-/* Sketches keep their own shape (--ar = width / height, set in index.html); nothing is cropped.
-   Phones and tablets: two columns, each sketch as wide as its column.
-   Desktop: justified rows. Pictures in a row share one height and together fill the width,
-   so none ends up tiny. A row that can't fill the width (e.g. tall portraits) stops at
-   1.25 x the row height and is centred. */
-.sketch-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem 0.9rem; align-items: start; max-width: 640px; margin-inline: auto; }
-.sketch-card { min-width: 0; background: none; border: 0; text-align: left; cursor: zoom-in; padding: 0; display: grid; align-content: start; gap: 0.7rem; }
-@media (min-width: 900px) {
-  .sketch-grid { --row-h: 330px; max-width: 900px; margin-inline: auto; display: flex; flex-wrap: wrap; justify-content: center; gap: 2.2rem 1.25rem; }
-  .sketch-card { flex: calc(var(--ar) * 100) 1 calc(var(--ar) * var(--row-h)); max-width: calc(var(--ar) * var(--row-h) * 1.25); }
+/* "Fra atelieret": every sketch sits on the same white paper mat, so the cards are all one size
+   whatever the shape of the picture (nothing is cropped, nothing ends up huge or tiny).
+   Two columns on phones and tablets, four on desktop. */
+.sketch-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 2rem 1rem; }
+@media (min-width: 1000px) { .sketch-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 2.5rem 1.75rem; } }
+.sketch-card { min-width: 0; background: none; border: 0; padding: 0; text-align: left; cursor: zoom-in; display: flex; flex-direction: column; color: inherit; font: inherit; }
+.sketch-mat {
+  aspect-ratio: 4 / 5; display: grid; place-items: center; padding: 9%; contain: size; /* the picture can never stretch the mat */
+  background: var(--white); border: 1px solid var(--line);
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 18px 36px -26px rgba(45, 61, 46, 0.5);
+  transition: transform 0.4s, box-shadow 0.4s;
 }
-@media (min-width: 1100px) { .sketch-grid { --row-h: 370px; max-width: 980px; gap: 2.4rem 1.5rem; } }
-.sketch-card .art { aspect-ratio: var(--ar) !important; box-shadow: 0 18px 40px -26px rgba(45, 61, 46, 0.55); transition: transform 0.4s, box-shadow 0.4s; }
-.sketch-card:hover .art, .sketch-card:focus-visible .art { transform: translateY(-4px); box-shadow: 0 24px 48px -24px rgba(45, 61, 46, 0.6); }
-.sketch-card .art img { object-fit: contain; }
-.sketch-card .art { background: var(--ivory-deep); }
-.sketch-card .art .ph { background: var(--ivory-deep); color: var(--text-muted); font-size: 1rem; }
-.sketch-card h4 { font-family: var(--serif); font-weight: 400; font-size: 1.15rem; color: var(--green-dark); line-height: 1.2; }
-.sketch-card p { font-size: 0.8rem; color: var(--text-muted); }
+.sketch-mat img { max-width: 100%; max-height: 100%; min-width: 0; min-height: 0; width: auto; height: auto; object-fit: contain; box-shadow: 0 6px 16px -8px rgba(42, 37, 32, 0.45); }
+.sketch-card:hover .sketch-mat, .sketch-card:focus-visible .sketch-mat { transform: translateY(-5px); box-shadow: 0 1px 0 rgba(255, 255, 255, 0.8) inset, 0 26px 44px -24px rgba(45, 61, 46, 0.55); }
+.sketch-card:focus-visible { outline: none; }
+.sketch-card:focus-visible .sketch-mat { outline: 2px solid var(--green-mid); outline-offset: 4px; }
+.sketch-info { display: grid; gap: 0.25rem; margin-top: 1rem; }
+.sketch-no { font-size: 0.72rem; letter-spacing: 0.22em; color: var(--green-light); }
+.sketch-card .sketch-title { font-family: var(--serif); font-weight: 400; font-size: 1.25rem; color: var(--green-dark); line-height: 1.2; }
+.sketch-card .sketch-medium { font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--warm-brown); }
+.sketch-card .sketch-desc { font-size: 0.88rem; line-height: 1.65; color: var(--text-muted); margin-top: 0.35rem; }
+@media (max-width: 599px) { .sketch-card .sketch-title { font-size: 1.1rem; } .sketch-card .sketch-desc { font-size: 0.82rem; } }
+.sketch-more { margin-top: 2.75rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem 1.5rem; padding-top: 1.75rem; border-top: 1px solid var(--line); }
+.sketch-more p { color: var(--text-muted); font-size: 0.92rem; }
 
 /* ---------- Coming soon ---------- */
 .soon-grid { display: grid; gap: 2.5rem; }
@@ -520,7 +524,7 @@ legend { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; c
 .variant.single small { font-size: 0.78rem; color: var(--text-muted); }
 .contact-form .form-title { font-family: var(--serif); font-weight: 400; font-size: 1.9rem; color: var(--green-dark); }
 #prints, #kontakt { scroll-margin-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px)); }
-@media (min-width: 1100px) { .sketch-card h4 { font-size: 1.35rem; } .sketch-card p { font-size: 0.88rem; } }
+/* (sketch text sizes: see "Fra atelieret" above) */
 
 /* Print cards: the description takes the spare room, so the price and the
    buy buttons always line up at the bottom, however long each text is */
@@ -574,3 +578,34 @@ legend { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; c
   .hero-content { grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 3rem; }
   .hero-logo { order: 0; width: clamp(280px, 30vw, 430px); }
 }
+
+/* Japper studio logo in the footer */
+.footer-logo { display: inline-flex; align-items: center; gap: 0.6rem; }
+.footer-logo img { width: 36px; height: 36px; border-radius: 50%; flex: none; }
+
+/* ---------- Instagram carousel ---------- */
+.ig-gate { display: flex; flex-wrap: wrap; align-items: center; gap: 1rem 1.5rem; padding: 1.5rem; background: var(--white); border: 1px solid var(--line); }
+.ig-gate p { flex: 1 1 28ch; font-size: 0.9rem; color: var(--text-muted); line-height: 1.7; }
+.ig-carousel { position: relative; }
+.ig-track {
+  display: flex; gap: 1.25rem; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: 0;
+  padding: 0.5rem 0.25rem 1.25rem; overscroll-behavior-x: contain; scrollbar-width: thin; scrollbar-color: var(--green-pale) transparent;
+}
+.ig-slide { flex: 0 0 min(360px, 86%); min-width: 326px; scroll-snap-align: start; }
+.ig-slide .instagram-media { margin: 0 !important; min-width: 0 !important; width: 100% !important; max-width: 100% !important; }
+.ig-slide blockquote.instagram-media { background: var(--white); border: 1px solid var(--line); padding: 2rem 1rem; text-align: center; min-height: 420px; display: grid; place-items: center; }
+.ig-nav {
+  position: absolute; top: 45%; transform: translateY(-50%); z-index: 2; width: 44px; height: 44px; border-radius: 50%;
+  display: none; place-items: center; cursor: pointer; background: var(--white); color: var(--green-dark); border: 1px solid var(--line);
+  box-shadow: 0 6px 16px -8px rgba(42, 37, 32, 0.4);
+}
+.ig-nav:hover { background: var(--green-dark); color: var(--ivory); }
+.ig-nav svg { width: 20px; height: 20px; }
+.ig-nav.prev { left: -0.5rem; }
+.ig-nav.next { right: -0.5rem; }
+@media (min-width: 760px) { .ig-nav { display: grid; } .ig-nav.prev { left: -1.4rem; } .ig-nav.next { right: -1.4rem; } }
+.ig-profile { margin-top: 2rem; display: flex; justify-content: center; }
+.ig-btn { gap: 0.7rem; padding-inline: 1.6rem; min-height: 54px; font-size: 0.9rem; }
+.ig-btn svg { width: 20px; height: 20px; flex: none; }
+.ig-btn .ig-handle { opacity: 0.75; text-transform: none; letter-spacing: 0.02em; }
+@media (max-width: 479px) { .ig-btn { width: 100%; justify-content: center; } }

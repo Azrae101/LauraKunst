@@ -1,0 +1,70 @@
+JAPPER STUDIO: FREMTIDIGE IDÉER
+
+Ting der er bygget, men slået fra for nu, og idéer til senere.
+Alt herunder kan slås til igen uden at skrive ny kode, medmindre andet står.
+
+
+1. AUKTION (slået fra)
+   Skal på sigt ligge på auction.net og indlejres på siden.
+   Slå til igen: i js/config.js sæt  showAuction: true
+   Så kommer menupunktet, auktionssiden, "Byd på originalen"-knapperne og auktionsteksterne tilbage.
+   Når auction.net er klar, kan deres indlejringskode sættes ind i auction.html.
+
+
+2. "KOMMER SNART" (slået fra)
+   En sektion på forsiden, hvor besøgende kan skrive deres e-mail ved det, de vil høre om først.
+   De tre punkter står i js/config.js under COMING_SOON:
+     - Klistermærker og småting: klistermærker med malerierne, til salg eller som lille gave i printordren.
+     - Flere printstørrelser: mindre og større formater end 50 × 70 cm.
+     - Nye originaler: besked, når næste maleri er færdigt.
+   Slå til igen: i index.html, fjern kommentar-linjerne omkring sektionen med id="soon"
+   (linjen der starter med  <!-- "Kommer snart"  og linjen med  -->  lige efter sektionen).
+
+   Vigtigt om e-mails: tilmeldingerne bliver først gemt rigtigt, når en database er sat op:
+   Supabase (se LÆS-MIG.txt) eller Firebase (se punkt 5). Så havner de i "waitlist",
+   som kun Laura/Clara kan se.
+   Indtil da gemmes de kun i den besøgendes egen browser og når aldrig frem.
+   Brug IKKE en "hemmelig" HTML-side til e-mails: alle der kender adressen kan åbne den.
+
+
+3. VIDEOER
+   Ikke på karrusellen for nu (kun billedopslag).
+   Idé: et kort, lydløst klip (få sekunder, under ca. 5 MB, .mp4) af Laura der maler,
+   i toppen af forsiden eller i "Fra atelieret". Længere videoer bør ligge på Instagram eller YouTube.
+
+
+4. FLERE MALERIER
+   Disse billeder ligger i images/paintings, men er ikke på siden endnu:
+     - Flicker.jpg (portræt med stearinlys)
+     - eurowoman x illy konkurence.jpg (par med kaffe)
+     - Lunar solitude.HEIC
+     - Marasme.HEIC
+   HEIC-filer (iPhone-format) kan de fleste browsere ikke vise. Gem dem som .jpg først.
+   Tilføj dem til ARTWORKS (shop + portefølje) eller SKETCHES i js/config.js med titel, størrelse og beskrivelse.
+
+
+5. GOOGLE FIREBASE / FIRESTORE (i stedet for Supabase)
+   Clara kan sætte Firebase op senere. Det kan bruges til det samme som Supabase:
+     - e-mail-tilmeldinger fra "Kommer snart" (en samling, fx "waitlist")
+     - printordrer (fx "orders")
+     - auktionsbud, hvis auktionen ikke ender på auction.net (fx "auctions" og "bids")
+   Sådan hænger det sammen i koden:
+     - Al kontakt med databasen går gennem ét sted: funktionen remoteApi() i js/site.js
+       (auctions, prints, bid, order, notify). Den skal skrives om til Firestore.
+     - Resten af siden behøver ikke ændres.
+     - Firebase-nøglerne (apiKey, projectId osv.) sættes ind i js/config.js ligesom Supabase-nøglerne nu.
+   Vigtigt:
+     - Lav Firestore-sikkerhedsregler, så besøgende kun kan TILFØJE (fx en tilmelding eller ordre),
+       men aldrig LÆSE andres e-mails, ordrer eller bud. Kun Laura/Clara må læse, logget ind i Firebase-konsollen.
+     - Priser og totaler skal tjekkes på serveren (Cloud Functions), ikke kun i browseren,
+       så ingen kan ændre prisen på en ordre. I Supabase gør place_order() det i dag.
+     - Firebase-nøglerne i config.js må gerne være offentlige; det er reglerne der beskytter dataene.
+   Når Firebase er valgt, kan Supabase-delen (supabase-setup.sql og remoteApi) fjernes.
+
+
+6. SMÅTING
+   - "Will you catch me?" mangler årstal (year i js/config.js) og evt. Lauras egen historie bag maleriet.
+   - Fanetitlen i browseren siger stadig "Laura Kruuse | ...". Kan ændres til Japper studio i js/i18n.js (meta.*).
+   - Portefølje-siden hedder stadig museum.html. Kan omdøbes til portfolio.html (links skal så rettes).
+   - "Portræt i kul" og "Billie Eilish-skitse" findes kun i lav opløsning. Større fotos vil se skarpere ud.
+   - Kontaktformularen virker først rigtigt, når Formspree er sat op (se LÆS-MIG.txt).

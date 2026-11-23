@@ -96,12 +96,12 @@ function artHTML(a, extra = "") {
   return `<div class="art ${extra}"${shape}><img src="${esc(a.image)}"${size} alt="${esc(title)}, Laura Kruuse" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"><div class="ph">${esc(title)}</div></div>`;
 }
 
-/* A print shown on paper inside the wooden frame (images/frame.png) */
+/* A print shown on paper inside the wooden frame (images/general/frame.png) */
 function printMockupHTML(a) {
   const title = L(a.title);
   return `<div class="mock">
     <div class="mock-paper"><img src="${esc(a.image)}" alt="${esc(title)}, print 50 × 70 cm" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"><span class="ph">${esc(title)}</span></div>
-    <img class="mock-frame" src="images/frame.png" alt="" aria-hidden="true" width="574" height="788" loading="lazy" decoding="async">
+    <img class="mock-frame" src="images/general/frame.png" alt="" aria-hidden="true" width="574" height="788" loading="lazy" decoding="async">
   </div>`;
 }
 

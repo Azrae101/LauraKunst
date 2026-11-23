@@ -39,7 +39,7 @@ const ARTWORKS = [
   {
     id: "vestige",
     title: "VESTIGE",
-    image: "images/vestige.jpg", w: 666, h: 891,
+    image: "images/paintings/vestige.jpg", w: 666, h: 891,
     size: "80 × 60 cm",
     year: "2025",
     medium: { da: "Akryl med tørrede blomster og guldfarvede ginkgoblade på lærred", en: "Acrylic with dried flowers and gold ginkgo leaves on canvas" },
@@ -51,7 +51,7 @@ const ARTWORKS = [
   {
     id: "florere",
     title: "FLORERE",
-    image: "images/florere.jpg", w: 1300, h: 1752,
+    image: "images/paintings/florere.jpg", w: 1300, h: 1752,
     size: "80 × 60 cm",
     year: "2025",
     medium: { da: "Akryl på lærred med ægte tørrede blomster", en: "Acrylic on canvas with real dried flowers" },
@@ -63,7 +63,7 @@ const ARTWORKS = [
   {
     id: "will-you-catch-me",
     title: "WILL YOU CATCH ME?",
-    image: "images/will-you-catch-me.jpg", w: 1300, h: 1629,
+    image: "images/paintings/will-you-catch-me.jpg", w: 1300, h: 1629,
     size: "80 × 60 cm",
     year: "", // leave empty until the year is known; the site then just hides it
     medium: { da: "Akryl på lærred", en: "Acrylic on canvas" },
@@ -76,18 +76,29 @@ const ARTWORKS = [
 ];
 
 const SKETCHES = [
-  { title: { da: "Håndstudie", en: "Hand Study" }, image: "images/hand_sketch.jpg", w: 613, h: 574,
+  { title: { da: "Håndstudie", en: "Hand Study" }, image: "images/paintings/hand_sketch.jpg", w: 613, h: 574,
     medium: { da: "Maling på lærred", en: "Paint on canvas" },
     desc: { da: "Et studie af hænder og perler, med fokus på form, lys og proportioner.", en: "A study of hands and pearls, focusing on form, light and proportion." } },
-  { title: { da: "Projekt undervejs", en: "Art Project in Progress" }, image: "images/sketch.jpg", w: 889, h: 891,
+  { title: { da: "Projekt undervejs", en: "Art Project in Progress" }, image: "images/paintings/sketch.jpg", w: 889, h: 891,
     medium: { da: "Maling på lærred, undervejs", en: "Paint on canvas, in progress" },
     desc: { da: "Et igangværende værk, der undersøger, hvordan man gengiver stoffets tekstur i en gylden kjole.", en: "Work in progress, exploring how to render the texture of fabric in a golden dress." } },
-  { title: { da: "Portræt i kul", en: "Portrait in Charcoal" }, image: "images/sketch1.jpg", w: 236, h: 367,
+  { title: { da: "Portræt i kul", en: "Portrait in Charcoal" }, image: "images/paintings/sketch1.jpg", w: 236, h: 367,
     medium: { da: "Kul på papir", en: "Charcoal on paper" },
     desc: { da: "Tegning bygget op af skygger, der undersøger dybde og kontrast.", en: "Shadow-based drawing, exploring depth and contrast." } },
-  { title: { da: "Billie Eilish-skitse", en: "Billie Eilish Sketch" }, image: "images/sketch2.jpg", w: 239, h: 360,
+  { title: { da: "Billie Eilish-skitse", en: "Billie Eilish Sketch" }, image: "images/paintings/sketch2.jpg", w: 239, h: 360,
     medium: { da: "Grafit på papir", en: "Graphite on paper" },
     desc: { da: "Et detaljeret portrætstudie med omhyggelig skyggelægning og sans for proportioner.", en: "A detailed portrait study with careful shading and attention to proportion." } }
+];
+
+/* Instagram posts shown in the carousel on the front page. Picture posts only (no videos/reels).
+   Paste the post's link from Instagram ("Copy link"). Newest first. */
+const INSTAGRAM_POSTS = [
+  "https://www.instagram.com/p/Df1s-fMDH35/",
+  "https://www.instagram.com/p/Dfzt7xlDBoy/",
+  "https://www.instagram.com/p/DZrucDmDABw/",
+  "https://www.instagram.com/p/DY9ZPxFDLpt/",
+  "https://www.instagram.com/p/DXT4fSpDLQn/",
+  "https://www.instagram.com/p/DWRFnWMDKQU/"
 ];
 
 const COMING_SOON = [

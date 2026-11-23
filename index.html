@@ -10,23 +10,23 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
-  <link rel="icon" type="image/png" sizes="32x32" href="images/favicon-32.png">
-  <link rel="icon" type="image/png" sizes="192x192" href="images/favicon-192.png">
-  <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20261132">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
+  <link rel="apple-touch-icon" href="images/general/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css?v=20261141">
 </head>
 <body data-title="meta.home">
 
 <header class="site-nav on-hero">
   <div class="nav-inner">
-    <a href="index.html#top" class="nav-logo"><img src="images/favicon-192.png" width="40" height="40" alt="">Japper studio</a>
+    <a href="index.html#top" class="nav-logo"><img src="images/general/favicon-192.png" width="40" height="40" alt="">Japper studio</a>
     <nav data-i18n-aria="nav.main" aria-label="Hovedmenu">
       <ul class="nav-links" id="navLinks">
         <li><a href="index.html#top" aria-current="page" data-i18n="nav.home">Forside</a></li>
         <li data-auction><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
         <li><a href="index.html#prints" data-i18n="nav.prints">Prints</a></li>
         <li><a href="index.html#om-mig" data-i18n="nav.about">Om mig</a></li>
-        <li><a href="museum.html" data-i18n="nav.museum">Museum</a></li>
+        <li><a href="museum.html" data-i18n="nav.museum">Portefølje</a></li>
         <li><a href="index.html#kontakt" data-i18n="nav.contact">Kontakt</a></li>
       </ul>
     </nav>
@@ -47,11 +47,11 @@
       <div class="hero-actions">
         <a class="btn light" href="#prints" data-i18n="home.ctaPrints">Køb et print</a>
         <a class="btn line" href="auction.html" data-auction data-i18n="home.ctaAuction">Se auktionen</a>
-        <a class="btn line" href="museum.html" data-i18n="home.ctaMuseum">Gå ind i museet</a>
+        <a class="btn line" href="museum.html" data-i18n="home.ctaMuseum">Se porteføljen</a>
       </div>
       <p class="hero-price" id="hero-price"></p>
       </div>
-      <img class="hero-logo" src="images/japper-mark.png" width="512" height="512" alt="Japper studio" fetchpriority="high">
+      <img class="hero-logo" src="images/general/japper-mark.png" width="512" height="512" alt="Japper studio" fetchpriority="high">
     </div>
   </section>
 
@@ -84,14 +84,14 @@
   <section class="museum-cta" id="museet" aria-labelledby="mcta-h">
     <div class="wrap mcta">
       <div class="mcta-text">
-        <p class="eyebrow" data-i18n="mcta.eyebrow">Virtuelt museum</p>
-        <h2 class="h-section" id="mcta-h" data-i18n-html="mcta.h">Gå en tur i <em>museet</em></h2>
+        <p class="eyebrow" data-i18n="mcta.eyebrow">Portefølje</p>
+        <h2 class="h-section" id="mcta-h" data-i18n-html="mcta.h">Gå en tur i <em>porteføljen</em></h2>
         <p class="lede" data-i18n="mcta.p">Se malerierne hænge på væggen, som i et rigtigt galleri.</p>
-        <a class="btn" href="museum.html" data-i18n="home.ctaMuseum">Gå ind i museet</a>
+        <a class="btn" href="museum.html" data-i18n="home.ctaMuseum">Se porteføljen</a>
       </div>
       <a class="mcta-wall" href="museum.html" tabindex="-1" aria-hidden="true">
         <span class="mcta-frames" id="mcta-frames"></span>
-        <img class="mcta-visitor" src="p3.png" width="188" height="615" alt="" loading="lazy">
+        <img class="mcta-visitor" src="images/general/p3.png" width="188" height="615" alt="" loading="lazy">
       </a>
     </div>
   </section>
@@ -107,11 +107,17 @@
         <div class="social-row" data-auto></div>
       </div>
       <figure class="reveal">
-        <div class="art"><img src="images/laura.jpg" width="1400" height="1230" alt="Laura Kruuse" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"><div class="ph">Laura</div></div>
+        <div class="art"><img src="images/general/laura.jpg" width="1400" height="1230" alt="Laura Kruuse" loading="lazy" decoding="async" onerror="this.parentNode.classList.add('noimg')"><div class="ph">Laura</div></div>
         <figcaption data-i18n="about.caption">Laura i sit atelier</figcaption>
       </figure>
     </div>
   </section>
+
+  <div class="pull-quote">
+    <div class="wrap">
+      <blockquote><span data-i18n="quote"></span><cite>Laura Kruuse</cite></blockquote>
+    </div>
+  </div>
 
   <section class="block">
     <div class="wrap story reveal">
@@ -124,11 +130,20 @@
     </div>
   </section>
 
-  <div class="pull-quote">
+  <section class="block tint" id="atelier">
     <div class="wrap">
-      <blockquote><span data-i18n="quote"></span><cite>Laura Kruuse</cite></blockquote>
+      <div class="sec-head">
+        <p class="eyebrow" data-i18n="sketch.eyebrow">Skitser og studier</p>
+        <h2 class="h-section" data-i18n-html="home.sketchH">Fra <em>atelieret</em></h2>
+        <p class="lede" data-i18n="home.sketchP">Studier, skitser og værker undervejs.</p>
+      </div>
+      <div class="sketch-grid" id="sketch-grid"></div>
+      <div class="sketch-more">
+        <p data-i18n="sketch.more">Se skitserne hænge på opslagstavlen i porteføljen.</p>
+        <a class="text-link" href="museum.html" data-i18n="home.ctaMuseum">Se porteføljen</a>
+      </div>
     </div>
-  </div>
+  </section>
 
   <section class="block">
     <div class="wrap">
@@ -141,23 +156,35 @@
     </div>
   </section>
 
-  <section class="block tint" id="atelier">
-    <div class="wrap">
-      <div class="sec-head">
-        <h2 class="h-section" data-i18n-html="home.sketchH">Fra <em>atelieret</em></h2>
-        <p class="lede" data-i18n="home.sketchP">Studier, skitser og værker undervejs.</p>
-      </div>
-      <div class="sketch-grid" id="sketch-grid"></div>
-    </div>
-  </section>
-
-  <section class="block" id="soon">
+  <!-- "Kommer snart": information only, no e-mail sign-up (see FREMTIDIGE-IDEER.txt) -->
+  <section class="block tint" id="soon">
     <div class="wrap">
       <div class="sec-head">
         <h2 class="h-section" data-i18n-html="soon.h">Kommer <em>snart</em></h2>
-        <p class="lede" data-i18n="soon.p">Skriv din e-mail ved det, du gerne vil høre om først.</p>
+        <p class="lede" data-i18n="soon.p">Det arbejder jeg på lige nu.</p>
       </div>
       <div class="soon-grid" id="soon-grid"></div>
+    </div>
+  </section>
+
+  <!-- Instagram carousel. Nothing is loaded from Instagram until the visitor says yes. -->
+  <section class="block" id="instagram" aria-labelledby="ig-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <p class="eyebrow">Instagram</p>
+        <h2 class="h-section" id="ig-h" data-i18n-html="ig.h">Følg med på <em>Instagram</em></h2>
+        <p class="lede" data-i18n="ig.p">Nye værker, glimt fra atelieret og malerierne, mens de bliver til.</p>
+      </div>
+      <div class="ig-gate" id="ig-gate">
+        <p data-i18n="ig.gate">Opslagene hentes fra Instagram. Når du viser dem, deles din IP-adresse med Instagram (Meta), og de kan sætte cookies.</p>
+        <button class="btn" type="button" id="ig-load" data-i18n="ig.load">Vis opslagene</button>
+      </div>
+      <div class="ig-carousel" id="ig-carousel" hidden>
+        <button class="ig-nav prev" type="button" data-ig="-1" data-i18n-aria="museum.prev" aria-label="Forrige"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m15 5-7 7 7 7"/></svg></button>
+        <div class="ig-track" id="ig-track" tabindex="0"></div>
+        <button class="ig-nav next" type="button" data-ig="1" data-i18n-aria="museum.next" aria-label="Næste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+      </div>
+      <div class="ig-profile"><a class="btn ig-btn" id="ig-profile" href="#" target="_blank" rel="noopener"></a></div>
     </div>
   </section>
 
@@ -165,7 +192,7 @@
   <section class="block tint" id="kontakt" aria-labelledby="contact-h">
     <div class="wrap contact-grid">
       <div>
-        <img class="avatar" src="images/laura-avatar.jpg" width="400" height="400" alt="Laura Kruuse" loading="lazy">
+        <img class="avatar" src="images/general/laura-avatar.jpg" width="400" height="400" alt="Laura Kruuse" loading="lazy">
         <p class="eyebrow" data-i18n="contact.eyebrow">Kontakt</p>
         <h2 class="h-section" id="contact-h" data-i18n-html="contact.h">Lad os<br><em>snakke</em></h2>
         <p class="lede" style="margin:1.2rem 0 2rem" data-i18n="contact.p">Har du et spørgsmål om et print eller en bestilling, eller vil du bare sige hej? Jeg vil meget gerne høre fra dig.</p>
@@ -214,22 +241,22 @@
 
 <footer class="site-footer">
   <div class="wrap">
-    <div class="footer-logo">Laura Kruuse</div>
+    <div class="footer-logo"><img src="images/general/favicon-192.png" width="36" height="36" alt="">Japper studio</div>
     <ul class="footer-nav">
       <li><a href="index.html#top" data-i18n="nav.home">Forside</a></li>
       <li data-auction><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
       <li><a href="index.html#prints" data-i18n="nav.prints">Prints</a></li>
       <li><a href="index.html#om-mig" data-i18n="nav.about">Om mig</a></li>
-      <li><a href="museum.html" data-i18n="nav.museum">Museum</a></li>
+      <li><a href="museum.html" data-i18n="nav.museum">Portefølje</a></li>
       <li><a href="index.html#kontakt" data-i18n="nav.contact">Kontakt</a></li>
     </ul>
-    <p class="footer-copy">© <span class="year">2026</span> Laura Kruuse. <span data-i18n="footer.rights">Alle rettigheder forbeholdes.</span></p>
+    <p class="footer-copy">© <span class="year">2026</span> Japper studio. <span data-i18n="footer.rights">Alle rettigheder forbeholdes.</span></p>
   </div>
 </footer>
 
-<script src="js/config.js?v=20261132"></script>
-<script src="js/i18n.js?v=20261132"></script>
-<script src="js/site.js?v=20261132"></script>
+<script src="js/config.js?v=20261141"></script>
+<script src="js/i18n.js?v=20261141"></script>
+<script src="js/site.js?v=20261141"></script>
 <script>
 let auctions = [];
 let shown = null;   // what the viewer is showing
@@ -327,24 +354,23 @@ $("#mcta-frames").innerHTML = ARTWORKS.slice(0, 3).map(a =>
 /* ---------- Sketches and coming soon ---------- */
 function renderSketches() {
   $("#sketch-grid").innerHTML = SKETCHES.map((s, i) => `
-    <button class="sketch-card" type="button" data-sketch="${i}" style="--ar:${(s.w / s.h).toFixed(4)}">
-      ${artHTML(s)}
-      <h4>${esc(L(s.title))}</h4>
-      <p>${esc(L(s.medium))}</p>
+    <button class="sketch-card" type="button" data-sketch="${i}" aria-label="${esc(L(s.title))}">
+      <span class="sketch-mat"><img src="${esc(s.image)}" width="${s.w}" height="${s.h}" alt="${esc(L(s.title))}, Laura Kruuse" loading="lazy" decoding="async"></span>
+      <span class="sketch-info">
+        <span class="sketch-no">${String(i + 1).padStart(2, "0")}</span>
+        <span class="sketch-title">${esc(L(s.title))}</span>
+        <span class="sketch-medium">${esc(L(s.medium))}</span>
+        <span class="sketch-desc">${esc(L(s.desc))}</span>
+      </span>
     </button>`).join("");
 }
 function renderSoon() {
+  if (!$("#soon-grid")) return;   // the "Kommer snart" section is switched off
   $("#soon-grid").innerHTML = COMING_SOON.map(s => `
     <div class="soon-item">
       <span class="soon-tag">${t("soon.tag")}</span>
       <h3>${esc(L(s.title))}</h3>
       <p>${esc(L((!AUCTION && s.textNoAuction) || s.text))}</p>
-      <form class="inline-form" data-notify="${esc(s.topic)}" novalidate>
-        <label class="sr-only" for="n-${esc(s.topic)}">${t("email.label")}</label>
-        <input id="n-${esc(s.topic)}" type="email" inputmode="email" autocomplete="email" placeholder="${t("email.ph")}" required>
-        <button class="btn line" type="submit">${t("notify.btn")}</button>
-      </form>
-      <p class="msg" role="status"></p>
     </div>`).join("");
 }
 
@@ -412,6 +438,38 @@ $("#contact-form").addEventListener("submit", async e => {
   }
 });
 
+/* ---------- Instagram carousel (loads only after the visitor says yes) ---------- */
+const IG_KEY = "lk-ig-ok";
+function renderIgProfile() {
+  const a = $("#ig-profile"), c = CONFIG.contact.instagram;
+  a.href = c.url;
+  a.innerHTML = `${ICONS.instagram}<span>${esc(t("ig.cta"))}</span><span class="ig-handle">${esc(c.handle)}</span>`;
+}
+function showInstagram() {
+  if (!INSTAGRAM_POSTS.length) { $("#instagram").hidden = true; return; }
+  $("#ig-gate").hidden = true; $("#ig-carousel").hidden = false;
+  $("#ig-track").innerHTML = INSTAGRAM_POSTS.map(url => `
+    <div class="ig-slide">
+      <blockquote class="instagram-media" data-instgrm-captioned data-instgrm-permalink="${esc(url)}" data-instgrm-version="14">
+        <a href="${esc(url)}" target="_blank" rel="noopener">${t("ig.view")}</a>
+      </blockquote>
+    </div>`).join("");
+  if (window.instgrm) { window.instgrm.Embeds.process(); return; }
+  const s = document.createElement("script");
+  s.async = true; s.src = "https://www.instagram.com/embed.js";
+  document.body.appendChild(s);
+}
+$("#ig-load").addEventListener("click", () => { local.set(IG_KEY, true); showInstagram(); });
+$("#ig-carousel").addEventListener("click", e => {
+  const b = e.target.closest("[data-ig]"); if (!b) return;
+  const track = $("#ig-track"), slide = track.querySelector(".ig-slide");
+  const step = slide ? slide.getBoundingClientRect().width + parseFloat(getComputedStyle(track).columnGap || 0) : track.clientWidth;
+  track.scrollBy({ left: step * +b.dataset.ig, behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+});
+renderIgProfile();
+if (!INSTAGRAM_POSTS.length) $("#instagram").hidden = true;
+else if (local.get(IG_KEY, false)) showInstagram();
+
 /* ---------- Menu follows the scroll: underline the section you are looking at ---------- */
 (() => {
   const links = $$(".nav-links a[href^='index.html#']");
@@ -430,7 +488,7 @@ $("#contact-form").addEventListener("submit", async e => {
   spy();
 })();
 
-document.addEventListener("lang:change", () => { renderTeaser(); renderPrints(); renderSketches(); renderSoon(); renderViewer(); renderLinks(); });
+document.addEventListener("lang:change", () => { renderTeaser(); renderPrints(); renderSketches(); renderSoon(); renderViewer(); renderLinks(); renderIgProfile(); });
 document.addEventListener("prints:change", renderPrints);
 loadShop();
 document.addEventListener("visibilitychange", () => { if (!document.hidden) loadShop(); });
