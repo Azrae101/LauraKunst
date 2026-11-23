@@ -134,6 +134,18 @@ const I18N = {
     "da": "Print i 50 × 70 cm, signeret og nummereret: {p}",
     "en": "Print at 50 × 70 cm, signed and numbered: {p}"
   },
+  "mcta.eyebrow": {
+    "da": "Virtuelt museum",
+    "en": "Virtual museum"
+  },
+  "mcta.h": {
+    "da": "Gå en tur i <em>museet</em>",
+    "en": "Take a walk through <em>the museum</em>"
+  },
+  "mcta.p": {
+    "da": "Se malerierne hænge på væggen, som i et rigtigt galleri. Gå fra værk til værk, læs historien bag hvert maleri, og kig med bag kulisserne i Lauras skitser.",
+    "en": "See the paintings hanging on the wall, just like in a real gallery. Walk from piece to piece, read the story behind each painting, and take a look behind the scenes at Laura’s sketches."
+  },
   "nav.home": {
     "da": "Forside",
     "en": "Home"

@@ -33,3 +33,8 @@ Adding a new painting
   2. Add it to ARTWORKS in js/config.js with its width (w) and height (h) in pixels.
      The site uses those numbers to show the picture at its own shape without cropping.
   3. Add a row for it in Supabase (auctions and prints tables) with the same id.
+
+After changing a .css or .js file
+  Browsers keep old copies of css and js files for up to 10 minutes. In index.html, museum.html
+  and auction.html, change the number after ?v= (for example ?v=20261124 to ?v=20261125) on
+  the style.css, config.js, i18n.js and site.js lines. Then every visitor gets the new files at once.
