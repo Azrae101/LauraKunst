@@ -713,3 +713,34 @@ img { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-
 @media (prefers-reduced-motion: reduce) {
   .to-top, .to-top svg * { transition: opacity 0.2s, visibility 0.2s; }
 }
+
+/* ---------- Section headings: a hand-drawn vine underneath (added by js/site.js) ---------- */
+.vine { display: block; width: clamp(150px, 42vw, 230px); margin: 0.35rem 0 1rem; transform: rotate(var(--tilt, 0deg)); transform-origin: left center; pointer-events: none; }
+/* In .sec-head the grid gap already gives space above; inside the inner div it does not */
+.sec-head > .vine { margin: -0.6rem 0 0; }
+.sec-head > div > .vine { margin: 0.35rem 0 0; }
+.vine.center { margin-inline: auto; transform-origin: center; }
+.vine svg { display: block; width: 100%; height: auto; overflow: visible; }
+.vine .v-stem, .vine .v-tendril {
+  fill: none; stroke: var(--green-mid); stroke-linecap: round; stroke-linejoin: round;
+  stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 1.4s cubic-bezier(.45, 0, .2, 1);
+}
+.vine .v-stem { stroke-width: 2.2; }
+.vine .v-tendril { stroke-width: 1.2; transition-duration: 0.8s; transition-delay: var(--d, 0.9s); }
+.vine .v-petal { stroke-width: 0.6; }   /* colours are picked at random per vine in js/site.js */
+.vine .v-heart, .vine .v-dot { fill: #b8902f; }
+.vine .v-leaf, .vine .v-flower, .vine .v-dot {
+  transform-box: fill-box; transform-origin: center; transform: scale(0);
+  transition: transform 0.55s cubic-bezier(.3, 1.6, .5, 1) var(--d, 0s);
+}
+.vine .v-leaf { transform-origin: left center; }
+.vine.visible .v-stem, .vine.visible .v-tendril { stroke-dashoffset: 0; }
+.vine.visible .v-leaf, .vine.visible .v-flower, .vine.visible .v-dot { transform: scale(1); }
+.vine.visible .v-flower { animation: vine-sway 5s ease-in-out 2s infinite; }
+@keyframes vine-sway { 0%, 100% { transform: rotate(0deg); } 50% { transform: rotate(14deg); } }
+@media (prefers-reduced-motion: reduce) {
+  .vine .v-stem, .vine .v-tendril, .vine .v-leaf, .vine .v-flower, .vine .v-dot { transition: none; }
+  .vine .v-stem, .vine .v-tendril { stroke-dashoffset: 0; }
+  .vine .v-leaf, .vine .v-flower, .vine .v-dot { transform: none; }
+  .vine.visible .v-flower { animation: none; }
+}

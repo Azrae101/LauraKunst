@@ -555,6 +555,19 @@ document.addEventListener("DOMContentLoaded", () => {
   const io = new IntersectionObserver(es => es.forEach(x => { if (x.isIntersecting) { x.target.classList.add("visible"); io.unobserve(x.target); } }), { threshold: 0.1 });
   $$(".reveal").forEach(el => io.observe(el));
 
+  /* Hand-drawn vine under the section headings, different for every heading and every page load
+     (see makeVine). It is a sibling (not inside the heading), because the language switch
+     rewrites the heading's HTML. Drawn in when scrolled into view. */
+  $$("main .h-section, main .h-display").forEach(h => {
+    const v = document.createElement("span");
+    v.className = "vine" + (h.classList.contains("center") ? " center" : "");
+    v.setAttribute("aria-hidden", "true");
+    v.style.setProperty("--tilt", (Math.random() * 3 - 1.5).toFixed(2) + "deg");
+    v.innerHTML = makeVine();
+    h.after(v);
+    io.observe(v);
+  });
+
   $$(".year").forEach(y => y.textContent = new Date().getFullYear());
 
 
@@ -562,3 +575,88 @@ document.addEventListener("DOMContentLoaded", () => {
   $$(".lang-btn").forEach(b => b.addEventListener("click", () => setLang(LANG === "da" ? "en" : "da")));
   applyLang();
 });
+
+/* ---------- Random hand-drawn vine (SVG) for the section headings ----------
+   Everything stays inside the 240 × 44 drawing, so it never reaches the heading above or the text below.
+   Leaves sit in their own slots along the stem (alternating sides, always pointing forward),
+   so they never touch each other, the tendril or the flower. */
+function makeVine() {
+  const rnd = (a, b) => a + Math.random() * (b - a);
+  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  const f = (n) => n.toFixed(1);
+  const W = 240, H = 44, MID = 22, END = 202;
+
+  // Stem: a gentle wave with a random height, length and starting point
+  const amp = rnd(2.5, 4.2), waves = rnd(0.9, 1.6), phase = rnd(0, Math.PI * 2);
+  const k = (Math.PI * 2 * waves) / (END - 4);
+  const y = (x) => MID + amp * Math.sin(k * x + phase);
+  const slope = (x) => amp * k * Math.cos(k * x + phase);
+  let d = `M4 ${f(y(4))}`;
+  for (let x = 8; x <= END; x += 4) d += `L${x} ${f(y(x))}`;
+
+  // Leaves: 3 to 5, one per slot, alternating above and below the stem
+  const LEAF = "M0 0c4-6 12-7 17-4c-4 5-12 7-17 4z";
+  const greens = ["#7a9e6e", "#4a6741", "#93b386", "#5f7f52", "#6d8f5f"];
+  const n = 3 + Math.floor(Math.random() * 3);
+  const from = 20, to = 172, slot = (to - from) / n;
+  let side = Math.random() < 0.5 ? -1 : 1;   // -1 = above the stem, 1 = below
+  const leaves = [];
+  for (let i = 0; i < n; i++) {
+    const x = from + slot * (i + 0.5) + rnd(-0.18, 0.18) * slot;
+    const s = rnd(0.75, 1.12);
+    const stemDeg = Math.atan(slope(x)) * 180 / Math.PI;
+    let off = rnd(35, 58);
+    // Keep the tip inside the drawing
+    const tipY = () => y(x) + Math.sin((stemDeg + side * off) * Math.PI / 180) * 17 * s;
+    while ((tipY() < 3 || tipY() > H - 3) && off > 20) off -= 4;
+    leaves.push({ x, side, s, deg: stemDeg + side * off, color: pick(greens) });
+    side = -side;
+  }
+  const leafSvg = leaves.map(l =>
+    `<g transform="translate(${f(l.x)} ${f(y(l.x))}) rotate(${f(l.deg)}) scale(${l.s.toFixed(2)})">` +
+    `<path class="v-leaf" style="--d:${(0.2 + 1.1 * l.x / END).toFixed(2)}s;fill:${l.color}" d="${LEAF}"/></g>`).join("");
+
+  // Tendril: sometimes, in the widest gap between two leaves, on the side of the leaf after the gap
+  // (that leaf points away from it, and the leaf before the gap is on the other side)
+  let tendril = "";
+  if (n > 1 && Math.random() < 0.75) {
+    let g = 0;
+    for (let i = 1; i < n - 1; i++) if (leaves[i + 1].x - leaves[i].x > leaves[g + 1].x - leaves[g].x) g = i;
+    const cx = (leaves[g].x + leaves[g + 1].x) / 2, sd = leaves[g + 1].side, cy = y(cx);
+    tendril = `<path class="v-tendril" pathLength="1" style="--d:${(0.3 + 1.1 * cx / END).toFixed(2)}s" ` +
+      `d="M${f(cx)} ${f(cy)}c1 ${sd * 7} -8 ${sd * 9} -9 ${sd * 3}c0 ${-sd * 3} 4 ${-sd * 3} 4 0"/>`;
+  }
+
+  // Flower at the end of the stem: 5 or 6 petals in one of several soft colours
+  const petals = pick([
+    ["#f1d7ca", "#c4877b"],   // blush
+    ["#f6e6a8", "#c9a74a"],   // butter yellow
+    ["#ddd3ee", "#9a87b8"],   // lavender
+    ["#fbf8f1", "#b9ae9a"],   // white
+    ["#f5c2b3", "#c97a66"],   // coral
+    ["#d4e4ef", "#7f9fb5"],   // sky blue
+    ["#ecc6cf", "#b0707f"]    // rose
+  ]);
+  const count = Math.random() < 0.6 ? 5 : 6, turn = rnd(0, 360 / count);
+  const fx = 212, fy = Math.min(Math.max(y(END), 12), H - 12);
+  const petalSvg = Array.from({ length: count }, (_, i) =>
+    `<ellipse cx="0" cy="-5" rx="${rnd(2.8, 3.4).toFixed(2)}" ry="${rnd(4.8, 5.6).toFixed(2)}" ` +
+    `transform="rotate(${f(turn + i * 360 / count)})" style="fill:${petals[0]};stroke:${petals[1]}" class="v-petal"/>`).join("");
+  const heart = pick(["#b8902f", "#c79a3a", "#9c7a2a"]);
+
+  // Gold dots: 2 or 3 above and to the right of the flower, well clear of the petals
+  const dots = [];
+  const angles = [rnd(15, 35), rnd(45, 60), rnd(70, 85)].slice(0, 2 + Math.floor(Math.random() * 2));
+  angles.forEach((a, i) => {
+    const dist = rnd(13, 18), r = [1.7, 1.1, 0.8][i];
+    const x = Math.min(fx + Math.cos(a * Math.PI / 180) * dist, W - 2);
+    const yy = Math.max(fy - Math.sin(a * Math.PI / 180) * dist, 2);
+    dots.push(`<circle class="v-dot" style="--d:${(1.4 + i * 0.1).toFixed(2)}s;fill:${heart}" cx="${f(x)}" cy="${f(yy)}" r="${r}"/>`);
+  });
+
+  return `<svg viewBox="0 0 ${W} ${H}" focusable="false">
+    <path class="v-stem" pathLength="1" d="${d}"/>${tendril}${leafSvg}
+    <g transform="translate(${fx} ${f(fy)})"><g class="v-flower" style="--d:1.15s">${petalSvg}<circle class="v-heart" r="2.4" style="fill:${heart}"/></g></g>
+    ${dots.join("")}
+  </svg>`;
+}
