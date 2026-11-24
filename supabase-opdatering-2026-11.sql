@@ -7,7 +7,7 @@
 --   1. place_order: only shipping and full payment (no pickup, no deposit)
 --   2. place_order can only be called by the place-order function (so the captcha cannot be skipped)
 --   3. the order overview: the admins table, admin_orders, admin_set_status (with tracking number)
---      and admin_purge_old (the "Slet gamle ordrer" button)
+--      admin_purge_old (the "Slet gamle ordrer" button) and admin_delete_order (the "Slet" button)
 --   4. the buyer's own order lookup and cancelling (order_status, cancel_order)
 --
 --  supabase-setup.sql already has all of this, so a fresh database made from it needs nothing from here.
@@ -285,6 +285,8 @@ revoke execute on function admin_purge_old() from public, anon;
 grant execute on function admin_orders() to authenticated;
 grant execute on function admin_set_status(text, text, text) to authenticated;
 grant execute on function admin_purge_old() to authenticated;
+revoke execute on function admin_delete_order(text) from public, anon;
+grant execute on function admin_delete_order(text) to authenticated;
 revoke execute on function orders_status_change() from public, anon;
 
 -- Who may see orders on ordrer.html (they must also be added as users under Authentication, Users)

@@ -662,6 +662,14 @@ const I18N = {
     "da": "Skriv venligst byen.",
     "en": "Please enter the town."
   },
+  "err.ZIP_UNKNOWN": {
+    "da": "Det postnummer findes ikke i Danmark. Tjek, at det er skrevet rigtigt. Er du sikker på, at det er rigtigt, så skriv til <a href=\"mailto:{e}\">{e}</a>.",
+    "en": "That postcode doesn’t exist in Denmark. Check that it’s typed correctly. If you’re sure it’s right, write to <a href=\"mailto:{e}\">{e}</a>."
+  },
+  "basket.cityAuto": {
+    "da": "Udfyldes ud fra postnummer",
+    "en": "Filled in from the postcode"
+  },
   "err.CAPTCHA": {
     "da": "Sikkerhedstjekket gik ikke igennem. Prøv igen.",
     "en": "The security check didn’t go through. Please try again."

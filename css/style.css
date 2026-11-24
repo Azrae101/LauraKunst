@@ -185,6 +185,10 @@ section.block { padding: 4rem 0; }
 .check { display: flex; gap: 0.7rem; align-items: flex-start; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; cursor: pointer; }
 .check input { width: 20px; height: 20px; margin-top: 0.15rem; flex: none; accent-color: var(--green-mid); }
 .msg { font-size: 0.95rem; min-height: 1.5em; }
+/* Town filled in from the postcode (checkout) */
+.field input.auto, .field input[readonly] { background: var(--ivory); color: var(--green-dark); cursor: default; }
+.zip-hint { min-height: 0; font-size: 0.88rem; }
+.zip-hint:empty { display: none; }
 .trust { list-style: none; display: grid; gap: 0.55rem; padding: 0.95rem 1rem; background: var(--ivory); border: 1px solid var(--line); }
 .trust li { display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.88rem; line-height: 1.5; color: var(--text); }
 .trust svg { width: 20px; height: 20px; flex: none; color: var(--green-mid); margin-top: 0.05rem; }

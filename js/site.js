@@ -512,8 +512,9 @@ function renderBasket() {
         <label class="field"><span>${t("basket.street")}</span><input name="street" autocomplete="address-line1" placeholder="${t("basket.streetPh")}" value="${esc(keep.street ?? "")}" required></label>
         <div class="row-zip">
           <label class="field"><span>${t("basket.zip")}</span><input name="zip" inputmode="numeric" autocomplete="postal-code" maxlength="4" pattern="[0-9]{4}" placeholder="5000" value="${esc(keep.zip ?? "")}" required></label>
-          <label class="field"><span>${t("basket.city")}</span><input name="city" autocomplete="address-level2" placeholder="Odense C" value="${esc(keep.city ?? "")}" required></label>
+          <label class="field"><span>${t("basket.city")}</span><input name="city" autocomplete="address-level2" placeholder="${t("basket.cityAuto")}" value="${esc(keep.city ?? "")}" required></label>
         </div>
+        <p class="zip-hint msg" id="zip-hint" role="status"></p>
         <p class="fineprint">${t("basket.dkOnly")}</p>
       </fieldset>
       <div class="totals">
@@ -537,6 +538,39 @@ function renderBasket() {
   $$("[data-rm]", body).forEach(b => b.addEventListener("click", () => { basket.splice(+b.dataset.rm, 1); saveBasket(); renderBasket(); }));
   $("#checkout").addEventListener("submit", submitOrder);
   mountCaptcha();
+  wireZip();
+}
+
+/* ---------- Address check: the official list of Danish postcodes (js/postnumre.json, from PostNord) ----------
+   Typing a postcode fills in the town by itself and locks it, so the town always matches the postcode.
+   If the list cannot be loaded, the checkout simply works as before (the town is typed by hand). */
+let POSTNUMRE = null, postnumreReady = null;
+function loadPostnumre() {
+  if (!postnumreReady) postnumreReady = fetch("js/postnumre.json?v=20261124")
+    .then(r => r.ok ? r.json() : null).then(j => (POSTNUMRE = j))
+    .catch(() => { postnumreReady = null; return null; });
+  return postnumreReady;
+}
+async function wireZip() {
+  const zipIn = $("#checkout [name=zip]"), cityIn = $("#checkout [name=city]"), hint = $("#zip-hint");
+  if (!zipIn || !cityIn) return;
+  const update = () => {
+    const zip = zipIn.value.replace(/\D/g, "").slice(0, 4);
+    if (zipIn.value !== zip) zipIn.value = zip;
+    hint.textContent = ""; hint.className = "zip-hint msg";
+    if (!POSTNUMRE) return;                                   // no list: the town is typed by hand
+    const town = zip.length === 4 && dkZip(zip) ? POSTNUMRE[zip] : null;
+    cityIn.readOnly = !!town || zip.length < 4;              // locked while there is no valid postcode
+    cityIn.classList.toggle("auto", !!town);
+    cityIn.value = town || "";
+    if (zip.length === 4 && !town) {
+      hint.className = "zip-hint msg err";
+      hint.innerHTML = /^39/.test(zip) || !dkZip(zip) ? t("err.ADDRESS_DK") : t("err.ZIP_UNKNOWN", { e: esc(CONFIG.contact.email) });
+    }
+  };
+  zipIn.addEventListener("input", update);
+  await loadPostnumre();
+  if (zipIn.isConnected) update();
 }
 
 async function submitOrder(e) {
@@ -546,9 +580,12 @@ async function submitOrder(e) {
   if ((f.name || "").trim().length < 2) { msg.textContent = t("err.NAME"); return; }
   if (!validEmail(f.email)) { msg.textContent = t("err.EMAIL"); return; }
   // Every order is shipped (the disabled "delivery" radio is not part of the form data)
-  const street = (f.street || "").trim(), zip = (f.zip || "").trim(), city = (f.city || "").trim();
-  if (street.length < 4 || !/\d/.test(street)) { msg.textContent = t("err.STREET"); return; }
+  const street = (f.street || "").trim(), zip = (f.zip || "").trim();
+  if (street.length < 4 || !/\d/.test(street) || !/\p{L}{2}/u.test(street)) { msg.textContent = t("err.STREET"); return; }
   if (!dkZip(zip)) { msg.textContent = t("err.ADDRESS_DK"); return; }
+  // The town always comes from the official postcode list, so "1710 Enschede" becomes impossible
+  if (POSTNUMRE && !POSTNUMRE[zip]) { msg.innerHTML = t("err.ZIP_UNKNOWN", { e: esc(CONFIG.contact.email) }); return; }
+  const city = POSTNUMRE ? POSTNUMRE[zip] : (f.city || "").trim();
   if (city.length < 2) { msg.textContent = t("err.CITY"); return; }
   const address = `${street}\n${zip} ${city}\nDanmark`;   // the same format place_order() checks
   const captcha = captchaToken();

@@ -23,6 +23,8 @@ WHAT IS WHERE
   js/config.js       settings: Supabase, contact form, MobilePay number, e-mail, links, paintings, sketches,
                      shipping price and the Instagram posts on the front page
   js/i18n.js         all fixed text, in Danish (da) and English (en)
+  js/postnumre.json  all Danish postcodes and their towns (PostNord's official list). The checkout fills in the town
+                     from it. Postcodes rarely change; a new one can be added by hand: "1234":"Town name"
   js/site.js         basket, checkout, auction, language, and the little paintings under the headings
   images/general/    photos of Laura, the logo, favicons, the print frame, the oak floor and the museum guests
   images/paintings/  the paintings and sketches

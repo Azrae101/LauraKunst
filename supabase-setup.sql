@@ -390,6 +390,21 @@ begin
   return json_build_object('deleted', n);
 end $$;
 
+-- Delete one order completely (the "Slet" button on ordrer.html), e.g. a test order.
+-- Only cancelled or unpaid orders: a paid or shipped order must be cancelled first, so prints.sold stays right
+-- and nothing for the accounts disappears by accident.
+create or replace function admin_delete_order(p_code text) returns json
+language plpgsql security definer set search_path = public as $$
+declare s text;
+begin
+  if not is_admin() then raise exception 'NOT_ADMIN'; end if;
+  select status into s from orders where order_code = upper(trim(p_code)) for update;
+  if not found then raise exception 'NOT_FOUND'; end if;
+  if s in ('paid', 'shipped') then raise exception 'DELETE_PAID'; end if;
+  delete from orders where order_code = upper(trim(p_code));
+  return json_build_object('order_code', upper(trim(p_code)), 'deleted', true);
+end $$;
+
 -- ---------- "Notify me" sign-ups ----------
 create or replace function join_waitlist(p_email text, p_topic text)
 returns json language plpgsql security definer set search_path = public as $$
@@ -414,6 +429,8 @@ grant execute on function shop_state() to anon, authenticated;
 revoke execute on function admin_orders() from public, anon;
 revoke execute on function admin_set_status(text, text, text) from public, anon;
 revoke execute on function admin_purge_old() from public, anon;
+revoke execute on function admin_delete_order(text) from public, anon;
+grant execute on function admin_delete_order(text) to authenticated;
 grant execute on function admin_orders() to authenticated;
 grant execute on function admin_set_status(text, text, text) to authenticated;
 grant execute on function admin_purge_old() to authenticated;
