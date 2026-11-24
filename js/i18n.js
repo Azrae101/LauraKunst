@@ -170,6 +170,42 @@ const I18N = {
     "da": "Vis opslagene",
     "en": "Show the posts"
   },
+  "meta.404": {
+    "da": "Siden findes ikke | Japper studio",
+    "en": "Page not found | Japper studio"
+  },
+  "nf.eyebrow": {
+    "da": "Fejl 404",
+    "en": "Error 404"
+  },
+  "nf.title": {
+    "da": "<em>Den forsvundne side</em>, 2026",
+    "en": "<em>The missing page</em>, 2026"
+  },
+  "nf.medium": {
+    "da": "Akryl, tørrede blomster og et lille tomrum på lærred",
+    "en": "Acrylic, dried flowers and a small void on canvas"
+  },
+  "nf.text": {
+    "da": "Den side, du leder efter, hænger her ikke. Måske er den solgt, flyttet til en anden væg eller aldrig blevet malet færdig.",
+    "en": "The page you’re looking for isn’t hanging here. Maybe it was sold, moved to another wall, or never quite finished."
+  },
+  "nf.sold": {
+    "da": "Solgt (formentlig)",
+    "en": "Sold (probably)"
+  },
+  "nf.home": {
+    "da": "Til forsiden",
+    "en": "Back to the front page"
+  },
+  "nf.again": {
+    "da": "Mal den igen",
+    "en": "Paint it again"
+  },
+  "nf.canvas": {
+    "da": "Et maleri af tallet 404 med en lille blomst, malet af en pensel",
+    "en": "A painting of the number 404 with a small flower, painted by a brush"
+  },
   "ig.blocked": {
     "da": "Opslagene kunne ikke vises her, fordi din browser eller en annonceblokering stopper indhold fra Instagram. Du kan se dem direkte på Instagram.",
     "en": "The posts can’t be shown here, because your browser or an ad blocker is stopping content from Instagram. You can see them directly on Instagram."

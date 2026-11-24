@@ -723,23 +723,24 @@ img { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-
 .vine svg { display: block; width: 100%; height: auto; overflow: visible; }
 /* Painted look: slightly rough, bristly edges (filter is added once to the page by js/site.js) */
 .vine .v-art { filter: url(#vine-paint); }
-.vine .v-stem, .vine .v-stem2, .vine .v-tendril {
+/* Lines (stems, twigs, ground) are drawn in by the brush: js/site.js sets the dash offset.
+   Hidden until their turn, or the round cap shows up as a dot. */
+.vine .v-line, .vine .v-tendril {
   fill: none; stroke: var(--green-mid); stroke-linecap: round; stroke-linejoin: round;
-  stroke-dasharray: 1; stroke-dashoffset: 1;
+  stroke-dasharray: 1; stroke-dashoffset: 1; opacity: 0;
 }
-.vine .v-stem { stroke-width: 2.2; }
+.vine .v-line.go { opacity: 1; }
 /* A thin, lighter streak beside the stem, like a dry edge of the brush */
-.vine .v-stem2 { stroke: var(--green-light); stroke-width: 0.8; opacity: 0.75; }
-.vine .v-tendril { stroke-width: 1.2; opacity: 0; transition: stroke-dashoffset 0.7s ease-out; }   /* hidden until drawn, or its round cap shows as a dot */
-.vine .v-petal { stroke-width: 0.6; }   /* colours are picked at random per vine in js/site.js */
-.vine .v-heart, .vine .v-dot { fill: #b8902f; }
-/* Each piece appears when the brush reaches it (.on is set by paintVine in js/site.js) */
-.vine .v-leaf, .vine .v-petal, .vine .v-heart, .vine .v-dot {
+.vine .v-streak { stroke: var(--green-light); stroke-width: 0.8; }
+.vine .v-streak.go { opacity: 0.75; }
+.vine .v-tendril { stroke-width: 1.2; transition: stroke-dashoffset 0.7s ease-out; }
+/* Everything else appears when the brush reaches it (.on is set by paintVine in js/site.js) */
+.vine .v-leaf, .vine .v-grow, .vine .v-pop {
   transform-box: fill-box; transform-origin: center; transform: scale(0); opacity: 0;
   transition: transform 0.4s cubic-bezier(.2, .8, .3, 1), opacity 0.25s ease-out;
 }
 .vine .v-leaf { transform-origin: left center; transform: scale(0, 0.4); transition-duration: 0.5s, 0.3s; }  /* swiped out from the stem */
-.vine .v-petal { transform-origin: 50% 100%; transform: scale(0.5, 0); }                                     /* pulled out from the centre */
+.vine .v-grow { transform-origin: 50% 100%; transform: scale(0.5, 0); }                                     /* petals, ginkgo: pulled out from the base */
 .vine .on { transform: scale(1); opacity: 1; }
 .vine .v-tendril.on { stroke-dashoffset: 0; }
 .vine .v-flower { transform-box: fill-box; transform-origin: center; }
@@ -751,8 +752,9 @@ img { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-
 .vine .v-brush .ferrule { stroke: #c9a74a; stroke-width: 3.2; stroke-linecap: butt; }
 .vine .v-brush .bristles { fill: var(--green-mid); transition: fill 0.2s; }
 @media (prefers-reduced-motion: reduce) {
-  .vine .v-stem, .vine .v-stem2, .vine .v-tendril { stroke-dashoffset: 0; transition: none; }
-  .vine .v-leaf, .vine .v-petal, .vine .v-heart, .vine .v-dot { transform: none; opacity: 1; transition: none; }
+  .vine .v-line, .vine .v-tendril { stroke-dashoffset: 0 !important; opacity: 1; transition: none; }
+  .vine .v-streak { opacity: 0.75; }
+  .vine .v-leaf, .vine .v-grow, .vine .v-pop { transform: none; opacity: 1; transition: none; }
   .vine .v-brush { display: none; }
   .vine.painted .v-flower { animation: none; }
 }

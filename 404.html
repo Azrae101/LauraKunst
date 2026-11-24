@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <!-- GitHub Pages shows this page for every address that does not exist, also deep ones like /a/b/c,
+       so all links, scripts and images are resolved from the site root. -->
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light only">
+  <meta name="theme-color" content="#f7f4ee">
+  <meta name="robots" content="noindex">
+  <title>Siden findes ikke | Japper studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
+  <link rel="apple-touch-icon" href="images/general/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css?v=20261208">
+  <style>
+    /* ---------- 404: an empty frame on a gallery wall, and a brush that paints "404" into it ---------- */
+    .nf {
+      position: relative; overflow: hidden; isolation: isolate;
+      min-height: calc(100svh - var(--nav-h) - env(safe-area-inset-top, 0px));
+      display: grid; place-items: center; padding: 4.5rem 1rem calc(clamp(80px, 15vh, 140px) + 2.5rem);
+      /* Plaster wall with a soft spotlight from above */
+      background:
+        radial-gradient(ellipse 55% 60% at 50% 18%, rgba(255, 251, 240, 0.95), rgba(255, 251, 240, 0) 70%),
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.45 0 0 0 0 0.4 0 0 0 0 0.33 0 0 0 0.09 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"),
+        linear-gradient(180deg, #f3eee4 0%, #ebe4d6 100%);
+    }
+    /* Oak floor with a skirting shadow */
+    .nf-floor {
+      position: absolute; left: 0; right: 0; bottom: 0; height: clamp(80px, 15vh, 140px); z-index: -1;
+      background:
+        linear-gradient(180deg, rgba(42, 30, 18, 0.35) 0, rgba(42, 30, 18, 0) 18px),
+        url("images/general/floor-oak.jpg?v=5") 0 0 / auto 100% repeat-x;
+      box-shadow: 0 -1px 0 rgba(60, 45, 30, 0.25), 0 -6px 0 #f6f1e7, 0 -7px 0 rgba(60, 45, 30, 0.12);
+    }
+    .nf-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 3.5rem 4rem; width: 100%; max-width: 1080px; }
+
+    /* The painting hangs from a nail and swings, as if someone just bumped it */
+    .nf-hang { position: relative; width: min(560px, 90vw); transform-origin: 50% -54px; transform: rotate(-1.6deg); animation: nf-swing 2.6s cubic-bezier(.36, .07, .19, .97) both; }
+    @keyframes nf-swing {
+      0% { transform: rotate(-9deg); } 22% { transform: rotate(5deg); } 42% { transform: rotate(-5.5deg); }
+      60% { transform: rotate(1.4deg); } 78% { transform: rotate(-3deg); } 100% { transform: rotate(-1.6deg); }
+    }
+    .nf-wire { position: absolute; left: 22%; width: 56%; top: -58px; height: 62px; overflow: visible; }
+    .nf-frame { position: relative; aspect-ratio: 788 / 574; filter: drop-shadow(0 18px 22px rgba(42, 37, 32, 0.3)); }
+    /* frame.png is portrait, so it is turned on its side */
+    .nf-frame > img { position: absolute; left: 50%; top: 50%; width: 72.84%; height: 137.28%; transform: translate(-50%, -50%) rotate(90deg); pointer-events: none; }
+    .nf-canvas {
+      position: absolute; left: 5.3%; right: 5.4%; top: 7.6%; bottom: 7.6%;
+      background:
+        repeating-linear-gradient(0deg, rgba(120, 105, 85, 0.035) 0 1px, transparent 1px 3px),
+        repeating-linear-gradient(90deg, rgba(120, 105, 85, 0.035) 0 1px, transparent 1px 3px),
+        #fbf9f3;
+      box-shadow: inset 0 0 18px rgba(42, 37, 32, 0.16);
+    }
+    .nf-canvas .vine { width: 100%; height: 100%; margin: 0; transform: none; }
+    .nf-canvas .vine svg { height: 100%; }
+    .nf-canvas .v-streak { stroke-width: 2.2; }
+
+    /* Museum label beside the painting */
+    .nf-label {
+      position: relative; width: min(290px, 90vw); background: var(--white); padding: 1.4rem 1.4rem 1.3rem;
+      box-shadow: 0 1px 2px rgba(42, 37, 32, 0.12), 0 8px 22px rgba(42, 37, 32, 0.1); font-size: 0.85rem; line-height: 1.6;
+    }
+    .nf-label .eyebrow { margin-bottom: 0.7rem; }
+    .nf-label .artist { font-weight: 500; letter-spacing: 0.04em; }
+    .nf-label h1 { font-family: var(--serif); font-weight: 400; font-size: 1.45rem; line-height: 1.25; color: var(--green-dark); margin: 0.1rem 0 0.35rem; }
+    .nf-label .medium { color: var(--text-muted); font-size: 0.8rem; }
+    .nf-label .text { margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--line); }
+    .nf-label .sold { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.9rem; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rose); }
+    .nf-label .sold::before { content: ""; width: 11px; height: 11px; border-radius: 50%; background: #c2413d; box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.15); }
+    .nf-actions { display: grid; gap: 0.6rem; margin-top: 1.3rem; }
+    .nf-actions .btn { width: 100%; justify-content: center; }
+    .nf-again { justify-self: center; margin-top: 0.2rem; background: none; border: 0; padding: 0.4rem; cursor: pointer; font: inherit; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green-mid); text-decoration: underline; text-underline-offset: 4px; }
+    .nf-again:hover { color: var(--green-dark); }
+
+    /* Dried petals that fall out of the frame onto the floor */
+    .nf-petal { position: absolute; width: 14px; height: 21px; z-index: 1; pointer-events: none; }
+    .nf-petal svg { width: 100%; height: 100%; display: block; overflow: visible; }
+
+    @media (prefers-reduced-motion: reduce) { .nf-hang { animation: none; } }
+  </style>
+</head>
+<body data-title="meta.404">
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html#top" class="nav-logo"><img src="images/general/favicon-192.png" width="40" height="40" alt="">Japper studio</a>
+    <nav data-i18n-aria="nav.main" aria-label="Hovedmenu">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#top" data-i18n="nav.home">Forside</a></li>
+        <li data-auction><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
+        <li><a href="index.html#prints" data-i18n="nav.prints">Prints</a></li>
+        <li><a href="index.html#om-mig" data-i18n="nav.about">Om mig</a></li>
+        <li><a href="museum.html" data-i18n="nav.museum">Portefølje</a></li>
+        <li><a href="index.html#kontakt" data-i18n="nav.contact">Kontakt</a></li>
+      </ul>
+    </nav>
+    <button class="lang-btn" type="button" aria-label="Switch to English"><span class="lang-short">EN</span></button>
+    <button class="basket-btn" type="button" aria-haspopup="dialog"><span class="label" data-i18n="nav.basket">Kurv</span><span class="count">0</span><span class="sr-only" data-i18n="nav.items">varer i kurven</span></button>
+    <button class="nav-toggle" type="button" aria-controls="navLinks" aria-expanded="false" data-i18n-aria="nav.menu" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main class="page">
+  <section class="nf" id="nf">
+    <div class="nf-floor" aria-hidden="true"></div>
+    <div class="nf-inner">
+      <div class="nf-hang" id="nf-hang">
+        <svg class="nf-wire" viewBox="0 0 100 62" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M0 62L50 4L100 62" fill="none" stroke="#8d8270" stroke-width="0.9" vector-effect="non-scaling-stroke"/>
+          <circle cx="50" cy="4" r="3.2" fill="#6f655a" vector-effect="non-scaling-stroke"/>
+          <circle cx="49.2" cy="3.2" r="1" fill="#b9ae9a"/>
+        </svg>
+        <div class="nf-frame">
+          <img src="images/general/frame.png" alt="">
+          <div class="nf-canvas" role="img" data-i18n-aria="nf.canvas" aria-label="Et maleri af tallet 404 med en lille blomst, malet af en pensel">
+            <span class="vine" id="nf-paint" aria-hidden="true"></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="nf-label">
+        <p class="eyebrow" data-i18n="nf.eyebrow">Fejl 404</p>
+        <p class="artist">Laura Kruuse</p>
+        <h1 data-i18n-html="nf.title"><em>Den forsvundne side</em>, 2026</h1>
+        <p class="medium" data-i18n="nf.medium">Akryl, tørrede blomster og et lille tomrum på lærred</p>
+        <p class="text" data-i18n="nf.text">Den side, du leder efter, hænger her ikke. Måske er den solgt, flyttet til en anden væg eller aldrig blevet malet færdig.</p>
+        <p class="sold" data-i18n="nf.sold">Solgt (formentlig)</p>
+        <div class="nf-actions">
+          <a class="btn" href="index.html#top" data-i18n="nf.home">Til forsiden</a>
+          <a class="btn line" href="museum.html" data-i18n="home.ctaMuseum">Se porteføljen</a>
+          <button class="nf-again" type="button" id="nf-again" data-i18n="nf.again">Mal den igen</button>
+        </div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-logo"><img src="images/general/favicon-192.png" width="36" height="36" alt="">Japper studio</div>
+    <ul class="footer-nav">
+      <li><a href="index.html#top" data-i18n="nav.home">Forside</a></li>
+      <li data-auction><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
+      <li><a href="index.html#prints" data-i18n="nav.prints">Prints</a></li>
+      <li><a href="index.html#om-mig" data-i18n="nav.about">Om mig</a></li>
+      <li><a href="museum.html" data-i18n="nav.museum">Portefølje</a></li>
+      <li><a href="index.html#kontakt" data-i18n="nav.contact">Kontakt</a></li>
+    </ul>
+    <p class="footer-copy">© <span class="year">2026</span> Japper studio. <span data-i18n="footer.rights">Alle rettigheder forbeholdes.</span> <span class="footer-credit" data-i18n="footer.credit">Udviklet med ❤️ af Clara Holst</span></p>
+  </div>
+</footer>
+
+<script src="js/config.js?v=20261215"></script>
+<script src="js/i18n.js?v=20261206"></script>
+<script src="js/site.js?v=20261206"></script>
+<script>
+/* ---------- The painting: "404" in thick strokes, a drip, grass and a flower growing beside it.
+   Uses the same brush as the vines under the headings (vinePainter / paintVine in js/site.js). ---------- */
+function make404() {
+  const W = 200, H = 138;
+  const P = vinePainter(W, H), { rnd, pick } = P;
+  // Hand-painted line: points every few units, with a slight wobble between the corners
+  const hand = (corners, wob = 0.45) => {
+    const out = [corners[0]];
+    for (let i = 1; i < corners.length; i++) {
+      const [ax, ay] = corners[i - 1], [bx, by] = corners[i], n = Math.max(2, Math.ceil(Math.hypot(bx - ax, by - ay) / 3));
+      for (let k = 1; k <= n; k++) {
+        const t = k / n, j = k === n ? 0 : wob;
+        out.push([ax + (bx - ax) * t + rnd(-j, j), ay + (by - ay) * t + rnd(-j, j)]);
+      }
+    }
+    return out;
+  };
+  const ink = "var(--green-dark)", dx = rnd(2, 6), j = () => rnd(-1.2, 1.2);
+  const stroke = (pts, ms) => P.line(pts, { width: 6.5, color: ink, ms, streak: true });
+  const four = (x) => {
+    stroke(hand([[x + 22 + j(), 26 + j()], [x + j(), 76 + j()], [x + 40 + j(), 76 + j()]]), 520);
+    stroke(hand([[x + 29 + j(), 46 + j()], [x + 29 + j(), 106 + j()]]), 300);
+  };
+  four(12 + dx);
+  // The zero: one loop, a little past where it started, like a quick hand
+  const cx = 80 + dx, cy = 66, rx = rnd(14, 16), ry = rnd(33, 36), start = rnd(-95, -70), wob = rnd(0, 6);
+  const zero = [];
+  for (let a = start; a >= start - 372; a -= 7) {
+    const r = 1 + 0.035 * Math.sin((a + wob) * 3 * Math.PI / 180);
+    zero.push([cx + rx * r * Math.cos(a * Math.PI / 180), cy + ry * r * Math.sin(a * Math.PI / 180)]);
+  }
+  stroke(zero, 720);
+  four(104 + dx);
+  // A drip running down from the bottom of the zero
+  const dripX = cx + rnd(2, 6), dripY = cy + ry - 1;
+  P.line([[dripX, dripY], [dripX + 0.3, dripY + 7], [dripX, dripY + 12]], { width: 2.6, color: ink, ms: 650 });
+  P.color(ink);
+  P.dab([dripX, dripY + 13.5], P.dot(dripX, dripY + 13.6, 2.1, "#2d3d2e"), 160);
+  // Grass along the bottom of the canvas
+  const ground = hand([[12, 125 + j()], [70, 124 + j()], [130, 126 + j()], [188, 124 + j()]], 0.6);
+  P.line(ground, { width: 2, color: "var(--green-light)", ms: 600 });
+  // A flower growing up beside the last four
+  const base = [174 + rnd(-3, 3), 124], top = [170 + rnd(-3, 3), rnd(40, 50)];
+  const stem = P.curve(base, [base[0] + rnd(8, 12), (base[1] + top[1]) / 2], top, 16);
+  const reveal = [];
+  P.line(stem, { width: 2.4, color: "var(--green-mid)", ms: 650, reveal });
+  [[5, -1], [9, 1]].forEach(([k, side]) => {
+    const p0 = stem[k], p1 = stem[k + 1], dir = Math.atan2(p1[1] - p0[1], p1[0] - p0[0]) * 180 / Math.PI;
+    reveal.push({ at: P.atIndex(stem, k), id: P.leaf(p0[0], p0[1], dir + side * rnd(40, 55), rnd(1.05, 1.25), pick(P.greens)) });
+  });
+  const fl = P.flower(top[0], top[1], { colors: pick(P.blooms), count: Math.random() < 0.5 ? 5 : 6, size: 1.45 });
+  P.paintFlower(fl);
+  P.goldDots(top[0], top[1], fl.heart, 20);
+  return P.done();
+}
+
+/* Dried petals falling out of the frame and landing on the floor */
+function dropPetals(count) {
+  const scene = $("#nf"), frame = $(".nf-frame"), floor = $(".nf-floor");
+  const s = scene.getBoundingClientRect(), fr = frame.getBoundingClientRect(), fl = floor.getBoundingClientRect();
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const colors = [["#e9c9a8", "#b98a62"], ["#ecc6cf", "#b0707f"], ["#f6e6a8", "#c9a74a"], ["#ddd3ee", "#9a87b8"], ["#d9b84f", "#9c7a2a"]];
+  for (let i = 0; i < count; i++) {
+    const [fill, edge] = colors[Math.floor(Math.random() * colors.length)];
+    const p = document.createElement("span");
+    p.className = "nf-petal";
+    p.innerHTML = `<svg viewBox="0 0 11 17" aria-hidden="true"><path d="M5.5 .5C9 3 10.5 8.5 8.6 13.2 7.6 15.6 3.4 15.6 2.4 13.2.5 8.5 2 3 5.5.5z" fill="${fill}" stroke="${edge}" stroke-width=".7"/><path d="M5.5 2.5V14" stroke="${edge}" stroke-width=".5" opacity=".6"/></svg>`;
+    // Resting place on the floor (kept in % / from the bottom, so it stays put when the window changes size)
+    const x = fr.left - s.left + fr.width * (0.12 + Math.random() * 0.76);
+    const restBottom = 8 + Math.random() * (fl.height - 30);
+    p.style.left = (x / s.width * 100).toFixed(2) + "%";
+    p.style.bottom = restBottom.toFixed(0) + "px";
+    const endRot = Math.random() * 180 - 90;
+    p.style.transform = `rotate(${endRot.toFixed(0)}deg) scaleY(0.75)`;
+    scene.appendChild(p);
+    if (reduce) continue;
+    const startY = (fr.bottom - 20) - (s.bottom - restBottom - 17);   // negative: from the frame's lower edge
+    const sway = 14 + Math.random() * 22, dir = Math.random() < 0.5 ? -1 : 1;
+    p.animate([
+      { transform: `translate(0, ${startY}px) rotate(0deg)`, opacity: 0 },
+      { transform: `translate(${dir * sway}px, ${startY * 0.72}px) rotate(${dir * 70}deg)`, opacity: 1, offset: 0.25 },
+      { transform: `translate(${-dir * sway * 0.6}px, ${startY * 0.42}px) rotate(${-dir * 40}deg)`, offset: 0.5 },
+      { transform: `translate(${dir * sway * 0.5}px, ${startY * 0.15}px) rotate(${dir * 110}deg)`, offset: 0.78 },
+      { transform: `rotate(${endRot.toFixed(0)}deg) scaleY(0.75)` }
+    ], { duration: 2600 + Math.random() * 1400, delay: Math.random() * 1400, easing: "cubic-bezier(.3, .1, .6, 1)", fill: "backwards" });
+  }
+}
+
+(() => {
+  const host = $("#nf-paint");
+  const paint = (delay) => {
+    const { html, plan } = make404();
+    host.classList.remove("painted");
+    host.innerHTML = html;
+    host._plan = plan;
+    setTimeout(() => paintVine(host), delay);
+  };
+  addEventListener("load", () => { dropPetals(6); paint(900); });
+  $("#nf-again").addEventListener("click", () => { $$(".nf-petal").forEach(p => p.remove()); dropPetals(4); paint(150); });
+})();
+</script>
+</body>
+</html>
