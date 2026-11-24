@@ -86,10 +86,6 @@ const I18N = {
     "da": "Tak for besøget",
     "en": "Thank you for visiting"
   },
-  "museum.thanksP": {
-    "da": "Alle malerierne kan købes som print, og originalerne kommer på auktion.",
-    "en": "Every painting is available as a print, and the originals go up for auction."
-  },
   "museum.end": {
     "da": "Udstillingen slutter her",
     "en": "End of the exhibition"
@@ -113,10 +109,6 @@ const I18N = {
   "home.paintP.noAuction": {
     "da": "Tryk på et maleri for at se detaljer eller købe et print.",
     "en": "Tap a painting to see details or buy a print."
-  },
-  "museum.thanksP.noAuction": {
-    "da": "Alle malerierne kan købes som signerede og nummererede print.",
-    "en": "Every painting is available as a signed and numbered print."
   },
   "contact.p.noAuction": {
     "da": "Har du et spørgsmål om et print eller en bestilling, eller vil du bare sige hej? Jeg vil meget gerne høre fra dig.",
