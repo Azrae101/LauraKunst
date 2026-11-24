@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light only">
+  <meta name="theme-color" content="#f7f4ee">
+  <title>Handelsbetingelser og privatlivspolitik | Japper studio</title>
+  <meta name="description" content="Handelsbetingelser og privatlivspolitik for køb af prints hos Japper studio.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
+  <link rel="apple-touch-icon" href="images/general/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css?v=20261124c">
+</head>
+<body data-title="meta.terms">
+<!-- Terms of sale and privacy policy, in Danish and English.
+     The two languages are two blocks (data-lang="da" / "en"); the language button shows one of them.
+     Numbers and contact details (e-mail, CVR, shipping price, hours) are filled in from js/config.js,
+     so they only need changing there. Update "Senest opdateret" when the text changes. -->
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html#top" class="nav-logo"><img src="images/general/favicon-192.png" width="40" height="40" alt="">Japper studio</a>
+    <nav data-i18n-aria="nav.main" aria-label="Hovedmenu">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#top" data-i18n="nav.home">Forside</a></li>
+        <li data-auction><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
+        <li><a href="prints.html" data-i18n="nav.prints">Prints</a></li>
+        <li><a href="museum.html" data-i18n="nav.museum">Portefølje</a></li>
+        <li><a href="index.html#om-mig" data-i18n="nav.about">Om mig</a></li>
+        <li><a href="index.html#kontakt" data-i18n="nav.contact">Kontakt</a></li>
+      </ul>
+    </nav>
+    <button class="lang-btn" type="button" aria-label="Switch to English"><span class="lang-short">EN</span></button>
+    <button class="basket-btn" type="button" aria-haspopup="dialog"><span class="label" data-i18n="nav.basket">Kurv</span><span class="count">0</span><span class="sr-only" data-i18n="nav.items">varer i kurven</span></button>
+    <button class="nav-toggle" type="button" aria-controls="navLinks" aria-expanded="false" data-i18n-aria="nav.menu" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main class="page legal">
+  <div class="wrap">
+
+<!-- ======================= DANSK ======================= -->
+<div data-lang="da">
+  <div class="page-head">
+    <p class="eyebrow">Tryg handel</p>
+    <h1 class="h-section">Handelsbetingelser <em>&amp; privatliv</em></h1>
+    <p class="lede">Her kan du læse, hvad der gælder, når du køber et print, og hvordan dine oplysninger bliver brugt. Har du spørgsmål, så skriv til <a data-v="email-link"></a>.</p>
+    <nav class="legal-toc" aria-label="Indhold">
+      <a href="#handel">Handelsbetingelser</a>
+      <a href="#fortrydelse">Fortrydelsesret</a>
+      <a href="#reklamation">Reklamation</a>
+      <a href="#privatliv">Privatlivspolitik</a>
+    </nav>
+  </div>
+
+  <section id="handel" class="legal-sec">
+    <h2>Handelsbetingelser</h2>
+
+    <h3>Sælger</h3>
+    <p class="seller">
+      <span data-v="name"></span><br>
+      <span data-v="city"></span>, Danmark<br>
+      <span data-v="cvr-line">CVR-nr.: <span data-v="cvr"></span><br></span>
+      E-mail: <a data-v="email-link"></a>
+    </p>
+
+    <h3>Produkter og priser</h3>
+    <p>Vi sælger prints i 50 × 70 cm af Laura Kruuses malerier. Hvert print er signeret og nummereret i hånden. Farverne på din skærm kan afvige en smule fra det trykte print.</p>
+    <p>Alle priser er i danske kroner (DKK) og er de endelige priser, du betaler. Levering koster <span data-v="ship"></span> pr. ordre. Den samlede pris står i kurven, før du bestiller.</p>
+    <p>Én person kan købe højst <span data-v="max"></span> af hvert print.</p>
+
+    <h3>Sådan foregår et køb</h3>
+    <ol>
+      <li>Du lægger prints i kurven, udfylder navn, e-mail og adresse og trykker bestil.</li>
+      <li>Du får et ordrenummer på skærmen og på e-mail. Dine prints er reserveret til dig i <span data-v="hold"></span> timer.</li>
+      <li>Du betaler med MobilePay til <span data-v="mobilepay"></span> og skriver den besked, der står ved ordren, så betalingen kan kobles til din ordre.</li>
+      <li>Når betalingen er modtaget, får du besked, og købet er gennemført.</li>
+    </ol>
+    <p>Er der ikke betalt inden for <span data-v="hold"></span> timer, bortfalder ordren af sig selv, og du skylder ingenting.</p>
+
+    <h3>Annullering før betaling</h3>
+    <p>Du kan selv annullere din ordre i <span data-v="cancel"></span> timer efter bestillingen, så længe den ikke er betalt: tryk på Kurv og vælg ordren. Du kan også skrive til os.</p>
+
+    <h3>Levering</h3>
+    <p>Vi sender kun til adresser i Danmark (ikke Grønland og Færøerne). Dine prints sendes, når betalingen er modtaget, og er normalt hos dig inden for 3–5 hverdage. Du får besked på e-mail, når de er sendt.</p>
+    <p>Prints sendes godt pakket. Er pakken synligt beskadiget, når du modtager den, så tag gerne billeder og skriv til os hurtigst muligt.</p>
+  </section>
+
+  <section id="fortrydelse" class="legal-sec">
+    <h2>Fortrydelsesret</h2>
+    <p>Du har 14 dages fortrydelsesret. Fristen løber fra den dag, du modtager dine prints. Har du købt flere prints, som kommer hver for sig, løber fristen fra den dag, du modtager det sidste.</p>
+
+    <h3>Sådan fortryder du</h3>
+    <p>Skriv til <a data-v="email-link"></a> inden fristen udløber, og fortæl, at du vil fortryde købet. Skriv dit ordrenummer. Du kan bruge formularen nederst i dette afsnit, men du behøver ikke.</p>
+
+    <h3>Returnering</h3>
+    <p>Du skal sende printet tilbage senest 14 dage efter, at du har fortalt os, at du fortryder. <b>Du betaler selv for returforsendelsen.</b> Pak printet godt ind, så det ikke bliver beskadiget undervejs, og send det gerne med en sporbar forsendelse. Vi oplyser adressen, når du skriver til os.</p>
+
+    <h3>Tilbagebetaling</h3>
+    <p>Vi betaler hele købsprisen tilbage, inklusive den oprindelige levering på <span data-v="ship"></span>, senest 14 dage efter, at vi har fået besked om, at du fortryder. Pengene sendes med MobilePay til det nummer, du betalte fra, medmindre vi aftaler andet. Vi må vente med at betale tilbage, til vi har modtaget printet, eller du har vist, at det er sendt.</p>
+
+    <h3>Printets stand</h3>
+    <p>Du må gerne se printet og undersøge det, som du ville gøre i en butik. Er printet blevet beskadiget, foldet eller brugt mere end det, kan vi trække et beløb fra, der svarer til værdiforringelsen.</p>
+
+    <div class="legal-form">
+      <h3>Standardfortrydelsesformular</h3>
+      <p class="fineprint">Udfyld og send kun denne formular, hvis du vil fortryde. Du kan kopiere teksten ind i en e-mail.</p>
+      <p>Til: <span data-v="name"></span>, <span data-v="city"></span>, <span data-v="email"></span><br>
+        Jeg meddeler herved, at jeg ønsker at gøre fortrydelsesretten gældende i forbindelse med min aftale om køb af følgende varer:<br>
+        Ordrenummer: ____________<br>
+        Bestilt den: ____________ / Modtaget den: ____________<br>
+        Navn: ____________<br>
+        Adresse: ____________<br>
+        Dato: ____________</p>
+    </div>
+  </section>
+
+  <section id="reklamation" class="legal-sec">
+    <h2>Reklamation og klager</h2>
+    <p>Du har 2 års reklamationsret efter købeloven. Er der en fejl ved printet, der ikke skyldes din egen behandling, eller er det beskadiget under forsendelsen, kan du få det repareret, ombyttet, få pengene tilbage eller få et afslag i prisen, afhængigt af situationen.</p>
+    <p>Skriv til <a data-v="email-link"></a> inden for rimelig tid, efter du har opdaget fejlen. Send gerne billeder med. Er reklamationen berettiget, betaler vi de rimelige fragtomkostninger.</p>
+    <h3>Klagemuligheder</h3>
+    <p>Kontakt os først, så finder vi som regel en løsning. Kan vi ikke blive enige, kan du klage til Center for Klageløsning, Nævnenes Hus, Toldboden 2, 8800 Viborg, via <a href="https://www.naevneneshus.dk" target="_blank" rel="noopener">naevneneshus.dk</a>.</p>
+
+    <h3>Ophavsret</h3>
+    <p>Alle billeder af malerierne og tegningerne på siden tilhører Laura Kruuse. Når du køber et print, køber du selve printet, ikke retten til at kopiere eller bruge motivet kommercielt.</p>
+  </section>
+
+  <section id="privatliv" class="legal-sec">
+    <h2>Privatlivspolitik</h2>
+    <p>Vi passer på dine oplysninger og indsamler kun det, der er nødvendigt for at sende din ordre og svare på dine beskeder.</p>
+
+    <h3>Dataansvarlig</h3>
+    <p><span data-v="name"></span>, <span data-v="city"></span><span data-v="cvr-inline">, CVR-nr. <span data-v="cvr"></span></span>. E-mail: <a data-v="email-link"></a>.</p>
+
+    <h3>Hvilke oplysninger og hvorfor</h3>
+    <table class="legal-table">
+      <thead><tr><th>Når du</th><th>Oplysninger</th><th>Formål og grundlag</th></tr></thead>
+      <tbody>
+        <tr><td>Køber et print</td><td>Navn, e-mail, telefonnummer (frivilligt), adresse og hvad du har købt</td><td>At sende din ordre og kontakte dig om den (aftale, GDPR art. 6, stk. 1, litra b). Bogføring (retlig forpligtelse, litra c).</td></tr>
+        <tr><td>Betaler med MobilePay</td><td>Dit navn, telefonnummer og beløbet, som vi kan se i MobilePay</td><td>At kontrollere, at ordren er betalt (aftale, litra b).</td></tr>
+        <tr><td>Skriver via kontaktformularen</td><td>Navn, e-mail og din besked</td><td>At svare dig (legitim interesse, litra f).</td></tr>
+        <tr><td>Bestiller (sikkerhedstjek)</td><td>IP-adresse og tekniske oplysninger om din browser</td><td>At forhindre falske ordrer fra robotter (legitim interesse, litra f).</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Hvem behandler oplysningerne for os</h3>
+    <p>Vi sælger aldrig dine oplysninger. Vi bruger disse tjenester til at drive siden:</p>
+    <ul>
+      <li><b>Supabase</b>: database, hvor ordrerne gemmes.</li>
+      <li><b>Resend</b>: sender ordre-e-mails.</li>
+      <li><b>Cloudflare Turnstile</b>: sikkerhedstjekket ved bestilling.</li>
+      <li><b>Formspree</b>: kontaktformularen.</li>
+      <li><b>GitHub Pages</b>: hosting af hjemmesiden.</li>
+      <li><b>Google Fonts</b>: skrifttyperne på siden. Din browser henter dem fra Google, som derved ser din IP-adresse.</li>
+      <li><b>Vipps MobilePay</b>: betalingen. MobilePay behandler dine oplysninger efter sin egen privatlivspolitik.</li>
+    </ul>
+    <p>Nogle af tjenesterne er amerikanske og kan behandle oplysninger uden for EU. Det sker på grundlag af EU-Kommissionens standardkontraktbestemmelser eller EU-U.S. Data Privacy Framework.</p>
+
+    <h3>Instagram og cookies</h3>
+    <p>Siden bruger ikke cookies til statistik eller reklame. Instagram-opslagene på forsiden indlæses først, når du selv trykker på knappen. Så sætter Instagram (Meta) cookies efter sine egne regler.</p>
+    <p>Din kurv, dit sprogvalg og dine seneste ordrer gemmes kun i din egen browser (local storage), så de er der næste gang. Du kan slette dem ved at rydde browserdata for siden.</p>
+
+    <h3>Hvor længe gemmer vi oplysningerne</h3>
+    <ul>
+      <li>Ordrer gemmes i 5 år fra udgangen af det regnskabsår, købet hører til, fordi bogføringsloven kræver det.</li>
+      <li>Annullerede og ubetalte ordrer slettes, når de ikke længere er nødvendige, senest efter 1 år.</li>
+      <li>Beskeder fra kontaktformularen slettes, når sagen er afsluttet.</li>
+    </ul>
+
+    <h3>Dine rettigheder</h3>
+    <p>Du har ret til at få indsigt i de oplysninger, vi har om dig, få dem rettet eller slettet, begrænse brugen af dem, gøre indsigelse og få dem udleveret (dataportabilitet). Skriv til <a data-v="email-link"></a>. Vi svarer inden for en måned. Oplysninger, vi skal gemme efter bogføringsloven, kan vi først slette, når fristen er udløbet.</p>
+    <p>Du kan klage til Datatilsynet, Carl Jacobsens Vej 35, 2500 Valby, <a href="https://www.datatilsynet.dk" target="_blank" rel="noopener">datatilsynet.dk</a>.</p>
+  </section>
+
+  <p class="fineprint legal-updated">Senest opdateret: 24. november 2026</p>
+</div>
+
+<!-- ======================= ENGLISH ======================= -->
+<div data-lang="en" hidden>
+  <div class="page-head">
+    <p class="eyebrow">Shop with confidence</p>
+    <h1 class="h-section">Terms of sale <em>&amp; privacy</em></h1>
+    <p class="lede">What applies when you buy a print, and how your details are used. Questions? Write to <a data-v="email-link"></a>. The Danish version applies if the two versions differ.</p>
+    <nav class="legal-toc" aria-label="Contents">
+      <a href="#terms">Terms of sale</a>
+      <a href="#withdrawal">Right of withdrawal</a>
+      <a href="#complaints">Complaints</a>
+      <a href="#privacy">Privacy policy</a>
+    </nav>
+  </div>
+
+  <section id="terms" class="legal-sec">
+    <h2>Terms of sale</h2>
+
+    <h3>Seller</h3>
+    <p class="seller">
+      <span data-v="name"></span><br>
+      <span data-v="city"></span>, Denmark<br>
+      <span data-v="cvr-line">CVR no.: <span data-v="cvr"></span><br></span>
+      E-mail: <a data-v="email-link"></a>
+    </p>
+
+    <h3>Products and prices</h3>
+    <p>We sell 50 × 70 cm prints of Laura Kruuse’s paintings. Every print is signed and numbered by hand. Colours on your screen may differ slightly from the printed print.</p>
+    <p>All prices are in Danish kroner (DKK) and are the final prices you pay. Delivery costs <span data-v="ship"></span> per order. The total is shown in the basket before you order.</p>
+    <p>One person can buy at most <span data-v="max"></span> of each print.</p>
+
+    <h3>How buying works</h3>
+    <ol>
+      <li>You add prints to the basket, fill in your name, e-mail and address, and place the order.</li>
+      <li>You get an order number on screen and by e-mail. Your prints are held for you for <span data-v="hold"></span> hours.</li>
+      <li>You pay with MobilePay to <span data-v="mobilepay"></span> and write the message shown with the order, so the payment can be matched to your order.</li>
+      <li>Once the payment has arrived, you are notified and the purchase is complete.</li>
+    </ol>
+    <p>If the order has not been paid within <span data-v="hold"></span> hours, it lapses by itself and you owe nothing.</p>
+
+    <h3>Cancelling before payment</h3>
+    <p>You can cancel your order yourself for <span data-v="cancel"></span> hours after ordering, as long as it has not been paid: press Basket and choose the order. You can also write to us.</p>
+
+    <h3>Delivery</h3>
+    <p>We only ship to addresses in Denmark (not Greenland or the Faroe Islands). Your prints are sent once the payment has arrived and normally reach you within 3–5 working days. You get an e-mail when they have been sent.</p>
+    <p>Prints are packed carefully. If the parcel is visibly damaged when it arrives, please take photos and write to us as soon as possible.</p>
+  </section>
+
+  <section id="withdrawal" class="legal-sec">
+    <h2>Right of withdrawal</h2>
+    <p>You have a 14-day right of withdrawal, counted from the day you receive your prints. If you bought several prints that arrive separately, it counts from the day you receive the last one.</p>
+
+    <h3>How to withdraw</h3>
+    <p>Write to <a data-v="email-link"></a> before the deadline and tell us that you want to withdraw from the purchase. Include your order number. You may use the form at the end of this section, but you do not have to.</p>
+
+    <h3>Returning the print</h3>
+    <p>You must send the print back no later than 14 days after telling us that you are withdrawing. <b>You pay for the return shipping yourself.</b> Pack the print well so it is not damaged on the way, and preferably use tracked shipping. We give you the address when you write to us.</p>
+
+    <h3>Refund</h3>
+    <p>We refund the full price, including the original delivery of <span data-v="ship"></span>, no later than 14 days after we are told that you are withdrawing. The money is sent with MobilePay to the number you paid from, unless we agree otherwise. We may wait to refund until we have received the print or you have shown that it has been sent.</p>
+
+    <h3>Condition of the print</h3>
+    <p>You may look at and examine the print as you would in a shop. If it has been damaged, folded or handled beyond that, we may deduct an amount matching the loss in value.</p>
+
+    <div class="legal-form">
+      <h3>Model withdrawal form</h3>
+      <p class="fineprint">Only fill in and send this form if you want to withdraw. You can copy the text into an e-mail.</p>
+      <p>To: <span data-v="name"></span>, <span data-v="city"></span>, <span data-v="email"></span><br>
+        I hereby give notice that I withdraw from my contract of sale of the following goods:<br>
+        Order number: ____________<br>
+        Ordered on: ____________ / Received on: ____________<br>
+        Name: ____________<br>
+        Address: ____________<br>
+        Date: ____________</p>
+    </div>
+  </section>
+
+  <section id="complaints" class="legal-sec">
+    <h2>Faults and complaints</h2>
+    <p>Under Danish law you have a 2-year right to complain about faults. If the print has a fault that is not caused by your own handling, or it was damaged in transit, you can have it repaired or replaced, get your money back or get a price reduction, depending on the situation.</p>
+    <p>Write to <a data-v="email-link"></a> within a reasonable time of discovering the fault, preferably with photos. If the complaint is justified, we pay the reasonable shipping costs.</p>
+    <h3>Where to complain</h3>
+    <p>Contact us first; we can usually find a solution. If we cannot agree, you can complain to Center for Klageløsning, Nævnenes Hus, Toldboden 2, 8800 Viborg, Denmark, via <a href="https://www.naevneneshus.dk" target="_blank" rel="noopener">naevneneshus.dk</a>.</p>
+
+    <h3>Copyright</h3>
+    <p>All images of the paintings and drawings on this site belong to Laura Kruuse. When you buy a print, you buy the print itself, not the right to copy the motif or use it commercially.</p>
+  </section>
+
+  <section id="privacy" class="legal-sec">
+    <h2>Privacy policy</h2>
+    <p>We look after your details and only collect what is needed to send your order and answer your messages.</p>
+
+    <h3>Data controller</h3>
+    <p><span data-v="name"></span>, <span data-v="city"></span>, Denmark<span data-v="cvr-inline">, CVR no. <span data-v="cvr"></span></span>. E-mail: <a data-v="email-link"></a>.</p>
+
+    <h3>What we collect and why</h3>
+    <table class="legal-table">
+      <thead><tr><th>When you</th><th>Details</th><th>Purpose and legal basis</th></tr></thead>
+      <tbody>
+        <tr><td>Buy a print</td><td>Name, e-mail, phone number (optional), address and what you bought</td><td>To send your order and contact you about it (contract, GDPR art. 6(1)(b)). Bookkeeping (legal obligation, art. 6(1)(c)).</td></tr>
+        <tr><td>Pay with MobilePay</td><td>Your name, phone number and the amount, as shown to us in MobilePay</td><td>To check that the order has been paid (contract, art. 6(1)(b)).</td></tr>
+        <tr><td>Write via the contact form</td><td>Name, e-mail and your message</td><td>To answer you (legitimate interest, art. 6(1)(f)).</td></tr>
+        <tr><td>Order (security check)</td><td>IP address and technical details about your browser</td><td>To stop fake orders from bots (legitimate interest, art. 6(1)(f)).</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Who processes the details for us</h3>
+    <p>We never sell your details. We use these services to run the site:</p>
+    <ul>
+      <li><b>Supabase</b>: the database where orders are stored.</li>
+      <li><b>Resend</b>: sends order e-mails.</li>
+      <li><b>Cloudflare Turnstile</b>: the security check when ordering.</li>
+      <li><b>Formspree</b>: the contact form.</li>
+      <li><b>GitHub Pages</b>: hosts the website.</li>
+      <li><b>Google Fonts</b>: the typefaces on the site. Your browser loads them from Google, which therefore sees your IP address.</li>
+      <li><b>Vipps MobilePay</b>: the payment. MobilePay processes your details under its own privacy policy.</li>
+    </ul>
+    <p>Some of these services are American and may process details outside the EU. This is done on the basis of the European Commission’s standard contractual clauses or the EU-U.S. Data Privacy Framework.</p>
+
+    <h3>Instagram and cookies</h3>
+    <p>The site does not use cookies for statistics or advertising. The Instagram posts on the front page only load when you press the button yourself; Instagram (Meta) then sets cookies under its own rules.</p>
+    <p>Your basket, language choice and recent orders are only stored in your own browser (local storage), so they are there next time. You can delete them by clearing the browser data for the site.</p>
+
+    <h3>How long we keep the details</h3>
+    <ul>
+      <li>Orders are kept for 5 years from the end of the financial year of the purchase, as required by the Danish Bookkeeping Act.</li>
+      <li>Cancelled and unpaid orders are deleted when no longer needed, at the latest after 1 year.</li>
+      <li>Messages from the contact form are deleted when the matter is closed.</li>
+    </ul>
+
+    <h3>Your rights</h3>
+    <p>You have the right to see the details we hold about you, have them corrected or deleted, restrict their use, object, and receive them in a portable format. Write to <a data-v="email-link"></a>. We answer within one month. Details we must keep under the Bookkeeping Act can only be deleted once that period has ended.</p>
+    <p>You can complain to the Danish Data Protection Agency (Datatilsynet), Carl Jacobsens Vej 35, 2500 Valby, Denmark, <a href="https://www.datatilsynet.dk" target="_blank" rel="noopener">datatilsynet.dk</a>.</p>
+  </section>
+
+  <p class="fineprint legal-updated">Last updated: 24 November 2026</p>
+</div>
+
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-logo"><img src="images/general/favicon-192.png" width="36" height="36" alt="">Japper studio</div>
+    <ul class="footer-nav">
+      <li><a href="index.html#top" data-i18n="nav.home">Forside</a></li>
+      <li data-auction><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
+      <li><a href="prints.html" data-i18n="nav.prints">Prints</a></li>
+      <li><a href="museum.html" data-i18n="nav.museum">Portefølje</a></li>
+      <li><a href="index.html#om-mig" data-i18n="nav.about">Om mig</a></li>
+      <li><a href="index.html#kontakt" data-i18n="nav.contact">Kontakt</a></li>
+    </ul>
+    <p class="footer-legal"></p>
+    <p class="footer-copy">© <span class="year">2026</span> Japper studio. <span data-i18n="footer.rights">Alle rettigheder forbeholdes.</span> <span class="footer-credit" data-i18n="footer.credit">Udviklet med ❤️ af Clara Holst</span></p>
+  </div>
+</footer>
+
+<script src="js/config.js?v=20261124c"></script>
+<script src="js/i18n.js?v=20261124c"></script>
+<script src="js/site.js?v=20261124c"></script>
+<script>
+/* Fill in the details from config.js */
+const B = CONFIG.business || {}, C = CONFIG.contact || {};
+const VALUES = {
+  name: B.name, city: B.city, cvr: B.cvr, email: C.email,
+  ship: kr(CONFIG.shipping.ship), max: MAX_PER_PERSON, hold: CONFIG.reserveHours, cancel: CANCEL_HOURS,
+  mobilepay: CONFIG.mobilepay.number
+};
+function fillValues() {
+  $$("[data-v]").forEach(el => {
+    const k = el.dataset.v;
+    if (k === "email-link") { el.href = "mailto:" + C.email; el.textContent = C.email; }
+    else if (k === "cvr-line" || k === "cvr-inline") el.hidden = !B.cvr;
+    else el.textContent = VALUES[k] ?? "";
+  });
+}
+/* Show the block for the current language. A link to an anchor in the other language
+   (e.g. #privatliv while reading in English) jumps to the matching section. */
+const SAME = { handel: "terms", fortrydelse: "withdrawal", reklamation: "complaints", privatliv: "privacy" };
+function showLang() {
+  $$("[data-lang]").forEach(b => { b.hidden = b.dataset.lang !== LANG; });
+  const id = location.hash.slice(1);
+  const match = LANG === "en" ? SAME[id] : Object.keys(SAME).find(k => SAME[k] === id);
+  if (match) { history.replaceState(null, "", "#" + match); document.getElementById(match).scrollIntoView(); }
+}
+fillValues();
+showLang();
+document.addEventListener("lang:change", () => { fillValues(); showLang(); });
+</script>
+</body>
+</html>

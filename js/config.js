@@ -40,6 +40,10 @@ const CONFIG = {
   // When they are gone the shop shows "sold out for today". Keep the same as daily_print_limit() in supabase-setup.sql.
   dailyLimit: 50,
 
+  // Who sells: shown in the footer and in the terms and privacy page (betingelser.html).
+  // cvr: fill in the CVR number when it arrives, e.g. "12345678". Empty = the CVR line is simply hidden.
+  business: { name: "Japper studio v/ Laura Kruuse", city: "Odense", cvr: "" },
+
   contact: {
     email: "laura@japperstudio.dk",
     instagram: { url: "https://www.instagram.com/laur_kru", handle: "@laur_kru" },

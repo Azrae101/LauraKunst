@@ -528,6 +528,37 @@ fieldset.address { gap: 0.9rem; }
 .footer-nav a { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--green-mid); text-decoration: none; display: inline-block; padding: 0.4rem 0; }
 .footer-nav a:hover { color: var(--green-dark); }
 .footer-copy { font-size: 0.8rem; color: var(--text-muted); }
+.footer-legal { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 1.4rem; font-size: 0.82rem; color: var(--text-muted); }
+.footer-legal a { color: var(--green-mid); padding: 0.3rem 0; }
+.footer-legal a:hover { color: var(--green-dark); }
+.fineprint a { color: var(--green-dark); }
+
+/* ---------- Terms and privacy (betingelser.html) ---------- */
+.legal { padding-bottom: 4rem; }
+.legal .page-head, .legal-sec, .legal-updated { max-width: 760px; }
+.legal-toc { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1.6rem; }
+.legal-toc a { min-height: 42px; display: inline-flex; align-items: center; padding: 0 1rem; border: 1px solid var(--line); border-radius: 999px; background: var(--white); color: var(--green-dark); text-decoration: none; font-size: 0.88rem; }
+.legal-toc a:hover { border-color: var(--green-mid); }
+.legal-sec { padding: 2.4rem 0 0.6rem; border-top: 1px solid var(--line); scroll-margin-top: calc(var(--nav-h) + 1rem); }
+.legal-sec h2 { font-family: var(--serif); font-weight: 400; font-size: clamp(1.9rem, 5vw, 2.4rem); color: var(--green-dark); line-height: 1.15; margin-bottom: 1rem; }
+.legal-sec h3 { font-family: var(--serif); font-weight: 500; font-size: 1.35rem; color: var(--green-dark); margin: 1.6rem 0 0.4rem; }
+.legal-sec p, .legal-sec li, .legal-sec td, .legal-sec th { font-size: 0.97rem; line-height: 1.75; }
+.legal-sec p + p { margin-top: 0.7rem; }
+.legal-sec ol, .legal-sec ul { padding-left: 1.3rem; display: grid; gap: 0.35rem; }
+.legal-sec a { color: var(--green-dark); }
+.legal-form { margin-top: 1.8rem; padding: 1.2rem 1.3rem; background: var(--white); border: 1px dashed var(--line); }
+.legal-form h3 { margin-top: 0; }
+.legal-table { width: 100%; border-collapse: collapse; margin-top: 0.4rem; }
+.legal-table th, .legal-table td { text-align: left; vertical-align: top; padding: 0.6rem 0.7rem 0.6rem 0; border-bottom: 1px solid var(--line); }
+.legal-table th { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); font-weight: 500; }
+/* On phones each row becomes a small card, so nothing scrolls sideways */
+@media (max-width: 640px) {
+  .legal-table thead { display: none; }
+  .legal-table tr { display: grid; gap: 0.2rem; padding: 0.8rem 0; border-bottom: 1px solid var(--line); }
+  .legal-table td { padding: 0; border: 0; }
+  .legal-table td:first-child { font-weight: 500; color: var(--green-dark); }
+}
+.legal-updated { margin-top: 2.4rem; }
 
 /* ---------- Toast and reveal ---------- */
 .toast { position: fixed; left: 50%; bottom: calc(1.2rem + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); z-index: 300;

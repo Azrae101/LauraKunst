@@ -39,6 +39,7 @@ function applyLang() {
   $$("[data-i18n-aria]").forEach(el => { el.setAttribute("aria-label", t(el.dataset.i18nAria)); });
   if (document.body.dataset.title) document.title = t(document.body.dataset.title);
   renderBasketBtn();
+  renderFooterLegal();
   // The button shows the flag of the language you can switch TO
   const other = LANG === "da" ? "en" : "da";
   $$(".lang-btn").forEach(b => {
@@ -50,6 +51,16 @@ function applyLang() {
   if (bar) { bar.querySelector("span").textContent = t("demo.text"); bar.querySelector("button").textContent = t("demo.reset"); }
   if (drawer && drawer.open && !drawer.dataset.paid) renderBasket();
   document.dispatchEvent(new CustomEvent("lang:change"));
+}
+/* Footer line on every page: links to the terms and privacy page, and who sells (with CVR once it is in config.js) */
+function renderFooterLegal() {
+  const b = CONFIG.business || {};
+  const seller = [b.name, b.city, b.cvr ? t("footer.cvr", { n: b.cvr }) : ""].filter(Boolean).map(esc).join(" · ");
+  $$(".footer-legal").forEach(p => {
+    p.innerHTML = `<a href="betingelser.html#${LANG === "en" ? "terms" : "handel"}">${t("footer.terms")}</a>
+      <a href="betingelser.html#${LANG === "en" ? "privacy" : "privatliv"}">${t("footer.privacy")}</a>
+      <span>${seller}</span>`;
+  });
 }
 function setLang(l) { LANG = l; try { localStorage.setItem("lk-lang", l); } catch {} applyLang(); }
 
@@ -507,6 +518,7 @@ function renderBasket() {
       <button class="btn block" type="submit" ${basketQty() > leftToday() ? "disabled" : ""}>${t("basket.submit")}</button>
       <p class="msg" id="co-msg" role="status"></p>
       <p class="fineprint">${t("basket.held", { h: CONFIG.reserveHours })}</p>
+      <p class="fineprint">${t("basket.terms")}</p>
     </form>`;
   $$("[data-rm]", body).forEach(b => b.addEventListener("click", () => { basket.splice(+b.dataset.rm, 1); saveBasket(); renderBasket(); }));
   $("#checkout").addEventListener("submit", submitOrder);

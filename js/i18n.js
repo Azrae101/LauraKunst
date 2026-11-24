@@ -306,6 +306,26 @@ const I18N = {
     "da": "EN",
     "en": "DA"
   },
+  "footer.terms": {
+    "da": "Handelsbetingelser",
+    "en": "Terms of sale"
+  },
+  "footer.privacy": {
+    "da": "Privatlivspolitik",
+    "en": "Privacy policy"
+  },
+  "footer.cvr": {
+    "da": "CVR {n}",
+    "en": "CVR {n}"
+  },
+  "meta.terms": {
+    "da": "Handelsbetingelser og privatlivspolitik | Japper studio",
+    "en": "Terms of sale and privacy policy | Japper studio"
+  },
+  "basket.terms": {
+    "da": "Ved at bestille accepterer du vores <a href=\"betingelser.html#handel\" target=\"_blank\">handelsbetingelser</a>. Du har 14 dages fortrydelsesret. Læs om dine oplysninger i vores <a href=\"betingelser.html#privatliv\" target=\"_blank\">privatlivspolitik</a>.",
+    "en": "By ordering you accept our <a href=\"betingelser.html#terms\" target=\"_blank\">terms of sale</a>. You have a 14-day right of withdrawal. Read about your details in our <a href=\"betingelser.html#privacy\" target=\"_blank\">privacy policy</a>."
+  },
   "footer.rights": {
     "da": "Alle rettigheder forbeholdes.",
     "en": "All rights reserved."

@@ -9,6 +9,10 @@ WHAT IS WHERE
   prints.html        the print shop, "Processen" (how a print is made) and "Kommer snart"
   museum.html        the virtual museum (portfolio). It hangs every painting in ARTWORKS and every sketch in SKETCHES by itself
   auction.html       the auction (hidden for now, see showAuction in js/config.js)
+  betingelser.html   terms of sale (handelsbetingelser) and privacy policy, Danish and English. Linked from the footer
+                     and the checkout. Seller name, city and CVR come from "business" in js/config.js: when the CVR
+                     number arrives, fill in cvr: "12345678" there and it shows everywhere. Change "Senest opdateret"
+                     at the bottom of both languages whenever the text changes
   ordrer.html        the order overview for Laura, with login (see "The order overview" below). Not linked anywhere
   supabase/functions/order-email/index.ts   the e-mail sent on every new order (see "E-mail on new orders")
   supabase/functions/place-order/index.ts   checks the captcha, then places the order (see "Captcha at checkout")
