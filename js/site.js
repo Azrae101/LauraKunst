@@ -640,6 +640,20 @@ function showPayment(order) {
       }
     });
   });
+
+  // Auto-poll for status changes while drawer is open (unless order is already complete)
+  if (open) {
+    const poll = setInterval(async () => {
+      if (!drawer.open) { clearInterval(poll); return; }
+      try {
+        const s = await api.status(order.order_code, order.email);
+        if (s && s.status !== order.status) {
+          clearInterval(poll);
+          showPayment(update(s));
+        }
+      } catch {}
+    }, 5000); // Poll every 5 seconds
+  }
 }
 
 // "kl. 14:30 i morgen" style end of the cancel window, in the visitor's language

@@ -80,11 +80,40 @@ function toBuyerPaymentConfirmed(o: Order) {
   const later = o.pay_later ?? 0;
   const subject = `Betaling modtaget: ordre ${o.order_code}`;
   const html = wrap(`
-    <h2 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:0 0 6px">Betaling modtaget! 🎉</h2>
+    <h2 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:0 0 6px">Betalingen er modtaget 🎉</h2>
     <p>Hej ${esc(o.name.split(" ")[0])},</p>
     <p>Tak! Vi har modtaget din betaling på ${kr(o.pay_now ?? o.total)} for ordre <b>${esc(o.order_code)}</b>.</p>
     ${itemsHtml(o)}
-    ${later ? `<p><b>Husk:</b> Du skal betale resten, ${kr(later)}, når du henter dine prints.</p>` : "<p>Dine prints bliver sendt snarest!</p>"}
+    ${later ? `<p><b>Husk:</b> Du skal betale resten, ${kr(later)}, når du henter dine prints.</p>` : "<p><b>Dine prints bliver gjort klar til forsendelse og skal være hos dig inden for 3-5 arbejdsdage.</b></p>"}
+    <p>Du får besked på denne e-mail, når dine prints er sendt eller klar til afhentning.</p>
+    <p>Spørgsmål? Svar bare på denne mail.</p>`);
+  return { subject, html };
+}
+
+function toBuyerCancelled(o: Order) {
+  const subject = `Ordre annulleret: ${o.order_code}`;
+  const html = wrap(`
+    <h2 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:0 0 6px">Ordre annulleret</h2>
+    <p>Hej ${esc(o.name.split(" ")[0])},</p>
+    <p>Din ordre <b>${esc(o.order_code)}</b> er blevet annulleret.</p>
+    ${itemsHtml(o)}
+    <p>Din betaling på ${kr(o.pay_now ?? o.total)} vil blive refunderet inden for 3-5 arbejdsdage.</p>
+    <p>Spørgsmål? Svar bare på denne mail.</p>`);
+  return { subject, html };
+}
+
+function toBuyerShipped(o: Order) {
+  const subject = o.delivery === "pickup" ? `Dine prints er klar til afhentning! Ordre ${o.order_code}` : `Dine prints er på vej! Ordre ${o.order_code}`;
+  const html = wrap(`
+    <h2 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:0 0 6px">${o.delivery === "pickup" ? "Dine prints er klar! 🎉" : "Dine prints er på vej! 📦"}</h2>
+    <p>Hej ${esc(o.name.split(" ")[0])},</p>
+    <p>${o.delivery === "pickup" ? "Godt nyt! Dine prints fra ordre <b>" + esc(o.order_code) + "</b> er klar til afhentning." : "Godt nyt! Dine prints fra ordre <b>" + esc(o.order_code) + "</b> er blevet sendt."}</p>
+    ${itemsHtml(o)}
+    ${o.delivery === "ship" 
+      ? `<p><b>Forsendelse:</b> De skulle være hos dig inden for 3-5 arbejdsdage. Du modtager snart et trackingnummer på denne e-mail-adresse.</p>` 
+      : `<p><b>Afhentningssted:</b><br><b>Foran Odense Banegård Center</b><br>Østre Stationsvej 29<br>5000 Odense C</p>
+         <p><b>Åbningstider:</b> Efter aftale (Laura svarer på denne mail)</p>
+         <p>Skriv til Laura på denne mail, så finder I et tidspunkt, der passer jer.</p>`}
     <p>Spørgsmål? Svar bare på denne mail.</p>`);
   return { subject, html };
 }
@@ -96,11 +125,11 @@ Deno.serve(async (req) => {
   let payload: { type?: string; table?: string; record?: Order };
   try { payload = await req.json(); } catch { return new Response("bad request", { status: 400 }); }
   if (payload.table !== "orders" || !payload.record) return new Response("ignored");
-  if (payload.type === "UPDATE" && payload.record.status !== "paid") return new Response("ignored");
+  if (payload.type === "UPDATE" && !["paid", "cancelled", "shipped"].includes(payload.record.status)) return new Response("ignored");
   if (payload.type !== "INSERT" && payload.type !== "UPDATE") return new Response("ignored");
 
   const o = payload.record;
-  const isPaymentConfirmed = payload.type === "UPDATE";
+  const isUpdate = payload.type === "UPDATE";
   const errors: string[] = [];
   
   if (NOTIFY.length && payload.type === "INSERT") {
@@ -109,8 +138,15 @@ Deno.serve(async (req) => {
   }
   
   if (SEND_TO_BUYER) {
-    const m = isPaymentConfirmed ? toBuyerPaymentConfirmed(o) : toBuyer(o);
-    try { await send([o.email], m.subject, m.html, NOTIFY[0]); } catch (e) { errors.push(String(e)); }
+    let m;
+    if (isUpdate) {
+      if (o.status === "paid") m = toBuyerPaymentConfirmed(o);
+      else if (o.status === "cancelled") m = toBuyerCancelled(o);
+      else if (o.status === "shipped") m = toBuyerShipped(o);
+    } else {
+      m = toBuyer(o);
+    }
+    if (m) try { await send([o.email], m.subject, m.html, NOTIFY[0]); } catch (e) { errors.push(String(e)); }
   }
   
   if (errors.length) { console.error(errors.join("\n")); return new Response(errors.join("\n"), { status: 500 }); }
