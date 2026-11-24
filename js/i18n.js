@@ -170,6 +170,10 @@ const I18N = {
     "da": "Vis opslagene",
     "en": "Show the posts"
   },
+  "ig.blocked": {
+    "da": "Opslagene kunne ikke vises her, fordi din browser eller en annonceblokering stopper indhold fra Instagram. Du kan se dem direkte på Instagram.",
+    "en": "The posts can’t be shown here, because your browser or an ad blocker is stopping content from Instagram. You can see them directly on Instagram."
+  },
   "ig.view": {
     "da": "Se opslaget på Instagram",
     "en": "See the post on Instagram"

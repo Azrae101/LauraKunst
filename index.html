@@ -186,6 +186,10 @@
         <div class="ig-track" id="ig-track" tabindex="0"></div>
         <button class="ig-nav next" type="button" data-ig="1" data-i18n-aria="museum.next" aria-label="Næste"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
       </div>
+      <!-- Shown instead of the carousel when the browser or an ad blocker stops Instagram -->
+      <div class="ig-gate" id="ig-blocked" hidden>
+        <p data-i18n="ig.blocked">Opslagene kunne ikke vises her, fordi din browser eller en annonceblokering stopper indhold fra Instagram. Du kan se dem direkte på Instagram.</p>
+      </div>
       <div class="ig-profile"><a class="btn ig-btn" id="ig-profile" href="#" target="_blank" rel="noopener"></a></div>
     </div>
   </section>
@@ -478,9 +482,18 @@ function showInstagram() {
         <a href="${esc(url)}" target="_blank" rel="noopener">${t("ig.view")}</a>
       </blockquote>
     </div>`).join("");
+  $("#ig-blocked").hidden = true;
+  // If a blocker stops Instagram, say so (with the profile button below) instead of showing an empty carousel
+  const blocked = () => { $("#ig-carousel").hidden = true; $("#ig-blocked").hidden = false; };
+  clearTimeout(showInstagram.check);
+  showInstagram.check = setTimeout(() => {
+    const shown = [...$$("#ig-track iframe")].some(f => f.offsetHeight > 100);
+    if (!shown) blocked();
+  }, 10000);
   if (window.instgrm) { window.instgrm.Embeds.process(); return; }
   const s = document.createElement("script");
   s.async = true; s.src = "https://www.instagram.com/embed.js";
+  s.onerror = () => { clearTimeout(showInstagram.check); blocked(); };   // e.g. ERR_BLOCKED_BY_CLIENT
   document.body.appendChild(s);
 }
 $("#ig-load").addEventListener("click", () => { local.set(IG_KEY, true); showInstagram(); });
