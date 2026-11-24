@@ -626,6 +626,18 @@ const I18N = {
     "da": "Skriv venligst byen.",
     "en": "Please enter the town."
   },
+  "err.CAPTCHA": {
+    "da": "Sikkerhedstjekket gik ikke igennem. Prøv igen.",
+    "en": "The security check didn’t go through. Please try again."
+  },
+  "err.CAPTCHA_WAIT": {
+    "da": "Vent et øjeblik, til sikkerhedstjekket er færdigt, og prøv så igen.",
+    "en": "Please wait a moment for the security check to finish, then try again."
+  },
+  "err.CAPTCHA_LOAD": {
+    "da": "Sikkerhedstjekket kunne ikke indlæses. Slå evt. din annonceblokering fra, og genindlæs siden.",
+    "en": "The security check couldn’t load. Try turning off your ad blocker and reloading the page."
+  },
   "err.ADDRESS_DK": {
     "da": "Skriv et dansk postnummer med 4 cifre, fx 5000. Vi sender kun inden for Danmark lige nu.",
     "en": "Please enter a Danish postcode with 4 digits, e.g. 5000. For now we only send within Denmark."

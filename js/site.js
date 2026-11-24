@@ -181,6 +181,30 @@ function fillSocialRows() {
 
 /* ---------- Data: Supabase when set up, otherwise a demo in this browser ---------- */
 const LIVE = !!(CONFIG.supabaseUrl && CONFIG.supabaseAnonKey);
+/* Captcha at checkout (Cloudflare Turnstile), only with the real database */
+const CAPTCHA = LIVE && !!CONFIG.turnstileSiteKey;
+let captchaId = null, captchaReady = null;
+function loadTurnstile() {
+  if (!captchaReady) captchaReady = new Promise((resolve, reject) => {
+    window.onTurnstileLoad = resolve;
+    const s = document.createElement("script");
+    s.src = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit&onload=onTurnstileLoad";
+    s.async = true; s.onerror = () => { captchaReady = null; reject(new Error("CAPTCHA_LOAD")); };
+    document.head.appendChild(s);
+  });
+  return captchaReady;
+}
+// Put the captcha in the checkout form (called every time the basket is drawn)
+async function mountCaptcha() {
+  const box = $("#co-captcha"); if (!CAPTCHA || !box) return;
+  try { await loadTurnstile(); } catch { box.textContent = t("err.CAPTCHA_LOAD"); return; }
+  if (!box.isConnected) return;
+  if (captchaId !== null) { try { turnstile.remove(captchaId); } catch {} }
+  captchaId = turnstile.render(box, { sitekey: CONFIG.turnstileSiteKey, language: LANG, theme: "light" });
+}
+const captchaToken = () => { try { return captchaId !== null ? turnstile.getResponse(captchaId) || "" : ""; } catch { return ""; } };
+// A token works only once, so get a new one after a failed order
+const resetCaptcha = () => { try { if (captchaId !== null) turnstile.reset(captchaId); } catch {} };
 
 function remoteApi() {
   const base = CONFIG.supabaseUrl.replace(/\/$/, "");
@@ -201,7 +225,10 @@ function remoteApi() {
     prints: () => call("/rest/v1/prints?select=artwork_id,stock,edition_size,sold,price_unsigned,price_signed&active=eq.true"),
     shop: () => rpc("shop_state"),
     bid: (b) => rpc("place_bid", { p_artwork: b.artwork, p_name: b.name, p_email: b.email, p_phone: b.phone, p_amount: b.amount }),
-    order: (o) => rpc("place_order", { p_name: o.name, p_email: o.email, p_phone: o.phone, p_address: o.address, p_delivery: o.delivery, p_items: o.items, p_plan: o.plan || "full" }),
+    // With the captcha on, orders go through the place-order function, which checks the captcha first
+    order: (o) => CAPTCHA
+      ? call("/functions/v1/place-order", { method: "POST", body: JSON.stringify({ name: o.name, email: o.email, phone: o.phone, address: o.address, delivery: o.delivery, items: o.items, plan: o.plan || "full", captcha: o.captcha }) })
+      : rpc("place_order", { p_name: o.name, p_email: o.email, p_phone: o.phone, p_address: o.address, p_delivery: o.delivery, p_items: o.items, p_plan: o.plan || "full" }),
     status: (code, email) => rpc("order_status", { p_code: code, p_email: email }),
     cancel: (code, email) => rpc("cancel_order", { p_code: code, p_email: email }),
     notify: (email, topic) => rpc("join_waitlist", { p_email: email, p_topic: topic })
@@ -476,12 +503,14 @@ function renderBasket() {
         <div class="grand"><span>${t("basket.total")}</span><span>${kr(subtotal() + ship)}</span></div>
       </div>
       ${basketQty() > leftToday() ? `<p class="msg err">${soldOutToday() ? t("err.SOLD_OUT_TODAY") : dailyLimitText(leftToday())}</p>` : ""}
+      ${CAPTCHA ? `<div class="captcha" id="co-captcha"></div>` : ""}
       <button class="btn block" type="submit" ${basketQty() > leftToday() ? "disabled" : ""}>${t("basket.submit")}</button>
       <p class="msg" id="co-msg" role="status"></p>
       <p class="fineprint">${t("basket.held", { h: CONFIG.reserveHours })}</p>
     </form>`;
   $$("[data-rm]", body).forEach(b => b.addEventListener("click", () => { basket.splice(+b.dataset.rm, 1); saveBasket(); renderBasket(); }));
   $("#checkout").addEventListener("submit", submitOrder);
+  mountCaptcha();
 }
 
 async function submitOrder(e) {
@@ -496,10 +525,12 @@ async function submitOrder(e) {
   if (!dkZip(zip)) { msg.textContent = t("err.ADDRESS_DK"); return; }
   if (city.length < 2) { msg.textContent = t("err.CITY"); return; }
   const address = `${street}\n${zip} ${city}\nDanmark`;   // the same format place_order() checks
+  const captcha = captchaToken();
+  if (CAPTCHA && !captcha) { msg.textContent = t("err.CAPTCHA_WAIT"); return; }
   btn.disabled = true; msg.className = "msg"; msg.textContent = t("basket.reserving");
   try {
     const items = basket.map(i => ({ artwork_id: i.artwork_id, signed: i.signed, qty: i.qty }));
-    const r = await api.order({ name: f.name.trim(), email: f.email.trim(), phone: (f.phone || "").trim(), address, delivery: "ship", items, plan: "full" });
+    const r = await api.order({ name: f.name.trim(), email: f.email.trim(), phone: (f.phone || "").trim(), address, delivery: "ship", items, plan: "full", captcha });
     local.set("lk-me", { ...local.get("lk-me", {}), name: f.name.trim(), email: f.email.trim(), phone: (f.phone || "").trim() });
     const order = { order_code: r.order_code, total: r.total, items: r.items || [], email: f.email.trim().toLowerCase(),
                     message: r.message || payMessage(r.order_code, r.items || []), status: "awaiting_payment", created_at: new Date().toISOString(),
@@ -511,6 +542,7 @@ async function submitOrder(e) {
     showPayment(order);
   } catch (err) {
     msg.className = "msg err"; msg.textContent = errText(err); btn.disabled = false;
+    resetCaptcha();
     try { await loadPrints(); document.dispatchEvent(new CustomEvent("prints:change")); } catch {}
   }
 }

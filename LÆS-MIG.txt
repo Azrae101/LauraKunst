@@ -11,6 +11,7 @@ WHAT IS WHERE
   auction.html       the auction (hidden for now, see showAuction in js/config.js)
   ordrer.html        the order overview for Laura, with login (see "The order overview" below). Not linked anywhere
   supabase/functions/order-email/index.ts   the e-mail sent on every new order (see "E-mail on new orders")
+  supabase/functions/place-order/index.ts   checks the captcha, then places the order (see "Captcha at checkout")
   404.html           shown for any address that does not exist (an empty frame that gets "404 not found" painted in it)
   gallery.html, contact.html, about.html   old addresses: they only send visitors on to the right page
                      (old front page links like index.html#prints also still work: they are sent to prints.html)
@@ -158,6 +159,32 @@ E-MAIL ON NEW ORDERS
   the DNS records it shows where the domain is registered. When it says Verified, add the secrets
      FROM_EMAIL      Japper studio <ordre@japperstudio.dk>
      SEND_TO_BUYER   yes
+
+
+CAPTCHA AT CHECKOUT
+  A small "I am human" check (Cloudflare Turnstile, free) before an order can be placed, so bots cannot
+  fill up the daily limit with fake orders. Most buyers only see a tick; nobody has to solve a puzzle.
+  The order goes through the Supabase function supabase/functions/place-order/index.ts, which checks
+  the captcha with Cloudflare and only then asks the database to place the order.
+
+  Set up once, IN THIS ORDER (the shop keeps working the whole way through):
+  1. Make a free account on cloudflare.com. Then Turnstile (in the menu on the left), "Add widget":
+       Name: Japper studio    Hostnames: japperstudio.dk  (add localhost too, to test on your own computer)
+       Widget mode: Managed.  Create. Copy the "Site Key" and the "Secret Key".
+  2. Supabase: Edge Functions, "Deploy a new function", "Via Editor". Name it  place-order ,
+     replace the example code with ALL of supabase/functions/place-order/index.ts, and Deploy.
+     Then open the function's settings and turn OFF "Verify JWT" (or "Enforce JWT verification"), and Save.
+  3. Supabase: Edge Functions, Secrets. Add  TURNSTILE_SECRET  with the Secret Key from step 1.
+  4. js/config.js: paste the Site Key into  turnstileSiteKey: "..." , push to GitHub, and wait until it is live.
+  5. Test: place an order (then cancel it in the basket). The check should appear above the order button.
+  6. Only now close the back door, so no one can skip the captcha: Supabase, SQL Editor, run:
+       revoke execute on function place_order(text, text, text, text, text, jsonb, text) from public, anon, authenticated;
+       grant execute on function place_order(text, text, text, text, text, jsonb, text) to service_role;
+     Test once more. (supabase-setup.sql already does this, so running it again later keeps the door closed.)
+
+  To turn the captcha off again: first run in the SQL Editor
+       grant execute on function place_order(text, text, text, text, text, jsonb, text) to anon;
+  and then empty turnstileSiteKey in js/config.js. (The other way round, the shop stops taking orders in between.)
 
 
 CHANGING TEXT

@@ -393,7 +393,11 @@ end $$;
 
 grant execute on function auction_state() to anon;
 grant execute on function place_bid(text, text, text, text, integer) to anon;
-grant execute on function place_order(text, text, text, text, text, jsonb, text) to anon;
+-- place_order is NOT open to the browser: orders go through the place-order Edge Function, which checks
+-- the captcha first (see "Captcha at checkout" in LÆS-MIG.txt). Without the captcha set up, change this to
+--   grant execute on function place_order(text, text, text, text, text, jsonb, text) to anon;
+revoke execute on function place_order(text, text, text, text, text, jsonb, text) from public, anon, authenticated;
+grant execute on function place_order(text, text, text, text, text, jsonb, text) to service_role;
 grant execute on function join_waitlist(text, text) to anon;
 grant execute on function order_status(text, text) to anon;
 grant execute on function cancel_order(text, text) to anon;

@@ -13,6 +13,10 @@ const CONFIG = {
   // Contact form. Create a free form at formspree.io and paste its address here.
   formspreeEndpoint: "https://formspree.io/f/xrpqrovw",
 
+  // Captcha at checkout (Cloudflare Turnstile). Paste the "Site Key" here once the place-order
+  // function is set up (see "Captcha at checkout" in LÆS-MIG.txt). Empty = no captcha, orders go straight to the database.
+  turnstileSiteKey: "",
+
   defaultLanguage: "da",
 
   // The auction is hidden for now (it will move to auction.net and be embedded later).

@@ -185,6 +185,7 @@ section.block { padding: 4rem 0; }
 .check { display: flex; gap: 0.7rem; align-items: flex-start; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; cursor: pointer; }
 .check input { width: 20px; height: 20px; margin-top: 0.15rem; flex: none; accent-color: var(--green-mid); }
 .msg { font-size: 0.95rem; min-height: 1.5em; }
+.captcha { min-height: 65px; font-size: 0.9rem; color: var(--err); }   /* room for the Turnstile box, so the form does not jump */
 .msg.err { color: var(--err); }
 .msg.ok { color: var(--ok); }
 .inline-form { display: flex; flex-wrap: wrap; gap: 0.6rem; }
