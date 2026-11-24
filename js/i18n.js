@@ -127,8 +127,8 @@ const I18N = {
     "en": "Buy a print"
   },
   "shop.p": {
-    "da": "Hvert print er 50 × 70 cm og bliver signeret og nummereret i hånden af Laura. {p} pr. print. Levering koster {s}.",
-    "en": "Every print is 50 × 70 cm and signed and numbered by hand by Laura. {p} per print. Delivery costs {s}."
+    "da": "Hvert print er 50 × 70 cm og blir signeret og nummereret i hånden af Laura.<br>{p} pr. print. Levering koster {s}.",
+    "en": "Every print is 50 × 70 cm and signed and numbered by hand by Laura.<br>{p} per print. Delivery costs {s}."
   },
   "viewer.printLine": {
     "da": "Print i 50 × 70 cm, signeret og nummereret: {p}",
