@@ -63,9 +63,6 @@ const validEmail = (e) => /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e || "");
 const MAX_PER_PERSON = CONFIG.maxPerPerson || 10;
 /* The last 8 digits of a phone number, so "+45 12 34 56 78" and "12345678" are the same person */
 const phoneKey = (p) => { const d = String(p || "").replace(/\D/g, "").slice(-8); return d.length === 8 ? d : ""; };
-/* Deposit at pickup: pay DEPOSIT_PCT % now (rounded up to whole kroner), the rest at pickup.
-   Same rule as place_order() in supabase-setup.sql. 0 turns the option off. */
-const DEPOSIT_PCT = Math.max(0, Math.min(100, CONFIG.depositPercent || 0));
 const CANCEL_HOURS = CONFIG.cancelHours ?? 24;
 const DAILY_LIMIT = CONFIG.dailyLimit ?? 50;
 // Prints are only sent inside Denmark for now: a Danish postcode is 4 digits, 1000 to 9990.
@@ -76,11 +73,6 @@ const zipOf = (address) => ((address || "").match(/(?:^|\n)\s*(\d{4})\s+\S/) || 
 // Can the buyer still cancel this order themselves? (not paid, and inside the cancel window)
 const canCancel = (o) => o.status === "awaiting_payment" && CANCEL_HOURS > 0 && o.created_at &&
   Date.now() - Date.parse(o.created_at) < CANCEL_HOURS * 36e5;
-function splitPayment(total, plan) {
-  if (plan !== "deposit") return { pay_now: total, pay_later: 0 };
-  const pay_now = Math.ceil(total * DEPOSIT_PCT / 100);
-  return { pay_now, pay_later: total - pay_now };
-}
 /* The text to write in MobilePay: order number and what was bought, e.g. "LK-12345 2x VESTIGE, 1x FLORERE".
    Same format as place_order() in supabase-setup.sql. MobilePay allows 60 characters. */
 function payMessage(code, lines) {
@@ -418,7 +410,7 @@ function addToBasket(artwork_id, signed, qty) {
 }
 
 /* Basket drawer, built once and shared by every page */
-let drawer, delivery = "ship", payPlan = "full";   // payPlan: "full" or "deposit" (deposit only with pickup)
+let drawer;
 function buildDrawer() {
   drawer = document.createElement("dialog");
   drawer.className = "drawer";
@@ -455,7 +447,7 @@ function renderBasket() {
   const ship = delivery === "ship" ? CONFIG.shipping.ship : CONFIG.shipping.pickup;
   const canDeposit = delivery === "pickup" && DEPOSIT_PCT > 0 && DEPOSIT_PCT < 100;
   if (!canDeposit) payPlan = "full";
-  const split = splitPayment(subtotal() + ship, payPlan);
+  const ship = CONFIG.shipping.ship;
   const me = local.get("lk-me", {});
   const keep = $("#checkout") ? Object.fromEntries(new FormData($("#checkout"))) : {};
   body.innerHTML = `
@@ -466,31 +458,25 @@ function renderBasket() {
       </div>`; }).join("")}</div>
     <form id="checkout" novalidate style="display:grid;gap:1.1rem">
       <fieldset><legend>${t("basket.delivery")}</legend>
-        <label class="radio"><input type="radio" name="delivery" value="ship" ${delivery === "ship" ? "checked" : ""} checked disabled>${t("basket.ship")}<span class="price">${kr(CONFIG.shipping.ship)}</span></label>
+        <label class="radio"><input type="radio" name="delivery" value="ship" checked disabled>${t("basket.ship")}<span class="price">${kr(CONFIG.shipping.ship)}</span></label>
       </fieldset>
-      ${canDeposit ? `<fieldset><legend>${t("basket.payment")}</legend>
-        <label class="radio"><input type="radio" name="plan" value="full" ${payPlan === "full" ? "checked" : ""}>${t("basket.planFull")}</label>
-        <label class="radio"><input type="radio" name="plan" value="deposit" ${payPlan === "deposit" ? "checked" : ""}>${t("basket.planDeposit", { p: DEPOSIT_PCT })}</label>
-      </fieldset>` : ""}
       <div class="row-2">
         <label class="field"><span>${t("basket.name")}</span><input name="name" autocomplete="name" value="${esc(keep.name ?? me.name ?? "")}" required></label>
         <label class="field"><span>${t("email.label")}</span><input name="email" type="email" inputmode="email" autocomplete="email" value="${esc(keep.email ?? me.email ?? "")}" required></label>
       </div>
       <label class="field"><span>${t("basket.phone")}</span><input name="phone" type="tel" autocomplete="tel" value="${esc(keep.phone ?? me.phone ?? "")}"></label>
-      ${delivery === "ship" ? `<fieldset class="address"><legend>${t("basket.address")}</legend>
+      <fieldset class="address"><legend>${t("basket.address")}</legend>
         <label class="field"><span>${t("basket.street")}</span><input name="street" autocomplete="address-line1" placeholder="${t("basket.streetPh")}" value="${esc(keep.street ?? "")}" required></label>
         <div class="row-zip">
           <label class="field"><span>${t("basket.zip")}</span><input name="zip" inputmode="numeric" autocomplete="postal-code" maxlength="4" pattern="[0-9]{4}" placeholder="5000" value="${esc(keep.zip ?? "")}" required></label>
           <label class="field"><span>${t("basket.city")}</span><input name="city" autocomplete="address-level2" placeholder="Odense C" value="${esc(keep.city ?? "")}" required></label>
         </div>
         <p class="fineprint">${t("basket.dkOnly")}</p>
-      </fieldset>` : ""}
+      </fieldset>
       <div class="totals">
         <div><span>${t("basket.prints")}</span><span>${kr(subtotal())}</span></div>
-        <div><span>${t(delivery === "ship" ? "basket.shipping" : "basket.pickup")}</span><span>${kr(ship)}</span></div>
+        <div><span>${t("basket.shipping")}</span><span>${kr(ship)}</span></div>
         <div class="grand"><span>${t("basket.total")}</span><span>${kr(subtotal() + ship)}</span></div>
-        ${payPlan === "deposit" ? `<div class="split"><span>${t("basket.payNow")}</span><span>${kr(split.pay_now)}</span></div>
-        <div class="split"><span>${t("basket.payLater")}</span><span>${kr(split.pay_later)}</span></div>` : ""}
       </div>
       ${basketQty() > leftToday() ? `<p class="msg err">${soldOutToday() ? t("err.SOLD_OUT_TODAY") : dailyLimitText(leftToday())}</p>` : ""}
       <button class="btn block" type="submit" ${basketQty() > leftToday() ? "disabled" : ""}>${t("basket.submit")}</button>
@@ -498,9 +484,6 @@ function renderBasket() {
       <p class="fineprint">${t("basket.held", { h: CONFIG.reserveHours })}</p>
     </form>`;
   $$("[data-rm]", body).forEach(b => b.addEventListener("click", () => { basket.splice(+b.dataset.rm, 1); saveBasket(); renderBasket(); }));
-  const form = $("#checkout");
-  $$("input[name=delivery]", form).forEach(r => r.addEventListener("change", () => { delivery = r.value; renderBasket(); }));
-  $$("input[name=plan]", form).forEach(r => r.addEventListener("change", () => { payPlan = r.value; renderBasket(); }));
   form.addEventListener("submit", submitOrder);
 }
 
@@ -521,12 +504,11 @@ async function submitOrder(e) {
   btn.disabled = true; msg.className = "msg"; msg.textContent = t("basket.reserving");
   try {
     const items = basket.map(i => ({ artwork_id: i.artwork_id, signed: i.signed, qty: i.qty }));
-    const plan = f.delivery === "pickup" && f.plan === "deposit" ? "deposit" : "full";
-    const r = await api.order({ name: f.name.trim(), email: f.email.trim(), phone: (f.phone || "").trim(), address, delivery: f.delivery, items, plan });
+    const r = await api.order({ name: f.name.trim(), email: f.email.trim(), phone: (f.phone || "").trim(), address, delivery: "ship", items, plan: "full" });
     local.set("lk-me", { ...local.get("lk-me", {}), name: f.name.trim(), email: f.email.trim(), phone: (f.phone || "").trim() });
     const order = { order_code: r.order_code, total: r.total, items: r.items || [], email: f.email.trim().toLowerCase(),
                     message: r.message || payMessage(r.order_code, r.items || []), status: "awaiting_payment", created_at: new Date().toISOString(),
-                    payment_plan: r.payment_plan || plan, pay_now: r.pay_now ?? r.total, pay_later: r.pay_later || 0 };
+                    payment_plan: "full", pay_now: r.total, pay_later: 0 };
     saveMyOrder(order);
     basket = []; saveBasket();
     try { await loadPrints(); } catch {}
@@ -538,8 +520,7 @@ async function submitOrder(e) {
   }
 }
 
-/* "Paid" on a deposit order means the deposit is paid and the rest is owed at pickup */
-const orderStatusText = (o) => t(o.status === "paid" && o.pay_later ? "order.depositPaid" : "order." + o.status);
+const orderStatusText = (o) => t("order." + o.status);
 /* Orders placed from this browser (newest first, at most 5) */
 const myOrders = () => local.get("lk-orders", []);
 function saveMyOrder(o) {
@@ -557,8 +538,7 @@ function showPayment(order) {
   const paid = order.status === "paid" || order.status === "shipped";
   const closed = order.status === "cancelled" || order.status === "expired";   // nothing to pay any more
   const open = !paid && !closed;
-  const now = order.pay_now ?? order.total, later = order.pay_later || 0;
-  const title = paid ? "pay.titlePaid" : order.status === "cancelled" ? "pay.titleCancelled" : order.status === "expired" ? "pay.titleExpired" : later ? "pay.titleDeposit" : "pay.title";
+  const title = paid ? "pay.titlePaid" : order.status === "cancelled" ? "pay.titleCancelled" : order.status === "expired" ? "pay.titleExpired" : "pay.title";
   const text = paid ? "pay.textPaid" : order.status === "cancelled" ? "pay.textCancelled" : order.status === "expired" ? "pay.textExpired" : "pay.text";
   $("#drawer-title").textContent = t(paid ? "pay.headPaid" : closed ? "orders.head" : "pay.head");
   $("#drawer-body").innerHTML = `
@@ -566,15 +546,13 @@ function showPayment(order) {
       <p class="order-status big ${esc(order.status)}">${orderStatusText(order)}</p>
       <h3>${t(title)}</h3>
       <p>${t(text, { h: CONFIG.reserveHours })}</p>
-      ${later && open ? `<p class="pay-rest">${t("pay.rest", { n: kr(later), t: kr(order.total) })}</p>` : ""}
-      ${later && paid && order.status !== "shipped" ? `<p class="pay-rest">${t("pay.rest", { n: kr(later), t: kr(order.total) })}</p>` : ""}
       <ul class="pay-items">${order.items.map(l => `<li>${l.qty} × ${esc(l.title)}, 50 × 70 cm</li>`).join("")}</ul>
       ${!open ? "" : `<ol class="pay-steps">
         <li>${t("pay.step1")}</li><li>${t("pay.step2")}</li><li>${t("pay.step3")}</li></ol>
       <dl>
         <div class="pay-row"><dt>${t("pay.to")}</dt><dd>${esc(mp.number)}</dd><button class="copy" type="button" data-copy="${esc(number)}">${t("pay.copy")}</button></div>
         <div class="pay-row"><dt>${t("pay.name")}</dt><dd>${esc(mp.name)}</dd></div>
-        <div class="pay-row"><dt>${t(later ? "pay.amountNow" : "pay.amount")}</dt><dd>${kr(now)}</dd><button class="copy" type="button" data-copy="${now}">${t("pay.copy")}</button></div>
+        <div class="pay-row"><dt>${t("pay.amount")}</dt><dd>${kr(order.total)}</dd><button class="copy" type="button" data-copy="${order.total}">${t("pay.copy")}</button></div>
         <div class="pay-row"><dt>${t("pay.msg")}</dt><dd class="pay-msg">${esc(order.message)}</dd><button class="copy" type="button" data-copy="${esc(order.message)}">${t("pay.copy")}</button></div>
       </dl>
       <p class="fineprint">${t("pay.msgWhy")}</p>`}
@@ -593,8 +571,7 @@ function showPayment(order) {
 
   // Merge what the server says into the order kept in this browser, and redraw if the status changed
   const update = (s) => {
-    const next = { ...order, status: s.status, pay_now: s.pay_now ?? order.pay_now, pay_later: s.pay_later ?? order.pay_later,
-                   created_at: s.created_at || order.created_at };
+    const next = { ...order, status: s.status, created_at: s.created_at || order.created_at };
     saveMyOrder(next);
     return next;
   };

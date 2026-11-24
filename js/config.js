@@ -28,10 +28,6 @@ const CONFIG = {
   // Keep the same as max_per_person in supabase-setup.sql.
   maxPerPerson: 10,
 
-  // With pickup, the buyer may pay this share (%) now with MobilePay and the rest in person at pickup.
-  // Set to 0 to turn the option off. Keep the same as deposit_percent in supabase-setup.sql.
-  depositPercent: 50,
-
   // The buyer can cancel their own order for this many hours after ordering, as long as it is not paid.
   // Keep the same as cancel_hours in supabase-setup.sql.
   cancelHours: 24,
@@ -47,9 +43,8 @@ const CONFIG = {
   },
 
   // Prices in DKK. Keep "ship" the same as in supabase-setup.sql.
-  shipping: { ship: 59, pickup: 0 },
+  shipping: { ship: 59 },
   reserveHours: 48,
-  pickupText: { da: "Hent selv foran Odense Banegård Center, Østre Stationsvej 29, 5000 Odense. Vi aftaler et tidspunkt", en: "Pick up in person in front of Odense Banegård Center, Østre Stationsvej 29, 5000 Odense. We agree on a time" },
   giftNote: { da: "Alle printordrer får en lille overraskelse med fra atelieret.", en: "Every print order comes with a small surprise from the studio." }
 };
 

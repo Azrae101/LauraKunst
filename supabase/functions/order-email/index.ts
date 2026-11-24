@@ -77,15 +77,14 @@ function toBuyer(o: Order) {
 }
 
 function toBuyerPaymentConfirmed(o: Order) {
-  const later = o.pay_later ?? 0;
   const subject = `Betaling modtaget: ordre ${o.order_code}`;
   const html = wrap(`
     <h2 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:0 0 6px">Betalingen er modtaget 🎉</h2>
     <p>Hej ${esc(o.name.split(" ")[0])},</p>
     <p>Tak! Vi har modtaget din betaling på ${kr(o.pay_now ?? o.total)} for ordre <b>${esc(o.order_code)}</b>.</p>
     ${itemsHtml(o)}
-    ${later ? `<p><b>Husk:</b> Du skal betale resten, ${kr(later)}, når du henter dine prints.</p>` : "<p><b>Dine prints bliver gjort klar til forsendelse og skal være hos dig inden for 3-5 arbejdsdage.</b></p>"}
-    <p>Du får besked på denne e-mail, når dine prints er sendt eller klar til afhentning.</p>
+    <p><b>Dine prints bliver gjort klar til forsendelse og skal være hos dig inden for 3-5 arbejdsdage.</b></p>
+    <p>Du får besked på denne e-mail, når dine prints er sendt.</p>
     <p>Spørgsmål? Svar bare på denne mail.</p>`);
   return { subject, html };
 }
@@ -103,17 +102,13 @@ function toBuyerCancelled(o: Order) {
 }
 
 function toBuyerShipped(o: Order) {
-  const subject = o.delivery === "pickup" ? `Dine prints er klar til afhentning! Ordre ${o.order_code}` : `Dine prints er på vej! Ordre ${o.order_code}`;
+  const subject = `Dine prints er på vej! Ordre ${o.order_code}`;
   const html = wrap(`
-    <h2 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:0 0 6px">${o.delivery === "pickup" ? "Dine prints er klar! 🎉" : "Dine prints er på vej! 📦"}</h2>
+    <h2 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:0 0 6px">Dine prints er på vej! 📦</h2>
     <p>Hej ${esc(o.name.split(" ")[0])},</p>
-    <p>${o.delivery === "pickup" ? "Godt nyt! Dine prints fra ordre <b>" + esc(o.order_code) + "</b> er klar til afhentning." : "Godt nyt! Dine prints fra ordre <b>" + esc(o.order_code) + "</b> er blevet sendt."}</p>
+    <p>Godt nyt! Dine prints fra ordre <b>${esc(o.order_code)}</b> er blevet sendt.</p>
     ${itemsHtml(o)}
-    ${o.delivery === "ship" 
-      ? `<p><b>Forsendelse:</b> De skulle være hos dig inden for 3-5 arbejdsdage. Du modtager snart et trackingnummer på denne e-mail-adresse.</p>` 
-      : `<p><b>Afhentningssted:</b><br><b>Foran Odense Banegård Center</b><br>Østre Stationsvej 29<br>5000 Odense C</p>
-         <p><b>Åbningstider:</b> Efter aftale (Laura svarer på denne mail)</p>
-         <p>Skriv til Laura på denne mail, så finder I et tidspunkt, der passer jer.</p>`}
+    <p><b>Forsendelse:</b> De skulle være hos dig inden for 3-5 arbejdsdage. Du modtager snart et trackingnummer på denne e-mail-adresse.</p>
     <p>Spørgsmål? Svar bare på denne mail.</p>`);
   return { subject, html };
 }
