@@ -113,7 +113,7 @@ const lowestPrice = () => printsCache.length ? Math.min(...printsCache.map(p => 
 
 function renderShopText() {
   const p = lowestPrice();
-  $("#shop-lede").textContent = t("shop.p", { p: p ? kr(p) : "…", s: kr(CONFIG.shipping.ship) });
+  $("#shop-lede").innerHTML = t("shop.p", { p: p ? kr(p) : "…", s: kr(CONFIG.shipping.ship) });
 }
 
 function renderPrints() {

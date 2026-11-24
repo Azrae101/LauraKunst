@@ -270,7 +270,7 @@ function demoApi() {
     },
     order({ name, email, phone, address, delivery, items, plan = "full" }) {
       if ((name || "").trim().length < 2) return fail("NAME");
-      if (!["full", "deposit"].includes(plan) || (plan === "deposit" && (delivery !== "pickup" || !DEPOSIT_PCT))) return fail("PLAN");
+      if (plan !== "full") return fail("PLAN");
       if (!validEmail(email)) return fail("EMAIL");
       if (delivery === "ship" && (address || "").trim().length < 8) return fail("ADDRESS");
       if (delivery === "ship" && !dkZip(zipOf(address))) return fail("ADDRESS_DK");
@@ -300,7 +300,7 @@ function demoApi() {
       // Daily limit for all buyers together (same as place_order)
       const count = items.reduce((s, it) => s + it.qty, 0), left = DAILY_LIMIT - demoSoldToday(db.orders);
       if (count > left) return fail("DAILY_LIMIT:" + Math.max(left, 0));
-      const { pay_now, pay_later } = splitPayment(total, plan);
+      const pay_now = total, pay_later = 0;
       db.orders.push({ order_code, name, email: em, phone, address, delivery, items: lines, total, message, payment_plan: plan, pay_now, pay_later, status: "awaiting_payment", created_at: new Date().toISOString() });
       save(); return ok({ order_code, total, message, items: lines, payment_plan: plan, pay_now, pay_later });
     },
@@ -481,7 +481,7 @@ function renderBasket() {
       <p class="fineprint">${t("basket.held", { h: CONFIG.reserveHours })}</p>
     </form>`;
   $$("[data-rm]", body).forEach(b => b.addEventListener("click", () => { basket.splice(+b.dataset.rm, 1); saveBasket(); renderBasket(); }));
-  form.addEventListener("submit", submitOrder);
+  $("#checkout").addEventListener("submit", submitOrder);
 }
 
 async function submitOrder(e) {
@@ -490,14 +490,12 @@ async function submitOrder(e) {
   msg.className = "msg err";
   if ((f.name || "").trim().length < 2) { msg.textContent = t("err.NAME"); return; }
   if (!validEmail(f.email)) { msg.textContent = t("err.EMAIL"); return; }
-  let address = "";
-  if (f.delivery === "ship") {
-    const street = (f.street || "").trim(), zip = (f.zip || "").trim(), city = (f.city || "").trim();
-    if (street.length < 4 || !/\d/.test(street)) { msg.textContent = t("err.STREET"); return; }
-    if (!dkZip(zip)) { msg.textContent = t("err.ADDRESS_DK"); return; }
-    if (city.length < 2) { msg.textContent = t("err.CITY"); return; }
-    address = `${street}\n${zip} ${city}\nDanmark`;   // the same format place_order() checks
-  }
+  // Every order is shipped (the disabled "delivery" radio is not part of the form data)
+  const street = (f.street || "").trim(), zip = (f.zip || "").trim(), city = (f.city || "").trim();
+  if (street.length < 4 || !/\d/.test(street)) { msg.textContent = t("err.STREET"); return; }
+  if (!dkZip(zip)) { msg.textContent = t("err.ADDRESS_DK"); return; }
+  if (city.length < 2) { msg.textContent = t("err.CITY"); return; }
+  const address = `${street}\n${zip} ${city}\nDanmark`;   // the same format place_order() checks
   btn.disabled = true; msg.className = "msg"; msg.textContent = t("basket.reserving");
   try {
     const items = basket.map(i => ({ artwork_id: i.artwork_id, signed: i.signed, qty: i.qty }));
