@@ -48,7 +48,7 @@ const itemsHtml = (o: Order) =>
 function toLaura(o: Order) {
   const now = o.pay_now ?? o.total, later = o.pay_later ?? 0;
   const summary = o.items.map((l) => `${l.qty}× ${l.title}`).join(", ");
-  const subject = `Ny ordre ${o.order_code}: ${summary}, ${kr(now)}`;
+  const subject = `Ny ordre ${o.order_code.replace(/[\r\n]/g, "")}: ${summary}, ${kr(now)}`;
   const html = wrap(`
     <h2 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:0 0 6px">Ny ordre ${esc(o.order_code)}</h2>
     <p style="margin:0 0 14px;color:#6b6157">Venter på betaling. Når pengene er kommet på MobilePay, markér den som betalt på ordresiden.</p>
@@ -77,7 +77,7 @@ function toBuyer(o: Order) {
 }
 
 Deno.serve(async (req) => {
-  if (!WEBHOOK_SECRET || req.headers.get("x-webhook-secret") !== WEBHOOK_SECRET) {
+  if (req.headers.get("x-webhook-secret") !== WEBHOOK_SECRET) {
     return new Response("forbidden", { status: 403 });
   }
   let payload: { type?: string; table?: string; record?: Order };
