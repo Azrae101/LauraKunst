@@ -45,7 +45,7 @@ const CONFIG = {
   business: { name: "Japper studio v/ Laura Kruuse", city: "Odense", cvr: "" },
 
   contact: {
-    email: "laura@japperstudio.dk",
+    email: "laur723kru@gmail.com",   // for now; change to laura@japperstudio.dk later (see FREMTIDIGE-IDEER.txt)
     instagram: { url: "https://www.instagram.com/laur_kru", handle: "@laur_kru" },
     tiktok: { url: "https://www.tiktok.com/@hassel_art", handle: "@hassel_art" }
   },

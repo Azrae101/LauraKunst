@@ -18,6 +18,8 @@ const WEBHOOK_SECRET = Deno.env.get("WEBHOOK_SECRET") ?? "";
 const FROM = Deno.env.get("FROM_EMAIL") || "Japper studio <onboarding@resend.dev>";
 const SEND_TO_BUYER = (Deno.env.get("SEND_TO_BUYER") ?? "").toLowerCase() === "yes";
 const SITE = "https://japperstudio.dk";
+// PostNord's tracking page; the tracking number is added at the end. Another carrier: set the secret TRACKING_URL.
+const TRACKING_URL = Deno.env.get("TRACKING_URL") || "https://tracking.postnord.com/dk/?id=";
 const MOBILEPAY = "+45 93 96 30 60";
 
 type Line = { qty: number; title: string; unit_price?: number };
@@ -61,7 +63,7 @@ function toLaura(o: Order) {
 }
 
 function toBuyer(o: Order) {
-  const subject = `Tak for din ordre ${o.order_code} – sådan betaler du`;
+  const subject = `Tak for din ordre ${o.order_code}: sådan betaler du`;
   const html = wrap(`
     <h2 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:0 0 6px">Tak for din ordre, ${esc(o.name.split(" ")[0])}</h2>
     <p>Din ordre <b>${esc(o.order_code)}</b> er reserveret i 48 timer. Den er først godkendt, når betalingen er modtaget.</p>
@@ -109,8 +111,8 @@ function toBuyerShipped(o: Order) {
     ${itemsHtml(o)}
     <p><b>Forsendelse:</b> De skulle være hos dig inden for 3-5 arbejdsdage.</p>
     ${o.tracking
-      ? `<p><b>Trackingnummer:</b> <code style="background:#f4efe4;padding:3px 6px">${esc(o.tracking)}</code><br>
-         Du kan følge pakken hos fragtfirmaet med nummeret.</p>`
+      ? `<p>Pakken er sendt med PostNord. Trackingnummer: <code style="background:#f4efe4;padding:3px 6px">${esc(o.tracking)}</code></p>
+         <p style="margin-top:14px"><a href="${esc(TRACKING_URL + encodeURIComponent(o.tracking))}" style="background:#2d3d2e;color:#f7f4ee;padding:11px 18px;text-decoration:none;display:inline-block">Følg din pakke</a></p>`
       : ""}
     <p>Spørgsmål? Svar bare på denne mail.</p>`);
   return { subject, html };

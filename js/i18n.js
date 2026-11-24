@@ -331,8 +331,8 @@ const I18N = {
     "en": "You can cancel yourself for {h} hours, as long as the order isn’t paid"
   },
   "trust.ship": {
-    "da": "Signeret af Laura, godt pakket og hos dig inden for 3–5 hverdage",
-    "en": "Signed by Laura, packed with care and with you within 3–5 working days"
+    "da": "Signeret af Laura, godt pakket og hos dig inden for 3-5 hverdage",
+    "en": "Signed by Laura, packed with care and with you within 3-5 working days"
   },
   "trust.return": {
     "da": "14 dages fortrydelsesret",

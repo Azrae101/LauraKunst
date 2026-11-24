@@ -82,6 +82,7 @@
     @keyframes spin { to { transform: rotate(360deg); } }
     @media (prefers-reduced-motion: reduce) { #refresh.busy::before { animation-duration: 2s; } }
     .link-btn.del { color: var(--err); margin-left: auto; }
+    .o-actions:empty { display: none; }   /* sent orders have no buttons, so no empty bar */
     .track { flex: 1 1 200px; min-height: 46px; padding: 0 0.9rem; border: 1px solid var(--line); background: var(--white); font: inherit; font-size: 0.9rem; }
   </style>
 </head>
@@ -228,7 +229,7 @@ $("#logout").addEventListener("click", async () => {
 let orders = [], shop = null, filter = "todo", query = "";
 const FILTERS = [
   ["todo", "Venter på betaling", o => o.status === "awaiting_payment" && !o.expired],
-  ["paid", "Betalt – skal sendes", o => o.status === "paid"],
+  ["paid", "Betalt, skal sendes", o => o.status === "paid"],
   ["done", "Afsluttet", o => o.status === "shipped" || o.status === "cancelled" || (o.status === "awaiting_payment" && o.expired)],
   ["all", "Alle", () => true]
 ];
@@ -248,8 +249,8 @@ function renderTiles() {
   const n = (k) => orders.filter(FILTERS.find(f => f[0] === k)[2]).length;
   $("#tiles").innerHTML = `
     <div class="tile ${n("todo") ? "alert" : ""}"><span>Venter på betaling</span><b>${n("todo")}</b></div>
-    <div class="tile ${n("paid") ? "alert" : ""}"><span>Betalt – skal sendes</span><b>${n("paid")}</b></div>
-    <div class="tile"><span>Prints bestilt i dag</span><b>${shop ? `${shop.sold_today} / ${shop.daily_limit}` : "–"}</b></div>`;
+    <div class="tile ${n("paid") ? "alert" : ""}"><span>Betalt, skal sendes</span><b>${n("paid")}</b></div>
+    <div class="tile"><span>Prints bestilt i dag</span><b>${shop ? `${shop.sold_today} / ${shop.daily_limit}` : "…"}</b></div>`;
   $("#tabs").innerHTML = FILTERS.map(([k, label]) =>
     `<button class="tab" type="button" data-f="${k}" aria-pressed="${k === filter}">${label}<b>${orders.filter(FILTERS.find(f => f[0] === k)[2]).length}</b></button>`).join("");
 }
@@ -261,7 +262,7 @@ function actionsFor(o) {
   if (s === "awaiting_payment" || s === "expired") return b("paid", "Markér som betalt") + b("cancelled", "Annullér", "btn line") + del;
   if (s === "paid") return `<input class="track" type="text" data-track="${esc(o.order_code)}" maxlength="80" placeholder="Trackingnummer (valgfrit)" aria-label="Trackingnummer for ${esc(o.order_code)}">` +
     b("shipped", "Sendt") + b("awaiting_payment", "Fortryd betaling", "link-btn") + b("cancelled", "Annullér", "link-btn");
-  if (s === "shipped") return b("paid", "Fortryd (ikke sendt alligevel)", "link-btn");
+  if (s === "shipped") return "";   // sent orders are done: no buttons
   return b("awaiting_payment", "Gendan ordren", "link-btn") + del;
 }
 
@@ -296,7 +297,7 @@ function renderOrders() {
           <span class="lbl">Skal betale</span>
           <div class="o-amount">${kr(o.total)}</div>
           ${o.paid_at ? `<p class="fineprint">Betalt ${esc(when(o.paid_at))}</p>` : ""}
-          ${o.tracking ? `<p class="fineprint">Tracking: <b>${esc(o.tracking)}</b></p>` : ""}
+          ${o.tracking ? `<p class="fineprint">Tracking: <a href="https://tracking.postnord.com/dk/?id=${encodeURIComponent(o.tracking)}" target="_blank" rel="noopener"><b>${esc(o.tracking)}</b></a> (PostNord)</p>` : ""}
         </div>
       </div>
       <div class="o-actions">${actionsFor(o)}</div>
