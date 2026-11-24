@@ -538,6 +538,11 @@ document.addEventListener("submit", async e => {
 document.addEventListener("contextmenu", e => { if (e.target.closest("img, .art, .mock, .frame, .sketch-mat, .np-img, .mv-frame, .note")) e.preventDefault(); });
 document.addEventListener("dragstart", e => { if (e.target.closest && e.target.closest("img")) e.preventDefault(); });
 
+/* The logo and "Forside" links point to index.html#top. Arriving that way already lands at the top;
+   drop the #top from the address bar so a later refresh is a normal refresh (keeps its scroll
+   position) instead of a jump to the top on top of the browser's own scroll restore. */
+if (location.hash === "#top") history.replaceState(null, "", location.pathname + location.search);
+
 document.addEventListener("DOMContentLoaded", () => {
   const nav = $(".site-nav"), toggle = $(".nav-toggle");
   if (toggle) toggle.addEventListener("click", () => {
@@ -552,7 +557,9 @@ document.addEventListener("DOMContentLoaded", () => {
   $$(".basket-btn").forEach(b => b.addEventListener("click", openBasket));
   saveBasket();
 
-  const io = new IntersectionObserver(es => es.forEach(x => { if (x.isIntersecting) { x.target.classList.add("visible"); io.unobserve(x.target); } }), { threshold: 0.1 });
+  const io = new IntersectionObserver(es => es.forEach(x => {
+    if (x.isIntersecting) { x.target.classList.add("visible"); io.unobserve(x.target); x.target.querySelectorAll(".vine").forEach(tryPaint); }
+  }), { threshold: 0.1 });
   $$(".reveal").forEach(el => io.observe(el));
 
   /* Hand-drawn vine under the section headings, different for every heading and every page load
@@ -566,9 +573,26 @@ document.addEventListener("DOMContentLoaded", () => {
       `<feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" result="n"/>` +
       `<feDisplacementMap in="SourceGraphic" in2="n" scale="1.6" xChannelSelector="R" yChannelSelector="G"/></filter></svg>`);
   }
-  const vio = new IntersectionObserver(es => es.forEach(x => {
-    if (x.isIntersecting) { vio.unobserve(x.target); paintVine(x.target); }
-  }), { threshold: 0.6 });
+  /* Start painting only when someone can actually watch it: the vine is mostly on screen,
+     the tab is in front, and any fade-in (.reveal) around it has finished. Every page load
+     starts from a blank vine, so a refresh paints it again. */
+  const vio = new IntersectionObserver(es => es.forEach(x => { x.target._inView = x.isIntersecting; tryPaint(x.target); }), { threshold: 0.6 });
+  function tryPaint(v) {
+    if (v._painting || v._waiting || !v._inView || document.hidden) return;
+    const rev = v.closest(".reveal");
+    if (rev && !rev.classList.contains("visible")) return;   // tried again when the block is revealed
+    // Wait a moment (and for any fade-in to finish), then check it is still in view: while a page
+    // loads, the browser can jump past a vine (scroll restore, #anchors) and that must not count
+    v._waiting = true;
+    setTimeout(() => {
+      v._waiting = false;
+      if (!v._inView || document.hidden) return;              // left again: tried on the next visit
+      v._painting = true;
+      vio.unobserve(v);
+      paintVine(v);
+    }, rev ? 600 : 250);
+  }
+  document.addEventListener("visibilitychange", () => $$(".vine").forEach(tryPaint));
   heads.forEach(h => {
     const v = document.createElement("span");
     v.className = "vine" + (h.classList.contains("center") ? " center" : "");
