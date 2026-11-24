@@ -466,8 +466,7 @@ function renderBasket() {
       </div>`; }).join("")}</div>
     <form id="checkout" novalidate style="display:grid;gap:1.1rem">
       <fieldset><legend>${t("basket.delivery")}</legend>
-        <label class="radio"><input type="radio" name="delivery" value="ship" ${delivery === "ship" ? "checked" : ""}>${t("basket.ship")}<span class="price">${kr(CONFIG.shipping.ship)}</span></label>
-        <label class="radio"><input type="radio" name="delivery" value="pickup" ${delivery === "pickup" ? "checked" : ""}>${esc(L(CONFIG.pickupText))}<span class="price">${t("basket.free")}</span></label>
+        <label class="radio"><input type="radio" name="delivery" value="ship" ${delivery === "ship" ? "checked" : ""} checked disabled>${t("basket.ship")}<span class="price">${kr(CONFIG.shipping.ship)}</span></label>
       </fieldset>
       ${canDeposit ? `<fieldset><legend>${t("basket.payment")}</legend>
         <label class="radio"><input type="radio" name="plan" value="full" ${payPlan === "full" ? "checked" : ""}>${t("basket.planFull")}</label>

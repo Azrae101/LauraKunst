@@ -11,7 +11,7 @@ const CONFIG = {
   supabaseAnonKey: "sb_publishable_AIh5vqqsahS--yF8Sm4bug_Wzyssy5N",
 
   // Contact form. Create a free form at formspree.io and paste its address here.
-  formspreeEndpoint: "https://formspree.io/f/YOUR_FORM_ID",
+  formspreeEndpoint: "https://formspree.io/f/xrpqrovw",
 
   defaultLanguage: "da",
 
