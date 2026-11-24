@@ -188,7 +188,7 @@ $("#login").addEventListener("submit", async (e) => {
   if (!validEmail(email)) { msg.textContent = "Skriv en gyldig e-mail."; return; }
   btn.disabled = true; msg.className = "msg"; msg.textContent = "Sender…";
   try {
-    const back = location.origin + location.pathname;
+    const back = "https://japperstudio.dk/ordrer.html";
     const res = await fetch(BASE + "/auth/v1/otp?redirect_to=" + encodeURIComponent(back), {
       method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
       body: JSON.stringify({ email, create_user: false })   // only people added in Supabase can log in
