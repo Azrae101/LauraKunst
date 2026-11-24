@@ -41,7 +41,7 @@ const CONFIG = {
   dailyLimit: 50,
 
   contact: {
-    email: "laur723kru@gmail.com",
+    email: "laura@japperstudio.dk",
     instagram: { url: "https://www.instagram.com/laur_kru", handle: "@laur_kru" },
     tiktok: { url: "https://www.tiktok.com/@hassel_art", handle: "@hassel_art" }
   },
