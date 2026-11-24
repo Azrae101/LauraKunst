@@ -76,24 +76,43 @@ function toBuyer(o: Order) {
   return { subject, html };
 }
 
+function toBuyerPaymentConfirmed(o: Order) {
+  const later = o.pay_later ?? 0;
+  const subject = `Betaling modtaget: ordre ${o.order_code}`;
+  const html = wrap(`
+    <h2 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:0 0 6px">Betaling modtaget! 🎉</h2>
+    <p>Hej ${esc(o.name.split(" ")[0])},</p>
+    <p>Tak! Vi har modtaget din betaling på ${kr(o.pay_now ?? o.total)} for ordre <b>${esc(o.order_code)}</b>.</p>
+    ${itemsHtml(o)}
+    ${later ? `<p><b>Husk:</b> Du skal betale resten, ${kr(later)}, når du henter dine prints.</p>` : "<p>Dine prints bliver sendt snarest!</p>"}
+    <p>Spørgsmål? Svar bare på denne mail.</p>`);
+  return { subject, html };
+}
+
 Deno.serve(async (req) => {
   if (req.headers.get("x-webhook-secret") !== WEBHOOK_SECRET) {
     return new Response("forbidden", { status: 403 });
   }
   let payload: { type?: string; table?: string; record?: Order };
   try { payload = await req.json(); } catch { return new Response("bad request", { status: 400 }); }
-  if (payload.type !== "INSERT" || payload.table !== "orders" || !payload.record) return new Response("ignored");
+  if (payload.table !== "orders" || !payload.record) return new Response("ignored");
+  if (payload.type === "UPDATE" && payload.record.status !== "paid") return new Response("ignored");
+  if (payload.type !== "INSERT" && payload.type !== "UPDATE") return new Response("ignored");
 
   const o = payload.record;
+  const isPaymentConfirmed = payload.type === "UPDATE";
   const errors: string[] = [];
-  if (NOTIFY.length) {
+  
+  if (NOTIFY.length && payload.type === "INSERT") {
     const m = toLaura(o);
     try { await send(NOTIFY, m.subject, m.html, o.email); } catch (e) { errors.push(String(e)); }
   }
+  
   if (SEND_TO_BUYER) {
-    const m = toBuyer(o);
+    const m = isPaymentConfirmed ? toBuyerPaymentConfirmed(o) : toBuyer(o);
     try { await send([o.email], m.subject, m.html, NOTIFY[0]); } catch (e) { errors.push(String(e)); }
   }
+  
   if (errors.length) { console.error(errors.join("\n")); return new Response(errors.join("\n"), { status: 500 }); }
   return new Response("ok");
 });
