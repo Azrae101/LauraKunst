@@ -81,6 +81,7 @@
     #refresh.failed { color: var(--err); }
     @keyframes spin { to { transform: rotate(360deg); } }
     @media (prefers-reduced-motion: reduce) { #refresh.busy::before { animation-duration: 2s; } }
+    .link-btn.del { color: var(--err); margin-left: auto; }
     .track { flex: 1 1 200px; min-height: 46px; padding: 0 0.9rem; border: 1px solid var(--line); background: var(--white); font: inherit; font-size: 0.9rem; }
   </style>
 </head>
@@ -255,11 +256,13 @@ function renderTiles() {
 
 function actionsFor(o) {
   const s = stateOf(o), b = (to, label, cls = "btn") => `<button class="${cls}" type="button" data-to="${to}" data-code="${esc(o.order_code)}">${label}</button>`;
-  if (s === "awaiting_payment" || s === "expired") return b("paid", "Markér som betalt") + b("cancelled", "Annullér", "btn line");
+  // "Slet" removes the order completely; only for unpaid or cancelled orders (a paid one must be cancelled first)
+  const del = `<button class="link-btn del" type="button" data-del="${esc(o.order_code)}">Slet ordren</button>`;
+  if (s === "awaiting_payment" || s === "expired") return b("paid", "Markér som betalt") + b("cancelled", "Annullér", "btn line") + del;
   if (s === "paid") return `<input class="track" type="text" data-track="${esc(o.order_code)}" maxlength="80" placeholder="Trackingnummer (valgfrit)" aria-label="Trackingnummer for ${esc(o.order_code)}">` +
     b("shipped", "Sendt") + b("awaiting_payment", "Fortryd betaling", "link-btn") + b("cancelled", "Annullér", "link-btn");
   if (s === "shipped") return b("paid", "Fortryd (ikke sendt alligevel)", "link-btn");
-  return b("awaiting_payment", "Gendan ordren", "link-btn");
+  return b("awaiting_payment", "Gendan ordren", "link-btn") + del;
 }
 
 function renderOrders() {
@@ -337,6 +340,27 @@ $("#refresh").addEventListener("click", async (e) => {
   if (ok) toast(`${orders.length} ordre${orders.length === 1 ? "" : "r"} hentet`);
   setTimeout(() => { b.classList.remove("done", "failed"); b.textContent = "Opdatér"; b.disabled = false; }, 2000);
 });
+/* Delete one order completely */
+$("#orders").addEventListener("click", async e => {
+  const b = e.target.closest("[data-del]"); if (!b) return;
+  const code = b.dataset.del, o = orders.find(x => x.order_code === code);
+  const wasPaid = o && o.paid_at;
+  if (!confirm(`Slet ordre ${code} helt?\n\nDen forsvinder fra listen og databasen og kan ikke hentes tilbage.` +
+      (wasPaid ? "\n\nOrdren har været betalt. Husk, at betalte ordrer skal gemmes i 5 år til regnskabet." : ""))) return;
+  b.disabled = true;
+  try {
+    await rpc("admin_delete_order", { p_code: code });
+    toast(`${code} er slettet.`);
+    await load();
+  } catch (err) {
+    if (err.message === "LOGIN") return show();
+    toast(err.message === "DELETE_PAID" ? "Betalte og sendte ordrer kan ikke slettes. Annullér ordren først."
+        : /admin_delete_order/.test(err.message) ? "Kør den nye supabase-opdatering-2026-11.sql i Supabase først."
+        : "Det lykkedes ikke. Prøv igen.");
+    b.disabled = false;
+  }
+});
+
 $("#orders").addEventListener("click", async e => {
   const b = e.target.closest("[data-to]"); if (!b) return;
   const code = b.dataset.code, to = b.dataset.to, o = orders.find(x => x.order_code === code);
