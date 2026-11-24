@@ -188,7 +188,9 @@ $("#login").addEventListener("submit", async (e) => {
   if (!validEmail(email)) { msg.textContent = "Skriv en gyldig e-mail."; return; }
   btn.disabled = true; msg.className = "msg"; msg.textContent = "Sender…";
   try {
-    const back = "https://japperstudio.dk/ordrer.html";
+    // Back to this same page. Supabase only allows it if the address is listed under
+    // Authentication > URL Configuration > Redirect URLs; otherwise it falls back to the Site URL.
+    const back = location.origin + location.pathname;
     const res = await fetch(BASE + "/auth/v1/otp?redirect_to=" + encodeURIComponent(back), {
       method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
       body: JSON.stringify({ email, create_user: false })   // only people added in Supabase can log in
@@ -219,7 +221,7 @@ const FILTERS = [
   ["all", "Alle", () => true]
 ];
 const STATUS = {
-  awaiting_payment: "Venter på betaling", expired: "Ikke betalt i tide", paid: "Betalt", shipped: "Sendt / afhentet", cancelled: "Annulleret"
+  awaiting_payment: "Venter på betaling", expired: "Ikke betalt i tide", paid: "Betalt", shipped: "Sendt", cancelled: "Annulleret"
 };
 const stateOf = (o) => o.status === "awaiting_payment" && o.expired ? "expired" : o.status;
 
@@ -243,7 +245,7 @@ function renderTiles() {
 function actionsFor(o) {
   const s = stateOf(o), b = (to, label, cls = "btn") => `<button class="${cls}" type="button" data-to="${to}" data-code="${esc(o.order_code)}">${label}</button>`;
   if (s === "awaiting_payment" || s === "expired") return b("paid", "Markér som betalt") + b("cancelled", "Annullér", "btn line");
-  if (s === "paid") return b("shipped", o.delivery === "pickup" ? "Afhentet" : "Sendt") + b("awaiting_payment", "Fortryd betaling", "link-btn") + b("cancelled", "Annullér", "link-btn");
+  if (s === "paid") return b("shipped", "Sendt") + b("awaiting_payment", "Fortryd betaling", "link-btn") + b("cancelled", "Annullér", "link-btn");
   if (s === "shipped") return b("paid", "Fortryd (ikke sendt alligevel)", "link-btn");
   return b("awaiting_payment", "Gendan ordren", "link-btn");
 }
@@ -253,19 +255,19 @@ function renderOrders() {
   const f = FILTERS.find(x => x[0] === filter)[2], q = query.trim().toLowerCase();
   const list = orders.filter(f).filter(o => !q || [o.order_code, o.name, o.email, o.phone].some(v => (v || "").toLowerCase().includes(q)));
   $("#orders").innerHTML = list.length ? list.map(o => {
-    const s = stateOf(o), later = o.pay_later || 0;
+    const s = stateOf(o);
     return `<article class="o-card ${s}">
       <div class="o-top">
         <span class="o-code">${esc(o.order_code)}</span>
-        <span class="order-status ${s}">${STATUS[s]}${s === "paid" && later ? " (depositum)" : ""}</span>
+        <span class="order-status ${s}">${STATUS[s]}</span>
         <span class="o-age" title="${esc(when(o.created_at))}">${esc(ago(o.created_at))} · ${esc(when(o.created_at))}</span>
       </div>
       <div class="o-body">
         <div>
           <h3>${esc(o.name)}</h3>
           <p><a href="mailto:${esc(o.email)}">${esc(o.email)}</a>${o.phone ? `<br><a href="tel:${esc(o.phone)}">${esc(o.phone)}</a>` : ""}</p>
-          <p style="margin-top:.6rem"><span class="lbl">${o.delivery === "ship" ? "Sendes til" : "Levering"}</span>
-            ${o.delivery === "ship" ? `<span class="o-addr">${esc(o.address)}</span>` : "Henter selv i Odense"}</p>
+          <p style="margin-top:.6rem"><span class="lbl">Sendes til</span>
+            <span class="o-addr">${esc(o.address)}</span></p>
         </div>
         <div>
           <span class="lbl">Prints</span>
@@ -273,9 +275,8 @@ function renderOrders() {
           <p style="margin-top:.6rem"><span class="lbl">MobilePay-besked</span><span class="o-mp">${esc(o.mobilepay_message)}</span></p>
         </div>
         <div>
-          <span class="lbl">${later ? "Skal betale nu (depositum)" : "Skal betale"}</span>
-          <div class="o-amount">${kr(o.pay_now)}</div>
-          ${later ? `<p>Resten ved afhentning: <b>${kr(later)}</b><br>I alt ${kr(o.total)}</p>` : ""}
+          <span class="lbl">Skal betale</span>
+          <div class="o-amount">${kr(o.total)}</div>
           ${o.paid_at ? `<p class="fineprint">Betalt ${esc(when(o.paid_at))}</p>` : ""}
         </div>
       </div>
