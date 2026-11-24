@@ -28,6 +28,8 @@ WHAT IS WHERE
   js/site.js         basket, checkout, auction, language, and the little paintings under the headings
   images/general/    photos of Laura, the logo, favicons, the print frame, the oak floor and the museum guests
   images/paintings/  the paintings and sketches
+  images/og/         the pictures shown when a link to the site is shared (1200 × 630). og-home.jpg is used by the
+                     front page, portfolio and terms page, og-prints.jpg by the print shop (see the og: lines in each page)
   supabase-setup.sql the database (paste it into Supabase, see below)
   supabase-opdatering-2026-11.sql   a one-time update for a database made before november 2026 (see "Update november 2026")
   CNAME              tells GitHub Pages the site's address (japperstudio.dk). Do not delete it.
