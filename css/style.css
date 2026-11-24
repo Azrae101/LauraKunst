@@ -392,7 +392,9 @@ section.block { padding: 4rem 0; }
 @media (min-width: 900px) { .drawer-head, .drawer-body { padding-inline: 1.6rem; } }
 .drawer-head h2 { font-family: var(--serif); font-weight: 400; font-size: 1.9rem; color: var(--green-dark); }
 .drawer-head .close-x { position: static; background: none; }
-.drawer-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 1.25rem var(--gutter) calc(1.5rem + env(safe-area-inset-bottom, 0px)); display: grid; gap: 1.25rem; align-content: start; }
+.drawer-body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 1.25rem var(--gutter) calc(1.5rem + env(safe-area-inset-bottom, 0px)); display: grid; gap: 1.25rem; align-content: start;
+  grid-auto-rows: max-content; }   /* rows always as tall as their content, also when the drawer is taller than the screen
+                                      (otherwise a message with min-height shrinks to one line and runs into the button below) */
 .line-item { display: grid; grid-template-columns: 54px 1fr auto; gap: 0.9rem; align-items: center; padding-bottom: 1rem; border-bottom: 1px solid var(--line); }
 .line-item .art { box-shadow: 0 0 0 4px var(--white), 0 0 0 5px var(--line); margin: 5px; }
 .line-item .art .ph { font-size: 0.7rem; padding: 0.2rem; }
