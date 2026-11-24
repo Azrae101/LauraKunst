@@ -662,6 +662,22 @@ const I18N = {
     "da": "Skriv venligst byen.",
     "en": "Please enter the town."
   },
+  "email.suggest": {
+    "da": "Mente du {s}?",
+    "en": "Did you mean {s}?"
+  },
+  "email.fix": {
+    "da": "Ja, ret den",
+    "en": "Yes, fix it"
+  },
+  "email.keep": {
+    "da": "Nej, min e-mail er rigtig",
+    "en": "No, my e-mail is right"
+  },
+  "err.EMAIL_CHECK": {
+    "da": "Tjek din e-mail herover. Det er her, du får betalingsoplysninger og trackingnummer.",
+    "en": "Please check your e-mail above. It’s where you get the payment details and tracking number."
+  },
   "err.ZIP_UNKNOWN": {
     "da": "Det postnummer findes ikke i Danmark. Tjek, at det er skrevet rigtigt. Er du sikker på, at det er rigtigt, så skriv til <a href=\"mailto:{e}\">{e}</a>.",
     "en": "That postcode doesn’t exist in Denmark. Check that it’s typed correctly. If you’re sure it’s right, write to <a href=\"mailto:{e}\">{e}</a>."

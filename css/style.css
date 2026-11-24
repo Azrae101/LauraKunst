@@ -185,6 +185,12 @@ section.block { padding: 4rem 0; }
 .check { display: flex; gap: 0.7rem; align-items: flex-start; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; cursor: pointer; }
 .check input { width: 20px; height: 20px; margin-top: 0.15rem; flex: none; accent-color: var(--green-mid); }
 .msg { font-size: 0.95rem; min-height: 1.5em; }
+/* "Did you mean …@gmail.com?" under the e-mail field (checkout) */
+.email-hint { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.9rem; padding: 0.8rem 1rem; background: #fbf3e2; border: 1px solid #e6cf9a; font-size: 0.92rem; margin-top: -0.4rem; }
+.email-hint:empty { display: none; }
+.email-hint b { font-weight: 500; overflow-wrap: anywhere; }
+.email-hint .btn { min-height: 40px; padding: 0 1rem; }
+
 /* Town filled in from the postcode (checkout) */
 .field input.auto, .field input[readonly] { background: var(--ivory); color: var(--green-dark); cursor: default; }
 .zip-hint { min-height: 0; font-size: 0.88rem; }

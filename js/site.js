@@ -507,6 +507,7 @@ function renderBasket() {
         <label class="field"><span>${t("basket.name")}</span><input name="name" autocomplete="name" value="${esc(keep.name ?? me.name ?? "")}" required></label>
         <label class="field"><span>${t("email.label")}</span><input name="email" type="email" inputmode="email" autocomplete="email" value="${esc(keep.email ?? me.email ?? "")}" required></label>
       </div>
+      <div class="email-hint" id="email-hint" role="status"></div>
       <label class="field"><span>${t("basket.phone")}</span><input name="phone" type="tel" autocomplete="tel" value="${esc(keep.phone ?? me.phone ?? "")}"></label>
       <fieldset class="address"><legend>${t("basket.address")}</legend>
         <label class="field"><span>${t("basket.street")}</span><input name="street" autocomplete="address-line1" placeholder="${t("basket.streetPh")}" value="${esc(keep.street ?? "")}" required></label>
@@ -539,6 +540,82 @@ function renderBasket() {
   $("#checkout").addEventListener("submit", submitOrder);
   mountCaptcha();
   wireZip();
+  wireEmailCheck();
+}
+
+/* ---------- E-mail typo check: "gmial.com" → "Mente du …@gmail.com?" ----------
+   Only the part after @ is checked (the name before @ can be anything). Common domains are known;
+   a domain close to one of them, or a typo in the ending (.con, .cm, .dkk), gets a suggestion.
+   It never blocks for good: the buyer can say the address is right. */
+const MAIL_DOMAINS = {
+  gmail: ["com"], googlemail: ["com"], hotmail: ["com", "dk"], outlook: ["com", "dk"], live: ["com", "dk"],
+  yahoo: ["com", "dk"], icloud: ["com"], protonmail: ["com"], jubii: ["dk"], mail: ["dk"], stofanet: ["dk"]
+};
+const TLD_TYPOS = { com: ["con", "cm", "om", "comm", "cpm", "vom", "xom", "cim", "c0m", "ocm"], dk: ["dkk", "kd", "dkm"] };
+// .cm (Cameroon) and .om (Oman) are real endings: only treated as typos on the known domains above (gmail.cm)
+const REAL_TLDS = ["cm", "om"];
+function editDistance(a, b) {
+  const d = Array.from({ length: a.length + 1 }, (_, i) => [i, ...Array(b.length).fill(0)]);
+  for (let j = 1; j <= b.length; j++) d[0][j] = j;
+  for (let i = 1; i <= a.length; i++) for (let j = 1; j <= b.length; j++)
+    d[i][j] = Math.min(d[i - 1][j] + 1, d[i][j - 1] + 1, d[i - 1][j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1),
+      i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1] ? d[i - 2][j - 2] + 1 : Infinity);   // swapped letters count as 1
+  return d[a.length][b.length];
+}
+const fixTld = (tld) => Object.keys(TLD_TYPOS).find(k => TLD_TYPOS[k].includes(tld));
+function emailSuggestion(email) {
+  const m = String(email || "").trim().toLowerCase().match(/^([^@\s]+)@([^@\s]+)$/);
+  if (!m) return null;
+  const [, user, domain] = m;
+  let name, tld;
+  if (domain.includes(".")) { const i = domain.lastIndexOf("."); name = domain.slice(0, i); tld = domain.slice(i + 1); }
+  else {   // a missing dot: "gmailcom"
+    for (const [k, tlds] of Object.entries(MAIL_DOMAINS)) for (const t of tlds) if (domain === k + t) return `${user}@${k}.${t}`;
+    return null;
+  }
+  const known = MAIL_DOMAINS[name];
+  if (known && known.includes(tld)) return null;                         // fine, e.g. hotmail.dk
+  if (known) {
+    if (name === "gmail") return `${user}@gmail.com`;                    // Gmail is only .com (gmail.dk is a common slip)
+    const t = fixTld(tld);
+    return t && known.includes(t) ? `${user}@${name}.${t}` : null;      // yahoo.de etc. are left alone
+  }
+  // A name close to a known one, e.g. "gmial", "hotmial", "outlok"
+  let best = null, bestD = Infinity;
+  for (const k of Object.keys(MAIL_DOMAINS)) {
+    if (k.length < 5) continue;   // short names like "mail" and "live" are too close to too many real domains
+    const dist = editDistance(name, k);
+    if (dist > 0 && dist <= (k.length >= 6 ? 2 : 1) && dist < bestD) { best = k; bestD = dist; }
+  }
+  if (best) {
+    const allowed = MAIL_DOMAINS[best];
+    const t = allowed.includes(tld) ? tld : (fixTld(tld) && allowed.includes(fixTld(tld)) ? fixTld(tld) : (best === "gmail" ? "com" : null));
+    if (t) return `${user}@${best}.${t}`;
+  }
+  // Unknown domain with a typo in the ending: "firma.con" → "firma.com"
+  const t = REAL_TLDS.includes(tld) ? null : fixTld(tld);
+  return t ? `${user}@${name}.${t}` : null;
+}
+let emailOk = "";   // an address the buyer has said is right, so it is not questioned again
+function showEmailHint() {
+  const input = $("#checkout [name=email]"), box = $("#email-hint");
+  if (!input || !box) return null;
+  const value = input.value.trim(), s = value && value.toLowerCase() !== emailOk ? emailSuggestion(value) : null;
+  box.innerHTML = s ? `<span>${t("email.suggest", { s: `<b>${esc(s)}</b>` })}</span>
+    <button class="btn line" type="button" data-email-fix>${t("email.fix")}</button>
+    <button class="link-btn" type="button" data-email-keep>${t("email.keep")}</button>` : "";
+  if (s) {
+    box.querySelector("[data-email-fix]").addEventListener("click", () => { input.value = s; box.innerHTML = ""; input.focus(); });
+    box.querySelector("[data-email-keep]").addEventListener("click", () => { emailOk = value.toLowerCase(); box.innerHTML = ""; });
+  }
+  return s;
+}
+function wireEmailCheck() {
+  const input = $("#checkout [name=email]");
+  if (!input) return;
+  input.addEventListener("change", showEmailHint);
+  input.addEventListener("input", () => { if ($("#email-hint").innerHTML) showEmailHint(); });   // hide it once fixed by hand
+  if (input.value) showEmailHint();
 }
 
 /* ---------- Address check: the official list of Danish postcodes (js/postnumre.json, from PostNord) ----------
@@ -579,6 +656,7 @@ async function submitOrder(e) {
   msg.className = "msg err";
   if ((f.name || "").trim().length < 2) { msg.textContent = t("err.NAME"); return; }
   if (!validEmail(f.email)) { msg.textContent = t("err.EMAIL"); return; }
+  if (showEmailHint()) { msg.textContent = t("err.EMAIL_CHECK"); $("#email-hint").scrollIntoView({ block: "center", behavior: "smooth" }); return; }
   // Every order is shipped (the disabled "delivery" radio is not part of the form data)
   const street = (f.street || "").trim(), zip = (f.zip || "").trim();
   if (street.length < 4 || !/\d/.test(street) || !/\p{L}{2}/u.test(street)) { msg.textContent = t("err.STREET"); return; }
