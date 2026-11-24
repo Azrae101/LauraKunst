@@ -680,3 +680,36 @@ img { -webkit-user-drag: none; user-drag: none; -webkit-user-select: none; user-
   .hero-logo { display: none; }
   .print-card .frame-btn, .sketch-card { cursor: default; }
 }
+
+/* ---------- White flowers: photo behind the quote (taken by Laura) ---------- */
+.pull-quote.has-photo { position: relative; overflow: hidden; isolation: isolate; background: #1f2a1f; padding: 5rem 0; }
+@media (min-width: 900px) { .pull-quote.has-photo { padding: 8rem 0; } }
+.pull-quote .pq-photo { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: 50% 45%; }
+.pull-quote.has-photo::before { content: ""; position: absolute; inset: 0; z-index: -1;
+  background: radial-gradient(ellipse at center, rgba(24, 34, 24, 0.72) 0%, rgba(24, 34, 24, 0.5) 60%, rgba(24, 34, 24, 0.35) 100%); }
+.pull-quote.has-photo blockquote { color: #fbf7ec; text-shadow: 0 1px 14px rgba(0, 0, 0, 0.45); }
+.pull-quote.has-photo cite { color: #f1dc9a; }
+
+.pull-quote .pq-credit { position: absolute; right: 1rem; bottom: 0.8rem; margin: 0; font-family: var(--sans); font-size: 0.7rem; letter-spacing: 0.08em; color: rgba(251, 247, 236, 0.75); text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5); }
+
+/* ---------- Back to top: a hand-drawn arrow on a light green, slightly uneven "painted" disc.
+   Appears from "Hej, jeg hedder Laura". No visible text; the aria-label names it for screen readers. ---------- */
+.to-top {
+  position: fixed; right: calc(1rem + env(safe-area-inset-right, 0px)); bottom: calc(1rem + env(safe-area-inset-bottom, 0px)); z-index: 90;
+  display: grid; place-items: center; width: 60px; height: 60px;
+  border-radius: 54% 46% 52% 48% / 47% 55% 45% 53%;
+  background: var(--green-pale); color: var(--green-dark); text-decoration: none;
+  box-shadow: 0 4px 16px rgba(45, 61, 46, 0.18), inset 0 0 0 1px rgba(74, 103, 65, 0.12);
+  opacity: 0; visibility: hidden; transform: translateY(12px) rotate(-4deg);
+  transition: opacity 0.3s, transform 0.35s, visibility 0.3s, background 0.2s, border-radius 0.6s;
+}
+.to-top.show { opacity: 1; visibility: visible; transform: rotate(-4deg); }
+.to-top:hover { background: #b6cda3; border-radius: 47% 53% 46% 54% / 54% 46% 55% 45%; }
+.to-top:focus-visible { outline: 2px solid var(--green-dark); outline-offset: 3px; }
+.to-top svg { width: 44px; height: 44px; overflow: visible; }
+.to-top svg .stem, .to-top svg .head, .to-top svg .leaf { transition: transform 0.35s ease; }
+.to-top:hover svg .head, .to-top:hover svg .stem { transform: translateY(-2px); }
+.to-top:hover svg .leaf { transform: translateY(-2px) rotate(-6deg); transform-origin: 16.6px 21.6px; }
+@media (prefers-reduced-motion: reduce) {
+  .to-top, .to-top svg * { transition: opacity 0.2s, visibility 0.2s; }
+}

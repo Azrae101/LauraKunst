@@ -1027,8 +1027,16 @@ const I18N = {
     "en": "But now I’m giving it a shot, even though it’s really nerve-racking 💛💛"
   },
   "quote": {
-    "da": "“Min kunst er tusindvis af timer i mit eget selskab, følelser jeg ikke havde nogen anden måde at få ud på.”",
-    "en": "“My art is thousands of hours spent in my own company, feelings I had no other way of getting out.”"
+    "da": "“Min kunst er tusindvis af timer brugt i mit eget selskab, følelser jeg ikke anede hvordan jeg kunne få ud på andre måder.”",
+    "en": "“My art is thousands of hours spent in my own company, feelings I had no idea how to get out in any other way.”"
+  },
+  "quote.photo": {
+    "da": "Foto: Laura Kruuse",
+    "en": "Photo: Laura Kruuse"
+  },
+  "toTop": {
+    "da": "Gå tilbage til start",
+    "en": "Back to top"
   },
   "process.h": {
     "da": "<em>Processen</em>",
@@ -1039,16 +1047,16 @@ const I18N = {
     "en": "Observation"
   },
   "process.1p": {
-    "da": "Hvert maleri begynder udenfor. Jeg skitserer, fotograferer og kigger bare, for at forstå lyset, strukturen og stemningen et sted.",
-    "en": "Every painting starts outside. I sketch, photograph and simply look, trying to understand the light, the structure and the feeling of a place."
+    "da": "Det hele starter med at kigge: på mennesker, på livet i byen og på naturen omkring mig. Jeg har næsten altid kameraet med, og fotografierne er både mine skitser og et udtryk i sig selv.",
+    "en": "It all starts with looking: at people, at life in the city and at the nature around me. I almost always have my camera with me, and the photographs are both my sketches and a form of expression in their own right."
   },
   "process.2h": {
     "da": "Maleriet",
     "en": "The painting"
   },
   "process.2p": {
-    "da": "Tilbage i atelieret maler jeg på lærred eller papir med akryl, olie eller akvarel, alt efter stemningen. Nogle malerier kommer hurtigt, andre tager uger.",
-    "en": "Back in the studio, I paint on canvas or paper using acrylics, oils or watercolour depending on the mood. Some paintings come quickly; others take weeks."
+    "da": "I atelieret bliver det, jeg har set, til akrylmalerier. Nogle gange er det et menneske, andre gange en travl gade eller et stille øjeblik i naturen. Nogle malerier kommer hurtigt, andre tager uger.",
+    "en": "In the studio, what I have seen becomes acrylic paintings. Sometimes it is a person, other times a busy street or a quiet moment in nature. Some paintings come quickly; others take weeks."
   },
   "process.3h": {
     "da": "Printet",

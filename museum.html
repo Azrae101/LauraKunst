@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
   <link rel="apple-touch-icon" href="images/general/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20261203">
+  <link rel="stylesheet" href="css/style.css?v=20261206">
   <style>
     /* ---------- Virtual museum ----------
        The hall is a horizontal scroller. Paintings, visitors (the shadow people),
@@ -161,7 +161,12 @@
       color: var(--m-cream); background: transparent; border: 2px solid var(--m-frame);
       transition: background 0.25s, color 0.25s, border-color 0.25s;
     }
-    .m-btn.solid { background: var(--m-cream); color: #2e392e; border-color: var(--m-cream); }
+    /* "Buy a print": round pill in a soft sand tone instead of near-white */
+    .m-btn.solid {
+      border-radius: 999px; padding-inline: 1.3rem;
+      background: #c9b48c; color: #2a2a1f; border-color: #c9b48c;
+    }
+    .m-btn.solid:hover { background: #b9a27a; border-color: #b9a27a; }
 
     /* Artist / welcome */
     .welcome .placard { width: clamp(260px, 30vw, 420px); }
@@ -296,6 +301,12 @@
     .ending h2 { font-size: clamp(1.6rem, 3vw, 2.4rem); }
     .ending .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; justify-content: center; margin-top: 1.2rem; }
     .ending .social-row { justify-content: center; }
+    /* "Gå tilbage til start": light green pill so it stands out from the dark placard */
+    .m-btn.restart {
+      margin-top: 0.8rem; border-radius: 999px; padding-inline: 1.4rem;
+      background: #c8d9b8; color: #2d3d2e; border-color: #c8d9b8;
+    }
+    .m-btn.restart:hover { background: #b6cda3; border-color: #b6cda3; }
     .ending .fin { margin-top: 1.2rem; font-style: italic; color: var(--m-cream-dim); font-family: var(--serif); font-size: 1rem; }
 
     /* Arrows and hint over the hall */
@@ -518,9 +529,9 @@
   <div class="mv-inner" id="mvInner" tabindex="-1" autofocus></div>
 </dialog>
 
-<script src="js/config.js?v=20261203"></script>
-<script src="js/i18n.js?v=20261203"></script>
-<script src="js/site.js?v=20261203"></script>
+<script src="js/config.js?v=20261215"></script>
+<script src="js/i18n.js?v=20261205"></script>
+<script src="js/site.js?v=20261204"></script>
 <script>
 /* The museum is built from ARTWORKS and SKETCHES in js/config.js,
    so a new painting added there also gets hung here automatically. */
@@ -640,7 +651,7 @@
           ${AUCTION ? `<a class="m-btn" href="auction.html">${t("viewer.bid")}</a>` : ""}
         </div>
         <div class="social-row" data-auto></div>
-        <button class="m-btn" type="button" id="m-restart" style="margin-top:0.8rem">${t("museum.restart")}</button>
+        <button class="m-btn restart" type="button" id="m-restart">${t("museum.restart")}</button>
       </div>
     </section>`);
 
@@ -799,7 +810,7 @@
     npFrom = note;
     $("#npImg").src = s.image; $("#npImg").alt = L(s.title);
     $("#np-title").textContent = L(s.title);
-    $("#npMedium").textContent = L(s.medium);
+    $("#npMedium").textContent = [L(s.medium), s.year].filter(Boolean).join(", ");
     $("#npDesc").textContent = L(s.desc);
     np.classList.remove("closing");
     np.showModal();

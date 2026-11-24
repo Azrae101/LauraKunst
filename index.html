@@ -13,7 +13,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
   <link rel="apple-touch-icon" href="images/general/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20261203">
+  <link rel="stylesheet" href="css/style.css?v=20261206">
 </head>
 <body data-title="meta.home">
 
@@ -113,10 +113,12 @@
     </div>
   </section>
 
-  <div class="pull-quote">
+  <div class="pull-quote has-photo">
+    <img class="pq-photo" src="images/general/flowers-b-2000.jpg" srcset="images/general/flowers-b-1000.jpg 1000w, images/general/flowers-b-2000.jpg 2000w" sizes="100vw" width="2000" height="1333" alt="" loading="lazy" decoding="async">
     <div class="wrap">
       <blockquote><span data-i18n="quote"></span><cite>Laura Kruuse</cite></blockquote>
     </div>
+    <p class="pq-credit" data-i18n="quote.photo">Foto: Laura Kruuse</p>
   </div>
 
   <section class="block">
@@ -237,6 +239,18 @@
   </section>
 </main>
 
+<!-- Back to top: appears once the visitor reaches "Hej, jeg hedder Laura" -->
+<a class="to-top" id="to-top" href="#top" data-i18n-aria="toTop" aria-label="Gå tilbage til start"><svg viewBox="0 0 32 32" aria-hidden="true">
+  <!-- hand-drawn stem with a leaf, brush-stroke arrowhead and two paint dots (like the logo) -->
+  <path class="stem" d="M16.4 27.5c-1.6-4.2 1.4-7.6.2-12.2-.4-1.9-.5-4.3-.4-7.6" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round"/>
+  <path class="head" d="M9.6 13.6c2.6-1.6 4.6-3.9 6.6-7.4M22.8 12.9c-2.7-1.4-4.8-3.4-6.6-6.7" fill="none" stroke="currentColor" stroke-width="2.1" stroke-linecap="round"/>
+  <path class="leaf" d="M16.6 21.6c.9-3 3.1-4.6 6.2-4.9-.6 3.1-2.9 4.8-6.2 4.9z" fill="currentColor"/>
+  <path class="vein" d="M17.4 20.8c1.4-1.4 2.7-2.4 4.4-3.3" fill="none" stroke="var(--green-pale)" stroke-width=".6" stroke-linecap="round"/>
+  <path class="leaf" d="M16.1 25.4c-.9-2.3-2.7-3.5-5.1-3.6.6 2.3 2.4 3.6 5.1 3.6z" fill="currentColor" opacity=".75"/>
+  <circle class="dot" cx="24.6" cy="8.4" r="1.15" fill="#b8902f"/>
+  <circle class="dot" cx="26.4" cy="11.6" r=".7" fill="#b8902f"/>
+</svg></a>
+
 <dialog class="viewer" id="viewer">
   <button class="close-x" type="button" id="viewer-close" data-i18n-aria="close" aria-label="Luk">×</button>
   <div class="viewer-inner" id="viewer-inner"></div>
@@ -257,9 +271,9 @@
   </div>
 </footer>
 
-<script src="js/config.js?v=20261203"></script>
-<script src="js/i18n.js?v=20261203"></script>
-<script src="js/site.js?v=20261203"></script>
+<script src="js/config.js?v=20261215"></script>
+<script src="js/i18n.js?v=20261205"></script>
+<script src="js/site.js?v=20261204"></script>
 <script>
 let auctions = [];
 let shown = null;   // what the viewer is showing
@@ -530,6 +544,22 @@ if (AUCTION) {
   setInterval(tickTeaser, 1000);
   setInterval(loadAuctions, 30000);
 }
+
+/* ---------- Back to top: visible from "Hej, jeg hedder Laura" and further down ---------- */
+(() => {
+  const btn = $("#to-top"), about = $("#om-mig");
+  if (!btn || !about) return;
+  const update = () => btn.classList.toggle("show", about.getBoundingClientRect().top < innerHeight * 0.6);
+  addEventListener("scroll", update, { passive: true });
+  addEventListener("resize", update);
+  update();
+  btn.addEventListener("click", e => {
+    e.preventDefault();
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    scrollTo({ top: 0, behavior: reduce ? "auto" : "smooth" });
+    history.replaceState(null, "", location.pathname + location.search);
+  });
+})();
 </script>
 </body>
 </html>

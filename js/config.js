@@ -44,8 +44,49 @@ const CONFIG = {
 };
 
 /* Pictures: put them in the images folder. w and h are the picture's size in pixels,
-   so the site can show each one at its own shape without cropping. */
+   so the site can show each one at its own shape without cropping.
+   Newest first: the portfolio and the print shop show them in this order.
+   shop: false = only in the portfolio, not for sale as prints.
+   Fill in medium, size, year and description when known. Anything left empty is simply hidden. */
 const ARTWORKS = [
+  {
+    id: "will-you-catch-me",
+    title: "WILL YOU CATCH ME?",
+    image: "images/paintings/will-you-catch-me.jpg", w: 1300, h: 1629,
+    size: "80 × 60 cm",
+    year: "2026",
+    medium: { da: "Akryl på lærred", en: "Acrylic on canvas" },
+    description: {
+      da: "Nogle gange føles livet, som om man bare falder, uden nogen til at gribe én, selvom man bliver ved med at skrige efter nogen, der kan redde én.",
+      en: "Sometimes life feels like you’re just falling, with nobody to catch you, even though you keep screaming for someone to save you."
+    }
+  },
+  {
+    id: "eurowoman-illy",
+    title: "EUROWOMAN × ILLY",
+    shop: false,
+    image: "images/paintings/eurowoman-illy.jpg", w: 1300, h: 1838,
+    size: "",
+    year: "2026",
+    medium: { da: "Akvarel på papir", en: "Watercolour on paper" },
+    description: {
+      da: "Det er tit de små øjeblikke, der betyder mest. En bænk ved vandet, en kop kaffe og en skulder at hvile hovedet på. Malet til Eurowoman × illy-konkurrencen.",
+      en: "It’s often the small moments that mean the most. A bench by the water, a cup of coffee and a shoulder to rest your head on. Painted for the Eurowoman × illy competition."
+    }
+  },
+  {
+    id: "ember",
+    title: "EMBER",
+    shop: false,
+    image: "images/paintings/ember.jpg", w: 1300, h: 1798,
+    size: "",
+    year: "2025",
+    medium: { da: "Akryl på lærred", en: "Acrylic on canvas" },
+    description: {
+      da: "Hun siger ikke noget, men det behøver hun heller ikke. Nogle gange kan man mærke varmen fra et menneske, bare ved at se på dem.",
+      en: "She doesn’t say anything, but she doesn’t need to. Sometimes you can feel the warmth of a person just by looking at them."
+    }
+  },
   {
     id: "vestige",
     title: "VESTIGE",
@@ -54,38 +95,22 @@ const ARTWORKS = [
     year: "2025",
     medium: { da: "Akryl med tørrede blomster og guldfarvede ginkgoblade på lærred", en: "Acrylic with dried flowers and gold ginkgo leaves on canvas" },
     description: {
-      da: "Et pigeansigt i klare farver mod en intens blå baggrund. Tørrede blomster og fine, guldfarvede ginkgoblade er presset ind i den teksturerede overflade.",
-      en: "A girl’s face in vibrant colour against an intense blue background. Dried flowers and delicate gold ginkgo leaves are pressed into the textured surface."
+      da: "Nogle ting forsvinder, men efterlader alligevel et lille spor. Det, der engang blomstrede, kan stadig være smukt, også når det er visnet.",
+      en: "Some things disappear but still leave a little trace behind. What once bloomed can still be beautiful, even after it has withered."
     }
   },
   {
     id: "florere",
     title: "FLORERE",
     image: "images/paintings/florere.jpg", w: 1300, h: 1752,
-    size: "80 × 60 cm",
+    size: "60 × 80 cm",
     year: "2025",
-    medium: { da: "Akryl på lærred med ægte tørrede blomster", en: "Acrylic on canvas with real dried flowers" },
+    medium: { da: "Akryl og ægte blomster på lærred", en: "Acrylics and real flowers on canvas" },
     description: {
-      da: "Det kan nogle gange være svært at se, når man selv udvikler sig og blomstrer. Men for andre er du blomstret så smukt.",
-      en: "Sometimes it can be hard to see when you are growing and blossoming yourself. But to others, you have blossomed so beautifully."
+      da: "Nogle gange kan det være svært at se sin egen vækst. Men for omverdenen blomstrer du så smukt, mens du bliver den bedste udgave af dig selv.",
+      en: "Sometimes it can be hard to see your own growth. But to the outside world, you are blooming so beautifully while becoming the best version of yourself."
     }
   },
-  {
-    id: "will-you-catch-me",
-    title: "WILL YOU CATCH ME?",
-    image: "images/paintings/will-you-catch-me.jpg", w: 1300, h: 1629,
-    size: "80 × 60 cm",
-    year: "", // leave empty until the year is known; the site then just hides it
-    medium: { da: "Akryl på lærred", en: "Acrylic on canvas" },
-    // Description of what the painting shows. Laura can replace it with her own story behind the piece.
-    description: {
-      da: "En kvinde falder ned mod en by i skumringen med armene strakt ud mod beskueren.",
-      en: "A woman falls towards a city at dusk, her arms reaching out to the viewer."
-    }
-  },
-
-  /* Only in the portfolio, not for sale as prints (shop: false).
-     Fill in medium, size, year and description when known. Anything left empty is simply hidden. */
   {
     id: "lunar-solitude",
     title: "LUNAR SOLITUDE",
@@ -93,8 +118,11 @@ const ARTWORKS = [
     image: "images/paintings/lunar-solitude.jpg", w: 1300, h: 1391,
     size: "40 × 40 cm",
     year: "",
-    medium: { da: "", en: "" },
-    description: { da: "", en: "" }
+    medium: { da: "Akryl på lærred. Månen har en 3D-effekt lavet af genbrugt akrylmaling", en: "Acrylic on canvas. The moon has a 3D effect made from recycled acrylic paint" },
+    description: {
+      da: "Der er dage, hvor man bare har brug for at komme helt væk fra det hele. Et sted hvor der er stille, og hvor man kan være alene med sine egne tanker.",
+      en: "There are days when you just need to get far away from it all. Somewhere quiet, where you can be alone with your own thoughts."
+    }
   },
   {
     id: "marasme",
@@ -103,8 +131,11 @@ const ARTWORKS = [
     image: "images/paintings/marasme.jpg", w: 1300, h: 1388,
     size: "40 × 40 cm",
     year: "",
-    medium: { da: "", en: "" },
-    description: { da: "", en: "" }
+    medium: { da: "Akryl på lærred", en: "Acrylic on canvas" },
+    description: {
+      da: "Det kan føles som om, at alt omkring én bare kører videre, mens man selv står helt stille og ikke ved, hvor man skal gå hen.",
+      en: "It can feel like everything around you just keeps going, while you stand completely still, not knowing where to go."
+    }
   },
   {
     id: "flicker",
@@ -113,18 +144,11 @@ const ARTWORKS = [
     image: "images/paintings/flicker-web.jpg", w: 1300, h: 1397,
     size: "40 × 40 cm",
     year: "",
-    medium: { da: "", en: "" },
-    description: { da: "", en: "" }
-  },
-  {
-    id: "eurowoman-illy",
-    title: "EUROWOMAN × ILLY",
-    shop: false,
-    image: "images/paintings/eurowoman-illy.jpg", w: 1300, h: 1838,
-    size: "",
-    year: "",
-    medium: { da: "", en: "" },
-    description: { da: "", en: "" }
+    medium: { da: "Akryl på lærred", en: "Acrylic on canvas" },
+    description: {
+      da: "Når alt omkring én er mørkt, er det det lille lys, man holder fast i. Det blafrer lidt, men det er nok til at finde vej.",
+      en: "When everything around you is dark, it’s the little light you hold on to. It flickers a bit, but it’s enough to find your way."
+    }
   },
   {
     id: "midt-om-natten",
@@ -133,8 +157,11 @@ const ARTWORKS = [
     image: "images/paintings/midt-om-natten.jpg", w: 437, h: 1300,
     size: "",
     year: "",
-    medium: { da: "", en: "" },
-    description: { da: "", en: "" }
+    medium: { da: "Akryl på lærred", en: "Acrylic on canvas" },
+    description: {
+      da: "Om natten bliver byen helt stille, men lysene bliver ved med at bevæge sig. Hver lille prik er nogen, der er på vej hjem.",
+      en: "At night the city goes completely quiet, but the lights keep moving. Every little dot is someone on their way home."
+    }
   }
 ];
 /* Paintings that are for sale as prints */
@@ -168,9 +195,9 @@ const NATURE = [
   { title: { da: "Fuglen i vindueskarmen", en: "Bird on the Windowsill" }, image: "images/paintings/fugl.jpg", w: 1300, h: 975,
     medium: { da: "Akvarel på papir", en: "Watercolour on paper" },
     desc: { da: "En lille fugl hviler i vindueskarmen mellem grønne grene og røde blomster.", en: "A small bird resting on the windowsill between green branches and red flowers." } },
-  { title: { da: "Koen i engen", en: "Cow in the Meadow" }, image: "images/paintings/ko.jpg", w: 1300, h: 903,
+  { title: { da: "Forår!", en: "Spring!" }, image: "images/paintings/ko.jpg", w: 1300, h: 903, year: "2025",
     medium: { da: "Akvarel på papir", en: "Watercolour on paper" },
-    desc: { da: "En nysgerrig ko kigger frem mellem højt græs og vilde blomster.", en: "A curious cow peeking out from tall grass and wild flowers." } }
+    desc: { da: "En ko på marken i akvarel.", en: "A cow in a field in watercolour." } }
 ];
 
 /* Instagram posts shown in the carousel on the front page. Picture posts only (no videos/reels).
