@@ -15,7 +15,7 @@ const CONFIG = {
 
   // Captcha at checkout (Cloudflare Turnstile). Paste the "Site Key" here once the place-order
   // function is set up (see "Captcha at checkout" in LÆS-MIG.txt). Empty = no captcha, orders go straight to the database.
-  turnstileSiteKey: "",
+  turnstileSiteKey: "0x4AAAAAAGRMnnOOulIAo7S_",
 
   defaultLanguage: "da",
 
