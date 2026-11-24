@@ -73,6 +73,14 @@
     .o-actions .link-btn { min-height: 46px; }
     .empty { padding: 3rem 1rem; text-align: center; color: var(--text-muted); background: var(--white); border: 1px dashed var(--line); }
     .order-status.expired { color: var(--err); }
+    /* "Opdatér" button feedback */
+    #refresh { display: inline-flex; align-items: center; gap: 0.4rem; transition: color 0.2s; }
+    #refresh:disabled { cursor: default; opacity: 1; }
+    #refresh.busy::before { content: ""; width: 0.85em; height: 0.85em; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    #refresh.done { color: var(--green-mid); }
+    #refresh.failed { color: var(--err); }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @media (prefers-reduced-motion: reduce) { #refresh.busy::before { animation-duration: 2s; } }
     .track { flex: 1 1 200px; min-height: 46px; padding: 0 0.9rem; border: 1px solid var(--line); background: var(--white); font: inherit; font-size: 0.9rem; }
   </style>
 </head>
@@ -303,18 +311,32 @@ async function load() {
     [orders, shop] = await Promise.all([rpc("admin_orders"), rpc("shop_state").catch(() => null)]);
     msg.textContent = ""; msg.className = "msg";
     renderOrders();
+    return true;
   } catch (err) {
-    if (err.message === "LOGIN") return show();
+    if (err.message === "LOGIN") { show(); return false; }
     msg.className = "msg err";
     msg.textContent = err.message === "NOT_ADMIN"
       ? `${myEmail()} er logget ind, men har ikke adgang til ordrer. Bed om at blive tilføjet (tabellen admins i Supabase).`
       : `Kunne ikke hente ordrerne. Tryk på Opdatér for at prøve igen. (Fejl fra databasen: ${err.message})`;
+    return false;
   }
 }
 
 $("#tabs").addEventListener("click", e => { const b = e.target.closest("[data-f]"); if (b) { filter = b.dataset.f; renderOrders(); } });
 $("#search").addEventListener("input", e => { query = e.target.value; renderOrders(); });
-$("#refresh").addEventListener("click", load);
+/* "Opdatér": spins while fetching, then says "Opdateret ✓" (or "Fejl") for a moment */
+$("#refresh").addEventListener("click", async (e) => {
+  const b = e.currentTarget;
+  if (b.disabled) return;
+  b.disabled = true; b.classList.add("busy"); b.textContent = "Opdaterer…";
+  const started = Date.now(), ok = await load();
+  // Show the spinner at least a moment, so a fast answer still looks like something happened
+  await new Promise(r => setTimeout(r, Math.max(0, 450 - (Date.now() - started))));
+  b.classList.remove("busy"); b.classList.add(ok ? "done" : "failed");
+  b.textContent = ok ? `Opdateret ✓ ${new Date().toLocaleTimeString("da-DK", { hour: "2-digit", minute: "2-digit" })}` : "Fejl, prøv igen";
+  if (ok) toast(`${orders.length} ordre${orders.length === 1 ? "" : "r"} hentet`);
+  setTimeout(() => { b.classList.remove("done", "failed"); b.textContent = "Opdatér"; b.disabled = false; }, 2000);
+});
 $("#orders").addEventListener("click", async e => {
   const b = e.target.closest("[data-to]"); if (!b) return;
   const code = b.dataset.code, to = b.dataset.to, o = orders.find(x => x.order_code === code);
