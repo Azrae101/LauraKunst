@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light only">
+  <meta name="theme-color" content="#f7f4ee">
+  <title>Prints | Japper studio</title>
+  <meta name="description" content="Køb et signeret og nummereret print i 50 × 70 cm af Laura Kruuses malerier.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
+  <link rel="apple-touch-icon" href="images/general/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css?v=20261216">
+</head>
+<body data-title="meta.prints">
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html#top" class="nav-logo"><img src="images/general/favicon-192.png" width="40" height="40" alt="">Japper studio</a>
+    <nav data-i18n-aria="nav.main" aria-label="Hovedmenu">
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html#top" data-i18n="nav.home">Forside</a></li>
+        <li data-auction><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
+        <li><a href="prints.html" aria-current="page" data-i18n="nav.prints">Prints</a></li>
+        <li><a href="museum.html" data-i18n="nav.museum">Portefølje</a></li>
+        <li><a href="index.html#om-mig" data-i18n="nav.about">Om mig</a></li>
+        <li><a href="index.html#kontakt" data-i18n="nav.contact">Kontakt</a></li>
+      </ul>
+    </nav>
+    <button class="lang-btn" type="button" aria-label="Switch to English"><span class="lang-short">EN</span></button>
+    <button class="basket-btn" type="button" aria-haspopup="dialog"><span class="label" data-i18n="nav.basket">Kurv</span><span class="count">0</span><span class="sr-only" data-i18n="nav.items">varer i kurven</span></button>
+    <button class="nav-toggle" type="button" aria-controls="navLinks" aria-expanded="false" data-i18n-aria="nav.menu" aria-label="Menu"><span></span><span></span><span></span></button>
+  </div>
+</header>
+
+<main class="page">
+  <!-- Prints shop -->
+  <section class="block" id="prints" aria-labelledby="prints-h">
+    <div class="wrap">
+      <div class="sec-head">
+        <div>
+          <p class="eyebrow" data-i18n="shop.eyebrow">Køb et print</p>
+          <h1 class="h-section" id="prints-h" data-i18n-html="prints.h">Prints, <em>50 × 70 cm</em></h1>
+        </div>
+        <p class="lede" id="shop-lede"></p>
+      </div>
+      <div class="print-grid" id="print-grid"><p class="lede">…</p></div>
+      <div class="note-box" id="gift-box">
+        <h3 data-i18n="prints.giftH">En lille gave</h3>
+        <p id="gift-note"></p>
+      </div>
+    </div>
+  </section>
+
+  <section class="block tint">
+    <div class="wrap">
+      <h2 class="h-section center" data-i18n-html="process.h"><em>Processen</em></h2>
+      <ol class="steps">
+        <li class="reveal"><h3 data-i18n="process.1h">Iagttagelse</h3><p data-i18n="process.1p"></p></li>
+        <li class="reveal"><h3 data-i18n="process.2h">Maleriet</h3><p data-i18n="process.2p"></p></li>
+        <li class="reveal"><h3 data-i18n="process.3h">Printet</h3><p data-i18n="process.3p"></p></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- "Kommer snart": information only, no e-mail sign-up (see FREMTIDIGE-IDEER.txt) -->
+  <section class="block" id="soon">
+    <div class="wrap">
+      <div class="sec-head">
+        <h2 class="h-section" data-i18n-html="soon.h">Kommer <em>snart</em></h2>
+        <p class="lede" data-i18n="soon.p">Det arbejder jeg på lige nu. Følg med på Instagram for at se, hvornår det er klar.</p>
+      </div>
+      <div class="soon-grid" id="soon-grid"></div>
+    </div>
+  </section>
+</main>
+
+<dialog class="viewer" id="viewer">
+  <button class="close-x" type="button" id="viewer-close" data-i18n-aria="close" aria-label="Luk">×</button>
+  <div class="viewer-inner" id="viewer-inner"></div>
+</dialog>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-logo"><img src="images/general/favicon-192.png" width="36" height="36" alt="">Japper studio</div>
+    <ul class="footer-nav">
+      <li><a href="index.html#top" data-i18n="nav.home">Forside</a></li>
+      <li data-auction><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
+      <li><a href="prints.html" data-i18n="nav.prints">Prints</a></li>
+      <li><a href="museum.html" data-i18n="nav.museum">Portefølje</a></li>
+      <li><a href="index.html#om-mig" data-i18n="nav.about">Om mig</a></li>
+      <li><a href="index.html#kontakt" data-i18n="nav.contact">Kontakt</a></li>
+    </ul>
+    <p class="footer-copy">© <span class="year">2026</span> Japper studio. <span data-i18n="footer.rights">Alle rettigheder forbeholdes.</span> <span class="footer-credit" data-i18n="footer.credit">Udviklet med ❤️ af Clara Holst</span></p>
+  </div>
+</footer>
+
+<script src="js/config.js?v=20261215"></script>
+<script src="js/i18n.js?v=20261216"></script>
+<script src="js/site.js?v=20261216"></script>
+<script>
+let shown = null;   // what the viewer is showing
+const MAX_QTY = CONFIG.maxPerPerson || 10;
+
+/* ---------- Prints shop ---------- */
+let printsLoaded = false, printsFailed = false;
+const lowestPrice = () => printsCache.length ? Math.min(...printsCache.map(p => p.price_signed)) : null;
+
+function renderShopText() {
+  const p = lowestPrice();
+  $("#shop-lede").textContent = t("shop.p", { p: p ? kr(p) : "…", s: kr(CONFIG.shipping.ship) });
+}
+
+function renderPrints() {
+  const grid = $("#print-grid");
+  renderShopText();
+  if (printsFailed) { grid.innerHTML = `<p class="msg err">${t("err.load")}</p>`; return; }
+  if (!printsLoaded) return;
+  // keep the quantities people already chose when re-drawing
+  const keep = {};
+  $$(".print-card", grid).forEach(c => { keep[c.dataset.id] = c.querySelector("output").textContent; });
+  grid.innerHTML = printsCache.map(p => {
+    const a = artById(p.artwork_id); if (!a || !forSale(a)) return "";
+    return `<article class="print-card" id="print-${esc(p.artwork_id)}" data-id="${esc(p.artwork_id)}">
+      <button class="frame frame-btn" type="button" data-art="${esc(a.id)}" aria-label="${esc(a.title)}">${printMockupHTML(a)}</button>
+      <h3>${esc(a.title)}</h3>
+      <p class="print-desc">${esc(L(a.description))}</p>
+      <p class="variant single"><span>${t("prints.signed")}<small>50 × 70 cm</small></span><b>${kr(p.price_signed)}</b></p>
+      <div class="buy-row">
+        <div class="qty" role="group" aria-label="${t("prints.qty")}"><button type="button" data-q="-1" aria-label="${t("prints.fewer")}">−</button><output>${keep[p.artwork_id] || 1}</output><button type="button" data-q="1" aria-label="${t("prints.more")}">+</button></div>
+        <button class="btn" type="button" data-add>${t("prints.add")}</button>
+      </div>
+    </article>`;
+  }).join("");
+  const note = L(CONFIG.giftNote);
+  $("#gift-box").hidden = !note; $("#gift-note").textContent = note || "";
+  // Links like prints.html#print-vestige (e.g. from the portfolio) jump to that print once the cards exist
+  if (/^#print-/.test(location.hash) && !renderPrints.scrolled) { renderPrints.scrolled = true; document.querySelector(location.hash)?.scrollIntoView(); }
+}
+
+$("#print-grid").addEventListener("click", e => {
+  const card = e.target.closest(".print-card"); if (!card) return;
+  const art = e.target.closest("[data-art]");
+  if (art) { if (!isPhone()) openViewer({ type: "art", id: art.dataset.art }); return; }
+  const out = card.querySelector("output"), q = e.target.closest("[data-q]");
+  if (q) { out.textContent = Math.min(MAX_QTY, Math.max(1, +out.textContent + +q.dataset.q)); return; }
+  if (e.target.closest("[data-add]") && addToBasket(card.dataset.id, true, +out.textContent)) out.textContent = 1;
+});
+
+async function loadShop() {
+  try { await loadPrints(); printsLoaded = true; printsFailed = false; } catch { printsFailed = true; }
+  renderPrints();
+}
+
+/* ---------- Coming soon ---------- */
+function renderSoon() {
+  $("#soon-grid").innerHTML = COMING_SOON.map(s => `
+    <div class="soon-item">
+      <span class="soon-tag">${t("soon.tag")}</span>
+      <h3>${esc(L(s.title))}</h3>
+      <p>${esc(L((!AUCTION && s.textNoAuction) || s.text))}</p>
+    </div>`).join("");
+}
+
+/* ---------- Viewer: a print's painting, larger ---------- */
+const viewer = $("#viewer");
+// On phones the pictures are already shown as large as the screen allows, so they don't open larger
+const isPhone = () => matchMedia("(max-width: 699px)").matches;
+function renderViewer() {
+  if (!shown) return;
+  const a = artById(shown.id), p = printFor(a.id);
+  $("#viewer-inner").innerHTML = `${artHTML(a)}
+    <div class="info">
+      <h2>${esc(a.title)}</h2>
+      <p>${esc(L(a.description))}</p>
+      <p class="fineprint">${esc(L(a.medium))}<br>${esc(sizeYear(a))}</p>
+      <p class="fineprint">${t("viewer.printLine", { p: p ? kr(p.price_signed) : "" })}</p>
+      <div class="actions">
+        ${p ? `<button class="btn" type="button" data-viewer-add="${esc(a.id)}">${t("prints.add")}</button>` : ""}
+        ${AUCTION ? `<a class="btn line" href="auction.html?id=${esc(a.id)}">${t("viewer.bid")}</a>` : ""}
+      </div>
+    </div>`;
+}
+function openViewer(item) { shown = item; renderViewer(); viewer.showModal(); document.body.classList.add("menu-locked"); }
+$("#viewer-close").addEventListener("click", () => viewer.close());
+viewer.addEventListener("click", e => {
+  if (e.target === viewer) { viewer.close(); return; }
+  const add = e.target.closest("[data-viewer-add]");
+  if (add && addToBasket(add.dataset.viewerAdd, true, 1)) viewer.close();
+});
+viewer.addEventListener("close", () => { shown = null; document.body.classList.remove("menu-locked"); });
+
+document.addEventListener("lang:change", () => { renderPrints(); renderSoon(); renderViewer(); });
+document.addEventListener("prints:change", renderPrints);
+renderSoon();
+loadShop();
+document.addEventListener("visibilitychange", () => { if (!document.hidden) loadShop(); });
+</script>
+</body>
+</html>

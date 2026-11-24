@@ -4,7 +4,9 @@
    The rest of the site text is in js/i18n.js. */
 
 const CONFIG = {
-  // From Supabase: Project settings, then API. Leave both empty to run the site in demo mode.
+  // From Supabase: Project settings, then API Keys (see LÆS-MIG.txt). Leave both empty to run the site in demo mode.
+  // supabaseAnonKey: the "publishable" key (sb_publishable_...) or the older "anon" key. Both are meant to be public.
+  // NEVER paste the secret / service_role key here.
   supabaseUrl: "",
   supabaseAnonKey: "",
 

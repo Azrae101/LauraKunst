@@ -457,6 +457,28 @@ legend { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; c
 .about-hero figcaption { margin-top: 0.7rem; text-align: right; font-family: var(--serif); font-style: italic; color: var(--text-muted); }
 .story { max-width: 680px; margin-inline: auto; }
 .story p { color: var(--text-muted); line-height: 2; margin-top: 1.3rem; }
+/* "Med mine egne ord": heading and a taped-up photo of Laura beside the text */
+.story-grid { display: grid; gap: 2rem; }
+.story-grid .story { max-width: 720px; margin: 0; }
+.story-grid .story p:first-child { margin-top: 0; }
+.story-photo {
+  position: relative; width: min(260px, 70%); margin: 1.6rem 0 0.5rem 0.4rem;
+  background: var(--white); padding: 0.7rem 0.7rem 0; transform: rotate(-2.5deg);
+  box-shadow: 0 1px 2px rgba(42, 37, 32, 0.12), 0 10px 24px rgba(42, 37, 32, 0.14);
+}
+.story-photo img { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; object-position: 50% 40%; }
+.story-photo figcaption { padding: 0.55rem 0 0.75rem; text-align: center; font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--text-muted); }
+/* A strip of washi tape holding the photo */
+.story-photo::before {
+  content: ""; position: absolute; top: -12px; left: 50%; width: 92px; height: 26px; transform: translateX(-50%) rotate(3deg);
+  background: rgba(200, 217, 184, 0.75); box-shadow: 0 1px 2px rgba(42, 37, 32, 0.08);
+}
+@media (min-width: 900px) {
+  .story-grid { grid-template-columns: minmax(240px, 0.75fr) 1.5fr; gap: 4.5rem; align-items: start; }
+  .story-side { position: sticky; top: calc(var(--nav-h) + 2rem); }
+  .story-photo { width: min(290px, 100%); margin-top: 2.2rem; }
+  .story-grid .story { padding-top: 0.6rem; }
+}
 .pull-quote { background: linear-gradient(180deg, #fbf5e2 0%, #f5ebcd 100%); padding: 4rem 0; text-align: center; }
 @media (min-width: 900px) { .pull-quote { padding: 6rem 0; } }
 .pull-quote blockquote { font-family: var(--serif); font-style: italic; font-weight: 300; font-size: clamp(1.5rem, 5.5vw, 2.3rem); line-height: 1.5; color: var(--green-dark); max-width: 700px; margin-inline: auto; }

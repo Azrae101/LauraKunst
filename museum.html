@@ -466,9 +466,9 @@
       <ul class="nav-links" id="navLinks">
         <li><a href="index.html#top" data-i18n="nav.home">Forside</a></li>
         <li data-auction><a href="auction.html" data-i18n="nav.auction">Auktion</a></li>
-        <li><a href="index.html#prints" data-i18n="nav.prints">Prints</a></li>
-        <li><a href="index.html#om-mig" data-i18n="nav.about">Om mig</a></li>
+        <li><a href="prints.html" data-i18n="nav.prints">Prints</a></li>
         <li><a href="museum.html" aria-current="page" data-i18n="nav.museum">Portefølje</a></li>
+        <li><a href="index.html#om-mig" data-i18n="nav.about">Om mig</a></li>
         <li><a href="index.html#kontakt" data-i18n="nav.contact">Kontakt</a></li>
       </ul>
     </nav>
@@ -604,7 +604,7 @@
           ${(L(a.medium) || a.size) ? `<p class="tech">${[esc(L(a.medium)), esc(a.size)].filter(Boolean).join("<br>")}</p>` : ""}
           ${L(a.description) ? `<p class="story">${esc(L(a.description))}</p>` : ""}
           <div class="label-actions">
-            ${forSale(a) ? `<a class="m-btn solid" href="index.html#print-${esc(a.id)}">${t("viewer.print")}</a>` : ""}
+            ${forSale(a) ? `<a class="m-btn solid" href="prints.html#print-${esc(a.id)}">${t("viewer.print")}</a>` : ""}
             <button class="m-btn open" type="button" data-open="${i}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6"/><path d="m15 15 5 5M10.5 8v5M8 10.5h5"/></svg>${t("museum.open")}</button>
           </div>
         </div>
@@ -646,7 +646,7 @@
       <div class="placard">
         <h2 id="m-end">${t("museum.thanksH")}</h2>
         <div class="actions">
-          <a class="m-btn solid" href="index.html#prints">${t("viewer.print")}</a>
+          <a class="m-btn solid" href="prints.html">${t("viewer.print")}</a>
           ${AUCTION ? `<a class="m-btn" href="auction.html">${t("viewer.bid")}</a>` : ""}
         </div>
         <div class="social-row" data-auto></div>
@@ -764,7 +764,7 @@
         ${tech ? `<p class="tech">${tech}</p>` : ""}
         ${desc ? `<p class="story">${esc(desc)}</p>` : ""}
         ${isArt && (forSale(o) || auctionIds.has(o.id)) ? `<div class="label-actions">
-          ${forSale(o) ? `<a class="m-btn solid" href="index.html#print-${esc(o.id)}">${t("viewer.print")}</a>` : ""}
+          ${forSale(o) ? `<a class="m-btn solid" href="prints.html#print-${esc(o.id)}">${t("viewer.print")}</a>` : ""}
           ${auctionIds.has(o.id) ? `<a class="m-btn" href="auction.html?id=${esc(o.id)}">${t("viewer.bid")}</a>` : ""}
         </div>` : ""}
       </div>`;

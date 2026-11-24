@@ -1,39 +1,84 @@
-﻿LAURA KRUUSE: WEBSITE
+﻿JAPPER STUDIO (LAURA KRUUSE): WEBSITE
 
-Folders
-  index.html         the whole website on one page: prints shop, about me, sketches, coming soon and contact (last)
-  museum.html        the only separate page
+The site lives at https://japperstudio.dk. It is hosted for free on GitHub Pages:
+everything pushed to the main branch on GitHub is live a minute or two later.
+
+
+WHAT IS WHERE
+  index.html         the front page: intro (with buttons to prints and portfolio), about me, Instagram and contact
+  prints.html        the print shop, "Processen" (how a print is made) and "Kommer snart"
+  museum.html        the virtual museum (portfolio). It hangs every painting in ARTWORKS and every sketch in SKETCHES by itself
   auction.html       the auction (hidden for now, see showAuction in js/config.js)
-  gallery.html, contact.html, about.html   only send old links on to the right part of the front page
-  museum.html        the virtual museum. It hangs every painting in ARTWORKS and every sketch in SKETCHES automatically
+  404.html           shown for any address that does not exist (an empty frame that gets "404 not found" painted in it)
+  gallery.html, contact.html, about.html   old addresses: they only send visitors on to the right page
+                     (old front page links like index.html#prints also still work: they are sent to prints.html)
   css/style.css      all styling
-  js/config.js       settings: MobilePay number, e-mail, links, paintings, prices for shipping
-  js/i18n.js         all text in Danish and English
-  js/site.js         basket, checkout, auction and language logic
-  images/general/    photos of Laura, the Japper studio logo, favicons, the print frame and the museum guests
+  js/config.js       settings: Supabase, contact form, MobilePay number, e-mail, links, paintings, sketches,
+                     shipping price and the Instagram posts on the front page
+  js/i18n.js         all fixed text, in Danish (da) and English (en)
+  js/site.js         basket, checkout, auction, language, and the little paintings under the headings
+  images/general/    photos of Laura, the logo, favicons, the print frame, the oak floor and the museum guests
   images/paintings/  the paintings and sketches
-  supabase-setup.sql the database
+  supabase-setup.sql the database (paste it into Supabase, see below)
+  CNAME              tells GitHub Pages the site's address (japperstudio.dk). Do not delete it.
+  FREMTIDIGE-IDEER.txt   things that are built but switched off, and ideas for later
 
-Getting it live
-  1. Make a free project on supabase.com. Open the SQL Editor, paste supabase-setup.sql,
-     change the dates and prices at the bottom, and click Run.
-  2. In Supabase, open Project settings, then API. Copy the Project URL and the anon key
-     into js/config.js.
-  3. Make a free form on formspree.io and paste its address into js/config.js.
-  4. Fill in the MobilePay number, e-mail and Messenger link in js/config.js.
-  5. Upload the whole folder to Netlify or GitHub Pages.
 
-Until step 2 is done, the site runs in demo mode and only saves bids and orders in your own browser.
+GETTING IT FULLY LIVE (shop, orders and contact form)
+  Until steps 1 and 2 are done, the site runs in DEMO MODE: orders, bids and "notify me" sign-ups
+  are only saved in the visitor's own browser and never reach Laura.
+  Until step 3 is done, the contact form only pretends to send: messages are lost.
 
-Selling prints with MobilePay
-  1. The buyer puts prints in the basket and fills in name, e-mail, delivery.
+  1. Database (Supabase, free)
+     a. Make an account and a new project on supabase.com. Pick the region "Central EU (Frankfurt)"
+        (or another EU region). Save the database password somewhere safe; the site does not need it.
+     b. In the project, open SQL Editor, click "New query", paste ALL of supabase-setup.sql and click Run.
+        It should end with "Success. No rows returned".
+        The bottom of the file (SEED) holds the print prices and the auction dates: change them first if needed.
+     c. Check: open Table Editor. You should see the tables auctions, bids, orders, prints and waitlist,
+        and prints should have 3 rows (WILL YOU CATCH ME?, VESTIGE, FLORERE).
+
+  2. Connect the site to the database
+     a. In Supabase, open Project Settings, then "Data API" (or "API"), and copy the Project URL
+        (it looks like https://abcdefgh.supabase.co).
+     b. Open Project Settings, then "API Keys", and copy the PUBLISHABLE key (starts with sb_publishable_).
+        On older projects it is called the "anon public" key (a long text starting with eyJ). Either works.
+        NEVER use the "secret" or "service_role" key: it opens the whole database to anyone.
+     c. Paste both into js/config.js:
+          supabaseUrl: "https://abcdefgh.supabase.co",
+          supabaseAnonKey: "sb_publishable_...",
+     d. Push (see "Putting changes online").
+     e. Test: buy a print yourself, then look in Supabase, Table Editor, orders: the order should be there.
+        Afterwards set it to cancelled (or delete the row).
+
+  3. Contact form (Formspree, free)
+     Make a form on formspree.io with Laura's e-mail, copy its address (https://formspree.io/f/xxxxxxx)
+     into formspreeEndpoint in js/config.js, and push. Send a test message from the site.
+
+  Note: on the free plan, Supabase pauses a project after a week without any visits to the database.
+  If the shop suddenly shows errors, open supabase.com and click "Restore project".
+
+
+PUTTING CHANGES ONLINE
+  1. If you changed a .css or .js file: browsers keep old copies of these files. In index.html, prints.html,
+     museum.html, auction.html and 404.html, change the number after ?v= on the lines for the file(s)
+     you changed (for example ?v=20261216 to ?v=20261217). Then every visitor gets the new files at once.
+  2. In a terminal in the project folder:
+       git add -A
+       git commit -m "What you changed"
+       git push
+  3. After a minute or two, open https://japperstudio.dk and check. Ctrl+F5 reloads without the old copies.
+
+
+SELLING PRINTS WITH MOBILEPAY
+  1. The buyer puts prints in the basket and fills in name, e-mail and delivery.
   2. The site makes an order with an order number and shows how to pay:
      MobilePay to +45 93 96 30 60, the amount, and the exact message to write,
      for example  "LK-48213 2x VESTIGE, 1x WILL YOU CATCH ME?"
      (order number + what they bought, so each payment matches its order).
   3. The order is NOT approved yet. It waits as "awaiting_payment".
-  4. When the payment shows up in MobilePay, open Supabase, then Table editor, then orders.
-     Find the order number from the MobilePay message, check the amount matches "total",
+  4. When the payment shows up in MobilePay, open Supabase, then Table Editor, then orders.
+     Find the order number from the MobilePay message, check the amount matches "pay_now",
      and change "status" to  paid . Only now does the order count as sold.
      The buyer can press "I have paid: check status" on the site and will see it approved.
      Send them a short e-mail too.
@@ -48,20 +93,28 @@ Selling prints with MobilePay
   Paid orders and unpaid orders from the last 48 hours count. The limit is checked on the server.
   To change the number 10 or the 48 hours: js/config.js (maxPerPerson, reserveHours) AND
   supabase-setup.sql (max_per_person, hold_hours, and '48 hours' in order_status), then run the SQL again.
-  Already have the database? Just paste supabase-setup.sql again and Run: it updates it safely.
+  Changing a price or the shipping price: change it in supabase-setup.sql (SEED at the bottom, and ship_price)
+  AND in js/config.js (shipping), then run the SQL again. The price the buyer pays always comes from the database.
+  Running supabase-setup.sql again is always safe: it updates the database without losing orders.
 
-Changing text
+
+CHANGING TEXT
   Fixed text is in js/i18n.js. Every line has a Danish (da) and an English (en) version.
   Painting descriptions and the coming soon items are in js/config.js.
 
-Adding a new painting
+
+ADDING A NEW PAINTING
   1. Save the picture as a .jpg in images/paintings, around 1200 to 1600 pixels tall.
-     In js/config.js its image is then "images/paintings/name.jpg".
+     (iPhone .HEIC files do not show in most browsers: save them as .jpg first.)
   2. Add it to ARTWORKS in js/config.js with its width (w) and height (h) in pixels.
      The site uses those numbers to show the picture at its own shape without cropping.
-  3. Add a row for it in Supabase (auctions and prints tables) with the same id.
+     shop: false = only in the portfolio, not for sale as a print.
+  3. If it is for sale as a print: add a line for it in the SEED part of supabase-setup.sql
+     (insert into prints ...) with the same id, and run the SQL again.
 
-After changing a .css or .js file
-  Browsers keep old copies of css and js files for up to 10 minutes. In index.html, museum.html
-  and auction.html, change the number after ?v= (for example ?v=20261124 to ?v=20261125) on
-  the style.css, config.js, i18n.js and site.js lines. Then every visitor gets the new files at once.
+
+INSTAGRAM POSTS ON THE FRONT PAGE
+  The list is INSTAGRAM_POSTS in js/config.js. On Instagram, open a picture post, choose "Copy link",
+  and paste it at the top of the list (newest first). Picture posts only, no videos or reels.
+  Visitors with an ad blocker or strict tracking protection see a short note and a button
+  to Instagram instead of the posts. That is their browser, not an error on the site.

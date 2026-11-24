@@ -76,6 +76,12 @@ alter table prints   enable row level security;
 alter table orders   enable row level security;
 alter table waitlist enable row level security;
 
+-- Spelled out, so it does not depend on Supabase's default settings: visitors may read auctions and
+-- prints; they can never write to any table directly (only through the functions further down).
+grant select on auctions, prints to anon, authenticated;
+revoke insert, update, delete on auctions, bids, prints, orders, waitlist from anon, authenticated;
+revoke select on bids, orders, waitlist from anon, authenticated;
+
 drop policy if exists "public read auctions" on auctions;
 create policy "public read auctions" on auctions for select using (true);
 drop policy if exists "public read prints" on prints;

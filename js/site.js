@@ -177,7 +177,11 @@ const LIVE = !!(CONFIG.supabaseUrl && CONFIG.supabaseAnonKey);
 
 function remoteApi() {
   const base = CONFIG.supabaseUrl.replace(/\/$/, "");
-  const headers = { apikey: CONFIG.supabaseAnonKey, Authorization: "Bearer " + CONFIG.supabaseAnonKey, "Content-Type": "application/json" };
+  // Works with both kinds of Supabase key: the new publishable key (sb_publishable_...) goes only in "apikey";
+  // the older anon key (a long text starting with eyJ) is also sent as Authorization.
+  const key = CONFIG.supabaseAnonKey;
+  const headers = { apikey: key, "Content-Type": "application/json" };
+  if (key.startsWith("eyJ")) headers.Authorization = "Bearer " + key;
   async function call(path, opts) {
     const res = await fetch(base + path, { headers, ...opts });
     const body = await res.json().catch(() => null);
@@ -383,7 +387,7 @@ function renderBasket() {
   if (!basket.length) {
     // Orders placed from this browser, so the buyer can find the payment details and the status again
     const mine = myOrders();
-    body.innerHTML = `<p class="lede">${t("basket.empty")}</p><a class="btn line" href="index.html#prints" onclick="this.closest('dialog').close()">${t("basket.see")}</a>
+    body.innerHTML = `<p class="lede">${t("basket.empty")}</p><a class="btn line" href="prints.html" onclick="this.closest('dialog').close()">${t("basket.see")}</a>
       ${mine.length ? `<div class="my-orders"><h3>${t("orders.head")}</h3>${mine.map(o => `
         <div class="line-item order-item"><div><b>${esc(o.order_code)}</b><small>${esc(o.items.map(l => `${l.qty}× ${l.title}`).join(", "))}</small><small>${kr(o.total)}</small></div>
           <span class="order-status ${esc(o.status)}">${orderStatusText(o)}</span>
