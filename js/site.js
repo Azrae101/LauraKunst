@@ -557,15 +557,28 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /* Hand-drawn vine under the section headings, different for every heading and every page load
      (see makeVine). It is a sibling (not inside the heading), because the language switch
-     rewrites the heading's HTML. Drawn in when scrolled into view. */
-  $$("main .h-section, main .h-display").forEach(h => {
+     rewrites the heading's HTML. Painted in by a little brush when scrolled into view (see paintVine). */
+  const heads = $$("main .h-section, main .h-display");
+  if (heads.length && !document.getElementById("vine-paint")) {
+    // Shared filter that gives the vines rough, painted edges
+    document.body.insertAdjacentHTML("beforeend",
+      `<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><filter id="vine-paint" x="-20%" y="-60%" width="140%" height="220%">` +
+      `<feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" result="n"/>` +
+      `<feDisplacementMap in="SourceGraphic" in2="n" scale="1.6" xChannelSelector="R" yChannelSelector="G"/></filter></svg>`);
+  }
+  const vio = new IntersectionObserver(es => es.forEach(x => {
+    if (x.isIntersecting) { vio.unobserve(x.target); paintVine(x.target); }
+  }), { threshold: 0.6 });
+  heads.forEach(h => {
     const v = document.createElement("span");
     v.className = "vine" + (h.classList.contains("center") ? " center" : "");
     v.setAttribute("aria-hidden", "true");
     v.style.setProperty("--tilt", (Math.random() * 3 - 1.5).toFixed(2) + "deg");
-    v.innerHTML = makeVine();
+    const { html, plan } = makeVine();
+    v.innerHTML = html;
+    v._plan = plan;
     h.after(v);
-    io.observe(v);
+    vio.observe(v);
   });
 
   $$(".year").forEach(y => y.textContent = new Date().getFullYear());
@@ -614,16 +627,17 @@ function makeVine() {
   }
   const leafSvg = leaves.map(l =>
     `<g transform="translate(${f(l.x)} ${f(y(l.x))}) rotate(${f(l.deg)}) scale(${l.s.toFixed(2)})">` +
-    `<path class="v-leaf" style="--d:${(0.2 + 1.1 * l.x / END).toFixed(2)}s;fill:${l.color}" d="${LEAF}"/></g>`).join("");
+    `<path class="v-leaf" style="fill:${l.color}" d="${LEAF}"/></g>`).join("");
 
   // Tendril: sometimes, in the widest gap between two leaves, on the side of the leaf after the gap
   // (that leaf points away from it, and the leaf before the gap is on the other side)
-  let tendril = "";
+  let tendril = "", tendrilX = null;
   if (n > 1 && Math.random() < 0.75) {
     let g = 0;
     for (let i = 1; i < n - 1; i++) if (leaves[i + 1].x - leaves[i].x > leaves[g + 1].x - leaves[g].x) g = i;
     const cx = (leaves[g].x + leaves[g + 1].x) / 2, sd = leaves[g + 1].side, cy = y(cx);
-    tendril = `<path class="v-tendril" pathLength="1" style="--d:${(0.3 + 1.1 * cx / END).toFixed(2)}s" ` +
+    tendrilX = cx;
+    tendril = `<path class="v-tendril" pathLength="1" ` +
       `d="M${f(cx)} ${f(cy)}c1 ${sd * 7} -8 ${sd * 9} -9 ${sd * 3}c0 ${-sd * 3} 4 ${-sd * 3} 4 0"/>`;
   }
 
@@ -639,24 +653,94 @@ function makeVine() {
   ]);
   const count = Math.random() < 0.6 ? 5 : 6, turn = rnd(0, 360 / count);
   const fx = 212, fy = Math.min(Math.max(y(END), 12), H - 12);
-  const petalSvg = Array.from({ length: count }, (_, i) =>
-    `<ellipse cx="0" cy="-5" rx="${rnd(2.8, 3.4).toFixed(2)}" ry="${rnd(4.8, 5.6).toFixed(2)}" ` +
-    `transform="rotate(${f(turn + i * 360 / count)})" style="fill:${petals[0]};stroke:${petals[1]}" class="v-petal"/>`).join("");
+  const petalDeg = Array.from({ length: count }, (_, i) => turn + i * 360 / count);
+  const petalSvg = petalDeg.map(a =>
+    `<g transform="rotate(${f(a)})"><ellipse cx="0" cy="-5" rx="${rnd(2.8, 3.4).toFixed(2)}" ry="${rnd(4.8, 5.6).toFixed(2)}" ` +
+    `style="fill:${petals[0]};stroke:${petals[1]}" class="v-petal"/></g>`).join("");
   const heart = pick(["#b8902f", "#c79a3a", "#9c7a2a"]);
 
   // Gold dots: 2 or 3 above and to the right of the flower, well clear of the petals
-  const dots = [];
+  const dots = [], dotPos = [];
   const angles = [rnd(15, 35), rnd(45, 60), rnd(70, 85)].slice(0, 2 + Math.floor(Math.random() * 2));
   angles.forEach((a, i) => {
     const dist = rnd(13, 18), r = [1.7, 1.1, 0.8][i];
     const x = Math.min(fx + Math.cos(a * Math.PI / 180) * dist, W - 2);
     const yy = Math.max(fy - Math.sin(a * Math.PI / 180) * dist, 2);
-    dots.push(`<circle class="v-dot" style="--d:${(1.4 + i * 0.1).toFixed(2)}s;fill:${heart}" cx="${f(x)}" cy="${f(yy)}" r="${r}"/>`);
+    dots.push(`<circle class="v-dot" style="fill:${heart}" cx="${f(x)}" cy="${f(yy)}" r="${r}"/>`);
+    dotPos.push([x, yy]);
   });
 
-  return `<svg viewBox="0 0 ${W} ${H}" focusable="false">
-    <path class="v-stem" pathLength="1" d="${d}"/>${tendril}${leafSvg}
-    <g transform="translate(${fx} ${f(fy)})"><g class="v-flower" style="--d:1.15s">${petalSvg}<circle class="v-heart" r="2.4" style="fill:${heart}"/></g></g>
-    ${dots.join("")}
+  // The paintbrush: bristle tip at (0,0), handle leaning up and to the right
+  const brush = `<g class="v-brush" transform="translate(4 ${f(y(4))})">
+    <line class="handle" x1="5.6" y1="-10.5" x2="15" y2="-29"/>
+    <line class="ferrule" x1="3" y1="-5.4" x2="5.8" y2="-10.9"/>
+    <path class="bristles" d="M0 0C-1.4-1.6-.2-4.6 1.6-6.2L4.6-4.7C4.2-2.4 2.4-.4 0 0z"/></g>`;
+
+  const html = `<svg viewBox="0 0 ${W} ${H}" focusable="false"><g class="v-art">
+    <path class="v-stem" pathLength="1" d="${d}"/><path class="v-stem2" pathLength="1" transform="translate(0.5 -0.9)" d="${d}"/>${tendril}${leafSvg}
+    <g transform="translate(${fx} ${f(fy)})"><g class="v-flower">${petalSvg}<circle class="v-heart" r="2.4" style="fill:${heart}"/></g></g>
+    ${dots.join("")}</g>${brush}
   </svg>`;
+  return { html, plan: { y, start: 4, end: END, leafX: leaves.map(l => l.x), tendrilX, fx, fy, petalDeg, petalColor: petals[1], gold: heart, dotPos } };
+}
+
+/* Paint a vine: a little brush draws the stem (leaves swipe out as it passes),
+   dabs the petals one by one, adds the gold heart and dots, then lifts away. */
+function paintVine(v) {
+  const P = v._plan, svg = v.querySelector("svg");
+  const q = (s) => [...svg.querySelectorAll(s)];
+  const stems = q(".v-stem, .v-stem2"), leaves = q(".v-leaf"), petals = q(".v-petal"), dots = q(".v-dot");
+  const tendril = svg.querySelector(".v-tendril"), heart = svg.querySelector(".v-heart");
+  const brush = svg.querySelector(".v-brush"), bristles = svg.querySelector(".bristles");
+  const on = (el) => el && el.classList.add("on");
+
+  if (!P || matchMedia("(prefers-reduced-motion: reduce)").matches) {
+    [...leaves, ...petals, ...dots, tendril, heart].forEach(on);
+    stems.forEach(s => s.style.strokeDashoffset = 0);
+    if (brush) brush.remove();
+    v.classList.add("painted");
+    return;
+  }
+
+  const ease = (t) => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  const stemAt = (p) => { const x = P.start + (P.end - P.start) * p; return [x, P.y(x)]; };
+  const petalAt = (a, r) => [P.fx + r * Math.sin(a * Math.PI / 180), P.fy - r * Math.cos(a * Math.PI / 180)];
+
+  // Steps run one after another; each hop moves the brush from where the last step ended
+  const steps = [];
+  const hop = (ms, to, done, before) => steps.push({ ms, to, done, before });
+  steps.push({ ms: 1500, path: true });
+  hop(220, [P.fx, P.fy], null, () => bristles.style.fill = P.petalColor);   // fresh paint for the flower
+  P.petalDeg.forEach((a, i) => { hop(85, petalAt(a, 7.5), null); hop(70, petalAt(a, 3), () => on(petals[i])); });
+  hop(130, [P.fx, P.fy], () => on(heart), () => bristles.style.fill = P.gold);
+  P.dotPos.forEach((p, i) => hop(120, p, () => on(dots[i])));
+  steps.push({ ms: 450, lift: true });
+
+  let i = 0, t0 = null, from = stemAt(0);
+  const place = ([x, y], tilt) => brush.setAttribute("transform", `translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${tilt.toFixed(1)})`);
+  const frame = (now) => {
+    const s = steps[i];
+    if (t0 === null) { t0 = now; if (s.before) s.before(); }
+    const t = Math.min((now - t0) / s.ms, 1);
+    if (s.path) {
+      const p = 1 - Math.pow(1 - t, 1.6), pos = stemAt(p);
+      stems.forEach(el => el.style.strokeDashoffset = 1 - p);
+      P.leafX.forEach((x, k) => { if (pos[0] >= x) on(leaves[k]); });
+      if (P.tendrilX !== null && pos[0] >= P.tendrilX) on(tendril);
+      place(pos, Math.sin(now / 110) * 4);   // a slight wobble, like a hand
+      if (t === 1) from = pos;
+    } else if (s.lift) {
+      const e = ease(t);
+      place([from[0] + 14 * e, from[1] - 18 * e], -10 * e);
+      brush.style.opacity = 1 - t;
+    } else {
+      const e = ease(t), dip = Math.sin(t * Math.PI) * 2.5;   // lifts a little between dabs
+      place([from[0] + (s.to[0] - from[0]) * e, from[1] + (s.to[1] - from[1]) * e - dip], -6 * Math.sin(t * Math.PI));
+      if (t === 1) { from = s.to; if (s.done) s.done(); }
+    }
+    if (t === 1) { i++; t0 = null; }
+    if (i < steps.length) requestAnimationFrame(frame);
+    else { brush.remove(); v.classList.add("painted"); }
+  };
+  requestAnimationFrame(frame);
 }
