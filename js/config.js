@@ -7,8 +7,8 @@ const CONFIG = {
   // From Supabase: Project settings, then API Keys (see LÆS-MIG.txt). Leave both empty to run the site in demo mode.
   // supabaseAnonKey: the "publishable" key (sb_publishable_...) or the older "anon" key. Both are meant to be public.
   // NEVER paste the secret / service_role key here.
-  supabaseUrl: "",
-  supabaseAnonKey: "",
+  supabaseUrl: "https://cveuxqoclslkriohigzs.supabase.co",
+  supabaseAnonKey: "sb_publishable_AIh5vqqsahS--yF8Sm4bug_Wzyssy5N",
 
   // Contact form. Create a free form at formspree.io and paste its address here.
   formspreeEndpoint: "https://formspree.io/f/YOUR_FORM_ID",
