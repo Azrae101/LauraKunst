@@ -1,6 +1,6 @@
 // Supabase Edge Function "order-email": sends an e-mail when a new order comes in.
 //
-// It is called by a Database Webhook on the orders table (INSERT). See LÆS-MIG.txt, "E-mail on new orders",
+// It is called by a Database Webhook on the orders table (INSERT and UPDATE). See LÆS-MIG.txt, "E-mail on new orders",
 // for how to set it up. It needs these secrets (Supabase: Edge Functions, Secrets):
 //   RESEND_API_KEY   the API key from resend.com
 //   NOTIFY_EMAIL     who gets the "new order" e-mail. Several: separate with commas.
@@ -23,8 +23,8 @@ const MOBILEPAY = "+45 93 96 30 60";
 type Line = { qty: number; title: string; unit_price?: number };
 type Order = {
   order_code: string; name: string; email: string; phone?: string | null; address?: string | null;
-  delivery: "ship" | "pickup"; items: Line[]; total: number; pay_now?: number | null; pay_later?: number | null;
-  payment_plan?: string; mobilepay_message?: string; created_at?: string;
+  items: Line[]; total: number; status: string; mobilepay_message?: string; created_at?: string;
+  paid_at?: string | null; tracking?: string | null;
 };
 
 const esc = (s: unknown) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
@@ -46,31 +46,28 @@ const itemsHtml = (o: Order) =>
   `<ul style="padding-left:18px;margin:6px 0">${o.items.map((l) => `<li>${l.qty} × ${esc(l.title)}, 50 × 70 cm</li>`).join("")}</ul>`;
 
 function toLaura(o: Order) {
-  const now = o.pay_now ?? o.total, later = o.pay_later ?? 0;
   const summary = o.items.map((l) => `${l.qty}× ${l.title}`).join(", ");
-  const subject = `Ny ordre ${o.order_code.replace(/[\r\n]/g, "")}: ${summary}, ${kr(now)}`;
+  const subject = `Ny ordre ${o.order_code.replace(/[\r\n]/g, "")}: ${summary}, ${kr(o.total)}`;
   const html = wrap(`
     <h2 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:0 0 6px">Ny ordre ${esc(o.order_code)}</h2>
     <p style="margin:0 0 14px;color:#6b6157">Venter på betaling. Når pengene er kommet på MobilePay, markér den som betalt på ordresiden.</p>
     <p><b>${esc(o.name)}</b><br><a href="mailto:${esc(o.email)}">${esc(o.email)}</a>${o.phone ? `<br>${esc(o.phone)}` : ""}</p>
     ${itemsHtml(o)}
-    <p><b>Skal betale ${later ? "nu (depositum)" : ""}: ${kr(now)}</b>${later ? `<br>Resten ved afhentning: ${kr(later)} (i alt ${kr(o.total)})` : ""}</p>
+    <p><b>Skal betale: ${kr(o.total)}</b></p>
     <p>MobilePay-besked at kigge efter:<br><code style="background:#f4efe4;padding:3px 6px">${esc(o.mobilepay_message)}</code></p>
-    <p>${o.delivery === "ship" ? `Sendes til:<br>${esc(o.address).replace(/\n/g, "<br>")}` : "Henter selv i Odense (aftal et tidspunkt)."}</p>
+    <p>Sendes til:<br>${esc(o.address).replace(/\n/g, "<br>")}</p>
     <p style="margin-top:22px"><a href="${SITE}/ordrer.html" style="background:#2d3d2e;color:#f7f4ee;padding:11px 18px;text-decoration:none;display:inline-block">Åbn ordresiden</a></p>`);
   return { subject, html };
 }
 
 function toBuyer(o: Order) {
-  const now = o.pay_now ?? o.total, later = o.pay_later ?? 0;
   const subject = `Tak for din ordre ${o.order_code} – sådan betaler du`;
   const html = wrap(`
     <h2 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:0 0 6px">Tak for din ordre, ${esc(o.name.split(" ")[0])}</h2>
     <p>Din ordre <b>${esc(o.order_code)}</b> er reserveret i 48 timer. Den er først godkendt, når betalingen er modtaget.</p>
     ${itemsHtml(o)}
-    <p><b>Betal ${kr(now)} med MobilePay til ${MOBILEPAY}</b> og skriv præcis denne besked:<br>
+    <p><b>Betal ${kr(o.total)} med MobilePay til ${MOBILEPAY}</b> og skriv præcis denne besked:<br>
       <code style="background:#f4efe4;padding:3px 6px">${esc(o.mobilepay_message)}</code></p>
-    ${later ? `<p>Resten, ${kr(later)}, betaler du ved afhentning.</p>` : ""}
     <p>Du kan annullere ordren selv inden for 24 timer, så længe den ikke er betalt: gå ind på ${SITE.replace("https://", "")}, tryk på Kurv og vælg ordren.</p>
     <p>Laura skriver til dig, når betalingen er kommet. Har du spørgsmål, så svar bare på denne mail.</p>`);
   return { subject, html };
@@ -81,7 +78,7 @@ function toBuyerPaymentConfirmed(o: Order) {
   const html = wrap(`
     <h2 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:0 0 6px">Betalingen er modtaget 🎉</h2>
     <p>Hej ${esc(o.name.split(" ")[0])},</p>
-    <p>Tak! Vi har modtaget din betaling på ${kr(o.pay_now ?? o.total)} for ordre <b>${esc(o.order_code)}</b>.</p>
+    <p>Tak! Vi har modtaget din betaling på ${kr(o.total)} for ordre <b>${esc(o.order_code)}</b>.</p>
     ${itemsHtml(o)}
     <p><b>Dine prints bliver gjort klar til forsendelse og skal være hos dig inden for 3-5 arbejdsdage.</b></p>
     <p>Du får besked på denne e-mail, når dine prints er sendt.</p>
@@ -96,7 +93,9 @@ function toBuyerCancelled(o: Order) {
     <p>Hej ${esc(o.name.split(" ")[0])},</p>
     <p>Din ordre <b>${esc(o.order_code)}</b> er blevet annulleret.</p>
     ${itemsHtml(o)}
-    <p>Din betaling på ${kr(o.pay_now ?? o.total)} vil blive refunderet inden for 3-5 arbejdsdage.</p>
+    ${o.paid_at
+      ? `<p>Din betaling på ${kr(o.total)} bliver sendt tilbage til dig med MobilePay inden for 3-5 arbejdsdage.</p>`
+      : `<p>Ordren var ikke betalt, så du skylder ingenting.</p>`}
     <p>Spørgsmål? Svar bare på denne mail.</p>`);
   return { subject, html };
 }
@@ -108,7 +107,11 @@ function toBuyerShipped(o: Order) {
     <p>Hej ${esc(o.name.split(" ")[0])},</p>
     <p>Godt nyt! Dine prints fra ordre <b>${esc(o.order_code)}</b> er blevet sendt.</p>
     ${itemsHtml(o)}
-    <p><b>Forsendelse:</b> De skulle være hos dig inden for 3-5 arbejdsdage. Du modtager snart et trackingnummer på denne e-mail-adresse.</p>
+    <p><b>Forsendelse:</b> De skulle være hos dig inden for 3-5 arbejdsdage.</p>
+    ${o.tracking
+      ? `<p><b>Trackingnummer:</b> <code style="background:#f4efe4;padding:3px 6px">${esc(o.tracking)}</code><br>
+         Du kan følge pakken hos fragtfirmaet med nummeret.</p>`
+      : ""}
     <p>Spørgsmål? Svar bare på denne mail.</p>`);
   return { subject, html };
 }

@@ -27,6 +27,7 @@ WHAT IS WHERE
   images/general/    photos of Laura, the logo, favicons, the print frame, the oak floor and the museum guests
   images/paintings/  the paintings and sketches
   supabase-setup.sql the database (paste it into Supabase, see below)
+  supabase-opdatering-2026-11.sql   a one-time update for a database made before november 2026 (see "Update november 2026")
   CNAME              tells GitHub Pages the site's address (japperstudio.dk). Do not delete it.
   FREMTIDIGE-IDEER.txt   things that are built but switched off, and ideas for later
 
@@ -119,8 +120,15 @@ DAILY LIMIT
 
 THE ORDER OVERVIEW (japperstudio.dk/ordrer.html)
   A page where Laura (and whoever else is allowed) sees all orders as cards and clicks
-  "Markér som betalt", "Sendt" / "Afhentet" or "Annullér". It is not linked anywhere on the site.
+  "Markér som betalt", "Sendt" or "Annullér". It is not linked anywhere on the site.
   Logging in: type your e-mail, open the link in the e-mail you get, and you are in. No password.
+  More on the page:
+    - Trackingnummer: on a paid order, type the tracking number in the field next to "Sendt" before
+      clicking it. The buyer gets it in the "Dine prints er på vej" e-mail.
+    - "Hent som regneark": downloads all orders as a CSV file that opens in Excel or Numbers (for the accounts).
+    - "Slet gamle ordrer": deletes cancelled and unpaid orders older than 1 year, as the privacy policy
+      promises. Paid and shipped orders are never deleted (keep them 5 years for the accounts). Click it about
+      once a year.
 
   Set up once (Supabase):
   1. Run the newest supabase-setup.sql (SQL Editor, paste all, Run).
@@ -152,7 +160,8 @@ E-MAIL ON NEW ORDERS
        NOTIFY_EMAIL     the e-mail from step 1 (several: separate with commas, but see the note below)
        WEBHOOK_SECRET   a long random text you make up (letters and digits, 30+ characters)
   4. Supabase: Database, Webhooks, "Create a new hook":
-       Name: new-order-email    Table: orders    Events: Insert (only)
+       Name: new-order-email    Table: orders    Events: Insert AND Update
+       (Insert = the "new order" e-mail. Update = the buyer's e-mails when an order is paid, sent or cancelled.)
        Type: Supabase Edge Functions, function: order-email, method POST
        HTTP Headers: add  x-webhook-secret  with the same text as WEBHOOK_SECRET.  Create.
   5. Test: place an order on the site. The e-mail should arrive within a minute (check spam the first time).
@@ -163,6 +172,16 @@ E-MAIL ON NEW ORDERS
   the DNS records it shows where the domain is registered. When it says Verified, add the secrets
      FROM_EMAIL      Japper studio <ordre@japperstudio.dk>
      SEND_TO_BUYER   yes
+
+
+UPDATE NOVEMBER 2026 (do once)
+  1. Supabase, SQL Editor, New query: paste ALL of supabase-opdatering-2026-11.sql and click Run.
+     It should say "Success". It allows only shipping and full payment, closes the back door around the captcha,
+     and adds tracking numbers and the "Slet gamle ordrer" button. Prices and orders are not touched.
+  2. Supabase, Edge Functions, order-email: replace the code with ALL of supabase/functions/order-email/index.ts
+     and Deploy again (the e-mails now include the tracking number and no longer mention pickup).
+  3. Supabase, Database, Webhooks, new-order-email: check that both Insert AND Update are ticked.
+  4. Test: place an order, mark it paid and then sent with a tracking number on ordrer.html, and check the e-mails.
 
 
 CAPTCHA AT CHECKOUT

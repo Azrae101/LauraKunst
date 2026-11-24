@@ -15,7 +15,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
-  <link rel="stylesheet" href="css/style.css?v=20261124c">
+  <link rel="stylesheet" href="css/style.css?v=20261124d">
   <style>
     /* ---------- Order overview ---------- */
     .admin { padding-bottom: 4rem; }
@@ -73,6 +73,7 @@
     .o-actions .link-btn { min-height: 46px; }
     .empty { padding: 3rem 1rem; text-align: center; color: var(--text-muted); background: var(--white); border: 1px dashed var(--line); }
     .order-status.expired { color: var(--err); }
+    .track { flex: 1 1 200px; min-height: 46px; padding: 0 0.9rem; border: 1px solid var(--line); background: var(--white); font: inherit; font-size: 0.9rem; }
   </style>
 </head>
 <body>
@@ -109,6 +110,8 @@
         <div class="who">
           <span>Logget ind som <b id="who"></b></span>
           <button class="link-btn" type="button" id="refresh">Opdatér</button>
+          <button class="link-btn" type="button" id="export">Hent som regneark</button>
+          <button class="link-btn" type="button" id="purge">Slet gamle ordrer</button>
           <button class="link-btn" type="button" id="logout">Log ud</button>
         </div>
       </div>
@@ -123,9 +126,9 @@
   </div>
 </main>
 
-<script src="js/config.js?v=20261124c"></script>
-<script src="js/i18n.js?v=20261124c"></script>
-<script src="js/site.js?v=20261124c"></script>
+<script src="js/config.js?v=20261124d"></script>
+<script src="js/i18n.js?v=20261124d"></script>
+<script src="js/site.js?v=20261124d"></script>
 <script>
 /* ---------- Log in with a link sent by e-mail (Supabase Auth), and talk to the database as that person ---------- */
 const BASE = (CONFIG.supabaseUrl || "").replace(/\/$/, ""), KEY = CONFIG.supabaseAnonKey;
@@ -245,12 +248,16 @@ function renderTiles() {
 function actionsFor(o) {
   const s = stateOf(o), b = (to, label, cls = "btn") => `<button class="${cls}" type="button" data-to="${to}" data-code="${esc(o.order_code)}">${label}</button>`;
   if (s === "awaiting_payment" || s === "expired") return b("paid", "Markér som betalt") + b("cancelled", "Annullér", "btn line");
-  if (s === "paid") return b("shipped", "Sendt") + b("awaiting_payment", "Fortryd betaling", "link-btn") + b("cancelled", "Annullér", "link-btn");
+  if (s === "paid") return `<input class="track" type="text" data-track="${esc(o.order_code)}" maxlength="80" placeholder="Trackingnummer (valgfrit)" aria-label="Trackingnummer for ${esc(o.order_code)}">` +
+    b("shipped", "Sendt") + b("awaiting_payment", "Fortryd betaling", "link-btn") + b("cancelled", "Annullér", "link-btn");
   if (s === "shipped") return b("paid", "Fortryd (ikke sendt alligevel)", "link-btn");
   return b("awaiting_payment", "Gendan ordren", "link-btn");
 }
 
 function renderOrders() {
+  // Keep tracking numbers that are being typed (the list is redrawn every minute)
+  const typed = {}, focused = document.activeElement?.dataset?.track;
+  $$("[data-track]").forEach(i => { if (i.value) typed[i.dataset.track] = i.value; });
   renderTiles();
   const f = FILTERS.find(x => x[0] === filter)[2], q = query.trim().toLowerCase();
   const list = orders.filter(f).filter(o => !q || [o.order_code, o.name, o.email, o.phone].some(v => (v || "").toLowerCase().includes(q)));
@@ -278,11 +285,16 @@ function renderOrders() {
           <span class="lbl">Skal betale</span>
           <div class="o-amount">${kr(o.total)}</div>
           ${o.paid_at ? `<p class="fineprint">Betalt ${esc(when(o.paid_at))}</p>` : ""}
+          ${o.tracking ? `<p class="fineprint">Tracking: <b>${esc(o.tracking)}</b></p>` : ""}
         </div>
       </div>
       <div class="o-actions">${actionsFor(o)}</div>
     </article>`;
   }).join("") : `<p class="empty">${q ? "Ingen ordrer passer på søgningen." : filter === "todo" ? "Ingen ordrer venter på betaling lige nu." : filter === "paid" ? "Ingen betalte ordrer venter på at blive sendt." : "Ingen ordrer her endnu."}</p>`;
+  $$("[data-track]").forEach(i => {
+    if (typed[i.dataset.track]) i.value = typed[i.dataset.track];
+    if (i.dataset.track === focused) i.focus();
+  });
 }
 
 async function load() {
@@ -296,7 +308,7 @@ async function load() {
     msg.className = "msg err";
     msg.textContent = err.message === "NOT_ADMIN"
       ? `${myEmail()} er logget ind, men har ikke adgang til ordrer. Bed om at blive tilføjet (tabellen admins i Supabase).`
-      : "Kunne ikke hente ordrerne. Tryk på Opdatér for at prøve igen.";
+      : `Kunne ikke hente ordrerne. Tryk på Opdatér for at prøve igen. (Fejl fra databasen: ${err.message})`;
   }
 }
 
@@ -307,15 +319,58 @@ $("#orders").addEventListener("click", async e => {
   const b = e.target.closest("[data-to]"); if (!b) return;
   const code = b.dataset.code, to = b.dataset.to, o = orders.find(x => x.order_code === code);
   if (to === "cancelled" && !confirm(`Annullér ordre ${code}?` + (o && o.status === "paid" ? "\n\nKunden har betalt: husk at sende pengene tilbage." : ""))) return;
+  // The tracking number typed next to "Sendt" goes along, so the buyer gets it in the "on its way" e-mail
+  const track = to === "shipped" ? ($(`[data-track="${CSS.escape(code)}"]`)?.value || "").trim() : "";
+  if (to === "shipped" && !track && !confirm(`Markér ${code} som sendt uden trackingnummer?`)) return;
   b.disabled = true;
   try {
-    await rpc("admin_set_status", { p_code: code, p_status: to });
+    await rpc("admin_set_status", { p_code: code, p_status: to, ...(track ? { p_tracking: track } : {}) });
     toast(`${code}: ${STATUS[to]}`);
     await load();
   } catch (err) {
     if (err.message === "LOGIN") return show();
     toast("Det lykkedes ikke. Prøv igen.");
     b.disabled = false;
+  }
+});
+
+/* ---------- Export all orders as a spreadsheet (CSV that opens in Excel and Numbers) ---------- */
+$("#export").addEventListener("click", () => {
+  if (!orders.length) { toast("Der er ingen ordrer at hente."); return; }
+  const cell = (v) => {
+    let s = String(v ?? "").replace(/\r?\n/g, ", ");
+    if (/^[=+\-@]/.test(s)) s = "'" + s;                       // so Excel never runs a cell as a formula
+    return /[";]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  };
+  const day = (iso) => iso ? new Date(iso).toLocaleString("da-DK", { dateStyle: "short", timeStyle: "short" }) : "";
+  const head = ["Ordrenr.", "Bestilt", "Status", "Navn", "E-mail", "Telefon", "Adresse", "Prints", "Antal", "Total (kr.)", "Betalt", "Tracking"];
+  const rows = orders.map(o => [
+    o.order_code, day(o.created_at), STATUS[stateOf(o)], o.name, o.email, o.phone, o.address,
+    (o.items || []).map(l => `${l.qty} × ${l.title}`).join(", "), (o.items || []).reduce((n, l) => n + l.qty, 0),
+    o.total, day(o.paid_at), o.tracking
+  ]);
+  // Semicolons and a BOM, so Danish Excel puts each column in its own cell and shows æ, ø and å right
+  const csv = "﻿" + [head, ...rows].map(r => r.map(cell).join(";")).join("\r\n");
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  a.download = `ordrer-${new Date().toISOString().slice(0, 10)}.csv`;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+});
+
+/* ---------- Delete cancelled and unpaid orders older than 1 year (as the privacy policy promises) ---------- */
+$("#purge").addEventListener("click", async () => {
+  const year = Date.now() - 365 * 864e5;
+  const old = orders.filter(o => (o.status === "cancelled" || o.status === "awaiting_payment") && Date.parse(o.created_at) < year);
+  if (!old.length) { toast("Der er ingen annullerede eller ubetalte ordrer over 1 år."); return; }
+  if (!confirm(`Slet ${old.length} annullerede eller ubetalte ordre(r), der er over 1 år gamle?\n\nBetalte og sendte ordrer bliver ikke slettet. Det kan ikke fortrydes.`)) return;
+  try {
+    const r = await rpc("admin_purge_old");
+    toast(`${r.deleted} gamle ordre(r) slettet.`);
+    await load();
+  } catch (err) {
+    if (err.message === "LOGIN") return show();
+    toast("Det lykkedes ikke. Er opdateringen i Supabase kørt? (supabase-opdatering-2026-11.sql)");
   }
 });
 

@@ -43,7 +43,7 @@ create table if not exists orders (
   email       text not null,
   phone       text,
   address     text,
-  delivery    text not null,                 -- 'ship' or 'pickup'
+  delivery    text not null,                 -- 'ship' ('pickup' only on old orders)
   items       jsonb not null,
   total       integer not null,
   status      text not null default 'awaiting_payment',  -- see "Order status" further down
@@ -52,10 +52,11 @@ create table if not exists orders (
 -- Added later: safe to run again on a database made with an older version of this file
 alter table orders add column if not exists mobilepay_message text;   -- the exact text the buyer writes in MobilePay
 alter table orders add column if not exists paid_at timestamptz;
--- Payment plan: 'full' = everything with MobilePay now; 'deposit' = part now, the rest at pickup (pickup only)
+-- Payment plan: always 'full' now. 'deposit' (part now, the rest at pickup) is only on old orders.
 alter table orders add column if not exists payment_plan text not null default 'full';
-alter table orders add column if not exists pay_now integer;               -- what to MobilePay now
-alter table orders add column if not exists pay_later integer not null default 0;  -- what to pay at pickup
+alter table orders add column if not exists pay_now integer;               -- what to MobilePay (= total)
+alter table orders add column if not exists pay_later integer not null default 0;  -- only old deposit orders
+alter table orders add column if not exists tracking text;                 -- tracking number, set when shipped
 
 create table if not exists waitlist (
   id          bigserial primary key,
@@ -167,10 +168,9 @@ $$;
 --     Paid orders count, and so do unpaid orders that are still inside the 48 hour payment window.
 --   * an order is NOT approved when it is placed. It waits as 'awaiting_payment' until Laura
 --     has seen the MobilePay payment and sets the status to 'paid' (see "Order status" below).
---   * with pickup, the buyer may pay a deposit now (deposit_percent of the total, rounded up to
---     whole kroner) and the rest in person at pickup. With shipping, everything is paid now.
+--   * every order is shipped inside Denmark and paid in full (no pickup, no deposit)
 --   * at most daily_print_limit() prints a day in total for all buyers (see "Daily limit" above)
--- Keep these numbers the same as in js/config.js (maxPerPerson, reserveHours, shipping.ship, depositPercent).
+-- Keep these numbers the same as in js/config.js (maxPerPerson, reserveHours, shipping.ship).
 drop function if exists place_order(text, text, text, text, text, jsonb);   -- the older version without p_plan
 create or replace function place_order(p_name text, p_email text, p_phone text, p_address text,
                                        p_delivery text, p_items jsonb, p_plan text default 'full')
@@ -179,8 +179,7 @@ declare
   max_per_person  constant integer := 10;
   hold_hours      constant integer := 48;
   ship_price      constant integer := 59;
-  deposit_percent constant integer := 50;
-  v_plan text := coalesce(p_plan, 'full'); v_now integer; v_later integer := 0; v_zip text;
+  v_plan text := coalesce(p_plan, 'full'); v_zip text;
   v_email text := lower(trim(coalesce(p_email, '')));
   v_phone text := right(regexp_replace(coalesce(p_phone, ''), '\D', '', 'g'), 8);
   item jsonb; p prints; v_art text; qty integer; already integer; total integer := 0;
@@ -189,16 +188,14 @@ declare
 begin
   if length(trim(coalesce(p_name,''))) < 2 then raise exception 'NAME'; end if;
   if v_email !~* '^[^@\s]+@[^@\s]+\.[^@\s]+$' then raise exception 'EMAIL'; end if;
-  if p_delivery not in ('ship','pickup') then raise exception 'DELIVERY'; end if;
-  if p_delivery = 'ship' and length(trim(coalesce(p_address,''))) < 8 then raise exception 'ADDRESS'; end if;
+  if p_delivery is distinct from 'ship' then raise exception 'DELIVERY'; end if;   -- shipping only
+  if length(trim(coalesce(p_address,''))) < 8 then raise exception 'ADDRESS'; end if;
   -- Prints are only sent inside Denmark for now: the address must have a Danish postcode (4 digits, 1000-9990)
   -- at the start of a line, followed by the town ("5000 Odense C"). 39xx is Greenland, which counts as abroad.
-  if p_delivery = 'ship' then
-    v_zip := substring(p_address from '(?:^|\n)\s*([0-9]{4})\s+\S');
-    if v_zip is null or v_zip::int < 1000 or v_zip::int > 9990 or v_zip like '39%' then raise exception 'ADDRESS_DK'; end if;
-  end if;
+  v_zip := substring(p_address from '(?:^|\n)\s*([0-9]{4})\s+\S');
+  if v_zip is null or v_zip::int < 1000 or v_zip::int > 9990 or v_zip like '39%' then raise exception 'ADDRESS_DK'; end if;
   if p_items is null or jsonb_typeof(p_items) <> 'array' or jsonb_array_length(p_items) = 0 then raise exception 'EMPTY'; end if;
-  if v_plan not in ('full', 'deposit') or (v_plan = 'deposit' and p_delivery <> 'pickup') then raise exception 'PLAN'; end if;
+  if v_plan <> 'full' then raise exception 'PLAN'; end if;                         -- paid in full, no deposit
   if length(v_phone) < 8 then v_phone := null; end if;
 
   -- One order per person at a time, so two orders sent at the same moment cannot both slip under the limit
@@ -242,13 +239,7 @@ begin
     msg := msg || case when msg = '' then '' else ', ' end || qty || 'x ' || p.title;
   end loop;
 
-  if p_delivery = 'ship' then total := total + ship_price; end if;
-
-  v_now := total;
-  if v_plan = 'deposit' then
-    v_now := ceil(total * deposit_percent / 100.0)::int;
-    v_later := total - v_now;
-  end if;
+  total := total + ship_price;
 
   code := 'LK-' || lpad((floor(random() * 90000) + 10000)::text, 5, '0');
   while exists (select 1 from orders where order_code = code) loop
@@ -261,19 +252,18 @@ begin
 
   insert into orders (order_code, name, email, phone, address, delivery, items, total, mobilepay_message,
                       payment_plan, pay_now, pay_later)
-  values (code, trim(p_name), v_email, nullif(trim(coalesce(p_phone,'')), ''), p_address, p_delivery, lines, total, msg,
-          v_plan, v_now, v_later);
+  values (code, trim(p_name), v_email, nullif(trim(coalesce(p_phone,'')), ''), p_address, 'ship', lines, total, msg,
+          'full', total, 0);
 
   return json_build_object('order_code', code, 'total', total, 'message', msg, 'items', lines,
-                           'payment_plan', v_plan, 'pay_now', v_now, 'pay_later', v_later);
+                           'payment_plan', 'full', 'pay_now', total, 'pay_later', 0);
 end $$;
 
 -- ---------- Order status ----------
 -- Laura approves an order in Supabase → Table editor → orders, by changing "status":
 --   awaiting_payment  placed, not paid yet (every order starts here)
---   paid              Laura has seen the MobilePay payment (pay_now): the order is approved.
---                     For a deposit order, the rest (pay_later) is still owed at pickup.
---   shipped           sent or handed over (and for a deposit order: the rest has been paid at pickup)
+--   paid              Laura has seen the MobilePay payment: the order is approved.
+--   shipped           sent (with a tracking number if Laura added one)
 --   cancelled         never paid, or refunded
 -- Only paid and shipped orders count as sold (prints.sold). This trigger keeps that number right
 -- and notes when the order was paid.
@@ -358,7 +348,7 @@ begin
     from (
       select order_code, name, email, phone, address, delivery, items, total,
              coalesce(pay_now, total) as pay_now, pay_later, payment_plan, mobilepay_message,
-             status, created_at, paid_at,
+             status, created_at, paid_at, tracking,
              (status = 'awaiting_payment' and created_at < now() - interval '48 hours') as expired
       from orders
       order by created_at desc
@@ -368,18 +358,36 @@ begin
 end $$;
 
 -- Change an order's status from the overview: paid, shipped, cancelled, or back to awaiting_payment.
+-- p_tracking: the tracking number, saved when the order is marked as shipped (it goes into the buyer's e-mail).
 -- The trigger orders_status_change keeps prints.sold right and notes when it was paid.
-create or replace function admin_set_status(p_code text, p_status text) returns json
+drop function if exists admin_set_status(text, text);   -- the older version without p_tracking
+create or replace function admin_set_status(p_code text, p_status text, p_tracking text default null) returns json
 language plpgsql security definer set search_path = public as $$
 begin
   if not is_admin() then raise exception 'NOT_ADMIN'; end if;
   if p_status not in ('awaiting_payment', 'paid', 'shipped', 'cancelled') then raise exception 'STATUS'; end if;
   update orders
      set status = p_status,
-         paid_at = case when p_status = 'awaiting_payment' then null else paid_at end
+         paid_at = case when p_status = 'awaiting_payment' then null else paid_at end,
+         tracking = case when p_status = 'shipped' then coalesce(nullif(left(trim(coalesce(p_tracking, '')), 80), ''), tracking)
+                         else tracking end
    where order_code = upper(trim(p_code));
   if not found then raise exception 'NOT_FOUND'; end if;
   return json_build_object('order_code', upper(trim(p_code)), 'status', p_status);
+end $$;
+
+-- Delete cancelled and unpaid orders older than 1 year (the privacy policy promises this).
+-- Paid and shipped orders are never deleted here: the bookkeeping law says keep them 5 years.
+create or replace function admin_purge_old() returns json
+language plpgsql security definer set search_path = public as $$
+declare n integer;
+begin
+  if not is_admin() then raise exception 'NOT_ADMIN'; end if;
+  delete from orders
+   where status in ('cancelled', 'awaiting_payment')
+     and created_at < now() - interval '1 year';
+  get diagnostics n = row_count;
+  return json_build_object('deleted', n);
 end $$;
 
 -- ---------- "Notify me" sign-ups ----------
@@ -404,9 +412,11 @@ grant execute on function cancel_order(text, text) to anon;
 grant execute on function shop_state() to anon, authenticated;
 -- The order overview: only for logged-in people (and the functions themselves check the admins table)
 revoke execute on function admin_orders() from public, anon;
-revoke execute on function admin_set_status(text, text) from public, anon;
+revoke execute on function admin_set_status(text, text, text) from public, anon;
+revoke execute on function admin_purge_old() from public, anon;
 grant execute on function admin_orders() to authenticated;
-grant execute on function admin_set_status(text, text) to authenticated;
+grant execute on function admin_set_status(text, text, text) to authenticated;
+grant execute on function admin_purge_old() to authenticated;
 revoke execute on function orders_status_change() from public, anon;
 
 -- ============================================================

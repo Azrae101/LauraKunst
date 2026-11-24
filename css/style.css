@@ -185,6 +185,9 @@ section.block { padding: 4rem 0; }
 .check { display: flex; gap: 0.7rem; align-items: flex-start; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; cursor: pointer; }
 .check input { width: 20px; height: 20px; margin-top: 0.15rem; flex: none; accent-color: var(--green-mid); }
 .msg { font-size: 0.95rem; min-height: 1.5em; }
+.trust { list-style: none; display: grid; gap: 0.55rem; padding: 0.95rem 1rem; background: var(--ivory); border: 1px solid var(--line); }
+.trust li { display: flex; align-items: flex-start; gap: 0.65rem; font-size: 0.88rem; line-height: 1.5; color: var(--text); }
+.trust svg { width: 20px; height: 20px; flex: none; color: var(--green-mid); margin-top: 0.05rem; }
 .captcha { min-height: 65px; font-size: 0.9rem; color: var(--err); }   /* room for the Turnstile box, so the form does not jump */
 .msg.err { color: var(--err); }
 .msg.ok { color: var(--ok); }
@@ -528,6 +531,8 @@ fieldset.address { gap: 0.9rem; }
 .footer-nav a { font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--green-mid); text-decoration: none; display: inline-block; padding: 0.4rem 0; }
 .footer-nav a:hover { color: var(--green-dark); }
 .footer-copy { font-size: 0.8rem; color: var(--text-muted); }
+.footer-credit a { color: var(--green-mid); }
+.footer-credit a:hover { color: var(--green-dark); }
 .footer-legal { display: flex; flex-wrap: wrap; align-items: center; gap: 0.3rem 1.4rem; font-size: 0.82rem; color: var(--text-muted); }
 .footer-legal a { color: var(--green-mid); padding: 0.3rem 0; }
 .footer-legal a:hover { color: var(--green-dark); }

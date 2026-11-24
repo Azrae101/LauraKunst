@@ -37,8 +37,9 @@ Alt herunder kan slås til igen uden at skrive ny kode, medmindre andet står.
 4. FLERE MALERIER
    Nye malerier tilføjes i ARTWORKS i js/config.js (se "Adding a new painting" i LÆS-MIG.txt).
    HEIC-filer (iPhone-format) kan de fleste browsere ikke vise. Gem dem som .jpg først.
-   Oprydning: images/paintings har gamle dubletter, der ikke bruges (fx "Flicker.jpg", "Lunar solitude.png",
-   "Marasme.png", "eurowoman x illy konkurence.jpg" og .HEIC-filerne). De kan slettes, så mappen bliver mindre.
+   Ikke på siden endnu (ligger i images/paintings): by-billede.jpg, woman.png og zoomed-in-lunar.HEIC (detalje
+   af Lunar Solitude, skal gemmes som .jpg først). Gamle dubletter blev slettet i november 2026; de kan hentes
+   tilbage fra git-historikken, hvis der skulle blive brug for dem.
 
 
 5. GOOGLE FIREBASE / FIRESTORE (i stedet for Supabase)
@@ -65,15 +66,13 @@ Alt herunder kan slås til igen uden at skrive ny kode, medmindre andet står.
    - "Portræt i kul" og "Billie Eilish-skitse" findes kun i lav opløsning. Større fotos vil se skarpere ud.
 
 
-7. SIKKERHED: DET DER MANGLER (vigtigt, kort)
-   - Luk den direkte adgang til place_order, så captchaen ikke kan omgås.
-     Kør de to SQL-linjer i "Captcha at checkout", trin 6, i LÆS-MIG.txt. Test en ordre bagefter.
-   - Fjern afhentning og depositum fra databasen. Siden tilbyder dem ikke længere, men place_order()
-     i supabase-setup.sql accepterer stadig delivery 'pickup' og plan 'deposit'. Begge skal kun tillade
-     'ship' og 'full'. (Bed Claude om SQL'en.)
+7. SIKKERHED OG OPDATERING: DET DU SKAL GØRE (vigtigt)
+   Koden er klar. Følg "UPDATE NOVEMBER 2026" i LÆS-MIG.txt:
+   - Kør supabase-opdatering-2026-11.sql i Supabase (SQL Editor). Den lukker for at omgå captchaen,
+     fjerner afhentning og depositum og tilføjer trackingnummer og "Slet gamle ordrer".
+   - Deploy order-email-funktionen igen med den nye kode.
+   - Tjek at webhooken new-order-email reagerer på både Insert og Update.
    - Tjek på GitHub, Settings, Pages, at "Enforce HTTPS" er slået til.
-   - Ryd op i order-email-funktionen (supabase/functions/order-email/index.ts): den har stadig tekst om
-     afhentning og depositum. Deploy den igen bagefter.
 
 
 8. CVR OG HANDELSBETINGELSER
@@ -82,17 +81,14 @@ Alt herunder kan slås til igen uden at skrive ny kode, medmindre andet står.
    - Lad nogen med forstand på det læse betingelser.html igennem (handelsbetingelser og privatlivspolitik).
    - Bliver Laura momsregistreret (ved salg over 50.000 kr. på 12 måneder): skriv "inkl. moms" ved priserne
      og i handelsbetingelserne.
-   - Privatlivspolitikken lover, at annullerede og ubetalte ordrer slettes senest efter 1 år. Det sker ikke
-     af sig selv. Enten slet dem i Supabase en gang om året, lav en knap til det på ordrer.html,
-     eller ret teksten.
+   - Tryk på "Slet gamle ordrer" på ordrer.html ca. en gang om året (privatlivspolitikken lover det).
    - Ret "Senest opdateret" nederst på betingelser.html (begge sprog), hver gang teksten ændres.
 
 
 9. TRYGHED VED KØB
-   - Korte linjer ved bestillingsknappen: "Du betaler først, når du har fået ordrenummeret",
-     "Du kan selv annullere i 24 timer", "Sendes inden for 3-5 hverdage". Evt. små ikoner.
    - Billeder af prints hjemme hos rigtige kunder (med deres tilladelse) eller af pakningen.
    - Anmeldelser fra kunder, når der er nogle. Kun ægte anmeldelser.
+   (Tryghedslinjerne ved bestillingsknappen er lavet.)
 
 
 10. BETALING MED KORT (større opgave)
@@ -104,7 +100,7 @@ Alt herunder kan slås til igen uden at skrive ny kode, medmindre andet står.
    Kræver CVR-nummer og en aftale med udbyderen. Koster et lille gebyr pr. betaling.
 
 
-11. ORDRESIDEN (ordrer.html)
-   - Felt til trackingnummer, når en ordre sendes, så kunden får det med i "Dine prints er på vej"-mailen.
-   - Eksport af ordrer til regneark (CSV) til regnskabet.
-   - Knap til at slette gamle annullerede og ubetalte ordrer (se punkt 8).
+11. ORDRESIDEN: IDÉER TIL SENERE
+   - Link direkte til pakken hos fragtfirmaet (PostNord, GLS, DAO) ud fra trackingnummeret, når det er valgt,
+     hvilket fragtfirma der bruges.
+   (Trackingnummer, "Hent som regneark" og "Slet gamle ordrer" er lavet.)

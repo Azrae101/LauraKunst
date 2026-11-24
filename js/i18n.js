@@ -235,8 +235,8 @@ const I18N = {
     "en": "Exit full screen"
   },
   "footer.credit": {
-    "da": "Udviklet med ❤️ af Clara Holst",
-    "en": "Developed with ❤️ by Clara Holst"
+    "da": "Udviklet med ❤️ af <a href=\"https://azrae101.github.io/Portfolio/\" target=\"_blank\" rel=\"noopener\">Clara Holst</a>",
+    "en": "Developed with ❤️ by <a href=\"https://azrae101.github.io/Portfolio/\" target=\"_blank\" rel=\"noopener\">Clara Holst</a>"
   },
   "museum.hintV": {
     "da": "Rul ned for at gå videre",
@@ -321,6 +321,22 @@ const I18N = {
   "meta.terms": {
     "da": "Handelsbetingelser og privatlivspolitik | Japper studio",
     "en": "Terms of sale and privacy policy | Japper studio"
+  },
+  "trust.pay": {
+    "da": "Du betaler først med MobilePay, når du har fået dit ordrenummer",
+    "en": "You only pay with MobilePay once you have your order number"
+  },
+  "trust.cancel": {
+    "da": "Du kan selv annullere i {h} timer, så længe ordren ikke er betalt",
+    "en": "You can cancel yourself for {h} hours, as long as the order isn’t paid"
+  },
+  "trust.ship": {
+    "da": "Signeret af Laura, godt pakket og hos dig inden for 3–5 hverdage",
+    "en": "Signed by Laura, packed with care and with you within 3–5 working days"
+  },
+  "trust.return": {
+    "da": "14 dages fortrydelsesret",
+    "en": "14-day right of withdrawal"
   },
   "basket.terms": {
     "da": "Ved at bestille accepterer du vores <a href=\"betingelser.html#handel\" target=\"_blank\">handelsbetingelser</a>. Du har 14 dages fortrydelsesret. Læs om dine oplysninger i vores <a href=\"betingelser.html#privatliv\" target=\"_blank\">privatlivspolitik</a>.",

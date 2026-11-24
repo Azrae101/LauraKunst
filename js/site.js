@@ -400,6 +400,14 @@ const basketQty = () => basket.reduce((s, i) => s + i.qty, 0);
 const inBasket = (id) => basket.filter(i => i.artwork_id === id).reduce((s, i) => s + i.qty, 0);
 const printFor = (id) => printsCache.find(p => p.artwork_id === id);
 const BAG_ICON = `<svg class="bag" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 8h14l-1.2 11.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 10V7a3 3 0 0 1 6 0v3"/></svg>`;
+/* Small icons for the "safe to buy" lines above the order button */
+const ico = (d) => `<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${d}</svg>`;
+const TRUST_ICONS = {
+  pay: ico(`<rect x="5" y="10.5" width="14" height="10" rx="1.5"/><path d="M8.5 10.5V7.5a3.5 3.5 0 0 1 7 0v3"/>`),
+  undo: ico(`<path d="M4 12a8 8 0 1 0 2.4-5.7"/><path d="M4 4v4.5h4.5"/><path d="M12 8v4l2.5 2"/>`),
+  box: ico(`<path d="M3.5 7.5 12 3.5l8.5 4v9L12 20.5l-8.5-4z"/><path d="M3.5 7.5 12 11.5l8.5-4M12 11.5v9"/>`),
+  back: ico(`<path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/>`)
+};
 function renderBasketBtn() {
   const n = basketQty();
   $$(".basket-btn").forEach(b => {
@@ -514,6 +522,12 @@ function renderBasket() {
         <div class="grand"><span>${t("basket.total")}</span><span>${kr(subtotal() + ship)}</span></div>
       </div>
       ${basketQty() > leftToday() ? `<p class="msg err">${soldOutToday() ? t("err.SOLD_OUT_TODAY") : dailyLimitText(leftToday())}</p>` : ""}
+      <ul class="trust">
+        <li>${TRUST_ICONS.pay}<span>${t("trust.pay")}</span></li>
+        <li>${TRUST_ICONS.undo}<span>${t("trust.cancel", { h: CANCEL_HOURS })}</span></li>
+        <li>${TRUST_ICONS.box}<span>${t("trust.ship")}</span></li>
+        <li>${TRUST_ICONS.back}<span>${t("trust.return")}</span></li>
+      </ul>
       ${CAPTCHA ? `<div class="captcha" id="co-captcha"></div>` : ""}
       <button class="btn block" type="submit" ${basketQty() > leftToday() ? "disabled" : ""}>${t("basket.submit")}</button>
       <p class="msg" id="co-msg" role="status"></p>
