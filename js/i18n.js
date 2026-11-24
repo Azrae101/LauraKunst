@@ -127,8 +127,8 @@ const I18N = {
     "en": "Buy a print"
   },
   "shop.p": {
-    "da": "Hvert print er 50 × 70 cm og bliver signeret og nummereret i hånden af Laura. {p} pr. print. Levering koster {s}, eller du kan hente det gratis foran Odense Banegård Center (Østre Stationsvej 29, 5000 Odense).",
-    "en": "Every print is 50 × 70 cm and signed and numbered by hand by Laura. {p} per print. Delivery costs {s}, or you can pick it up for free in front of Odense Banegård Center (Østre Stationsvej 29, 5000 Odense)."
+    "da": "Hvert print er 50 × 70 cm og bliver signeret og nummereret i hånden af Laura. {p} pr. print. Levering koster {s}.",
+    "en": "Every print is 50 × 70 cm and signed and numbered by hand by Laura. {p} per print. Delivery costs {s}."
   },
   "viewer.printLine": {
     "da": "Print i 50 × 70 cm, signeret og nummereret: {p}",
