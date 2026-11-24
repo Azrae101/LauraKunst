@@ -444,9 +444,6 @@ function renderBasket() {
     $$("[data-order]", body).forEach(b => b.addEventListener("click", () => showPayment(mine.find(o => o.order_code === b.dataset.order))));
     return;
   }
-  const ship = delivery === "ship" ? CONFIG.shipping.ship : CONFIG.shipping.pickup;
-  const canDeposit = delivery === "pickup" && DEPOSIT_PCT > 0 && DEPOSIT_PCT < 100;
-  if (!canDeposit) payPlan = "full";
   const ship = CONFIG.shipping.ship;
   const me = local.get("lk-me", {});
   const keep = $("#checkout") ? Object.fromEntries(new FormData($("#checkout"))) : {};
