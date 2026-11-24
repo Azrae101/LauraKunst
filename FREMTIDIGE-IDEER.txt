@@ -35,13 +35,10 @@ Alt herunder kan slås til igen uden at skrive ny kode, medmindre andet står.
 
 
 4. FLERE MALERIER
-   Disse billeder ligger i images/paintings, men er ikke på siden endnu:
-     - Flicker.jpg (portræt med stearinlys)
-     - eurowoman x illy konkurence.jpg (par med kaffe)
-     - Lunar solitude.HEIC
-     - Marasme.HEIC
+   Nye malerier tilføjes i ARTWORKS i js/config.js (se "Adding a new painting" i LÆS-MIG.txt).
    HEIC-filer (iPhone-format) kan de fleste browsere ikke vise. Gem dem som .jpg først.
-   Tilføj dem til ARTWORKS (shop + portefølje) eller SKETCHES i js/config.js med titel, størrelse og beskrivelse.
+   Oprydning: images/paintings har gamle dubletter, der ikke bruges (fx "Flicker.jpg", "Lunar solitude.png",
+   "Marasme.png", "eurowoman x illy konkurence.jpg" og .HEIC-filerne). De kan slettes, så mappen bliver mindre.
 
 
 5. GOOGLE FIREBASE / FIRESTORE (i stedet for Supabase)
@@ -64,8 +61,50 @@ Alt herunder kan slås til igen uden at skrive ny kode, medmindre andet står.
 
 
 6. SMÅTING
-   - "Will you catch me?" mangler årstal (year i js/config.js) og evt. Lauras egen historie bag maleriet.
-   - Fanetitlen i browseren siger stadig "Laura Kruuse | ...". Kan ændres til Japper studio i js/i18n.js (meta.*).
    - Portefølje-siden hedder stadig museum.html. Kan omdøbes til portfolio.html (links skal så rettes).
    - "Portræt i kul" og "Billie Eilish-skitse" findes kun i lav opløsning. Større fotos vil se skarpere ud.
-   - Kontaktformularen virker først rigtigt, når Formspree er sat op (se LÆS-MIG.txt).
+
+
+7. SIKKERHED: DET DER MANGLER (vigtigt, kort)
+   - Luk den direkte adgang til place_order, så captchaen ikke kan omgås.
+     Kør de to SQL-linjer i "Captcha at checkout", trin 6, i LÆS-MIG.txt. Test en ordre bagefter.
+   - Fjern afhentning og depositum fra databasen. Siden tilbyder dem ikke længere, men place_order()
+     i supabase-setup.sql accepterer stadig delivery 'pickup' og plan 'deposit'. Begge skal kun tillade
+     'ship' og 'full'. (Bed Claude om SQL'en.)
+   - Tjek på GitHub, Settings, Pages, at "Enforce HTTPS" er slået til.
+   - Ryd op i order-email-funktionen (supabase/functions/order-email/index.ts): den har stadig tekst om
+     afhentning og depositum. Deploy den igen bagefter.
+
+
+8. CVR OG HANDELSBETINGELSER
+   - Når CVR-nummeret kommer: skriv det i js/config.js under business (cvr: "12345678").
+     Så vises det i footeren og på betingelser.html.
+   - Lad nogen med forstand på det læse betingelser.html igennem (handelsbetingelser og privatlivspolitik).
+   - Bliver Laura momsregistreret (ved salg over 50.000 kr. på 12 måneder): skriv "inkl. moms" ved priserne
+     og i handelsbetingelserne.
+   - Privatlivspolitikken lover, at annullerede og ubetalte ordrer slettes senest efter 1 år. Det sker ikke
+     af sig selv. Enten slet dem i Supabase en gang om året, lav en knap til det på ordrer.html,
+     eller ret teksten.
+   - Ret "Senest opdateret" nederst på betingelser.html (begge sprog), hver gang teksten ændres.
+
+
+9. TRYGHED VED KØB
+   - Korte linjer ved bestillingsknappen: "Du betaler først, når du har fået ordrenummeret",
+     "Du kan selv annullere i 24 timer", "Sendes inden for 3-5 hverdage". Evt. små ikoner.
+   - Billeder af prints hjemme hos rigtige kunder (med deres tilladelse) eller af pakningen.
+   - Anmeldelser fra kunder, når der er nogle. Kun ægte anmeldelser.
+
+
+10. BETALING MED KORT (større opgave)
+   I dag betaler kunderne til et privat MobilePay-nummer, og Laura skal selv tjekke hver betaling.
+   En rigtig betalingsløsning (fx Stripe, QuickPay eller MobilePay Checkout) giver:
+     - kort, MobilePay og Apple Pay direkte i checkout
+     - købsbeskyttelse for kunden, hvilket giver mere tryghed
+     - ordren bliver godkendt af sig selv, når betalingen går igennem (ingen manuel kontrol på ordrer.html)
+   Kræver CVR-nummer og en aftale med udbyderen. Koster et lille gebyr pr. betaling.
+
+
+11. ORDRESIDEN (ordrer.html)
+   - Felt til trackingnummer, når en ordre sendes, så kunden får det med i "Dine prints er på vej"-mailen.
+   - Eksport af ordrer til regneark (CSV) til regnskabet.
+   - Knap til at slette gamle annullerede og ubetalte ordrer (se punkt 8).
