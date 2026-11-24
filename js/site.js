@@ -673,6 +673,19 @@ function vinePainter(W = 240, H = 44) {
     // Brush pass without a line (e.g. lavender buds appearing along a stem)
     sweep(pts, ms, reveal) { steps.push({ path: pts, els: [], ms, reveal }); },
     dab(to, ids, ms = 110) { steps.push({ to, on: [].concat(ids), ms }); },
+    // Words in a brush font, written out left to right: a clip opens up to wherever the brush tip is
+    write(text, { x, y, len, size = 20, color = "var(--green-dark)", ms = 1200, font = "'Caveat Brush', 'Segoe Print', cursive" }) {
+      const id = n++, clip = "vw" + Math.random().toString(36).slice(2, 9), top = y - size * 1.05, h = size * 1.45;
+      svg += `<clipPath id="${clip}"><rect data-p="${id}" data-full="${f(len + 12)}" x="${f(x - 6)}" y="${f(top)}" width="0" height="${f(h)}"/></clipPath>` +
+        `<text x="${f(x)}" y="${f(y)}" textLength="${f(len)}" lengthAdjust="spacingAndGlyphs" clip-path="url(#${clip})" ` +
+        `style="font-family:${font};font-size:${size}px;fill:${color}">${text}</text>`;
+      // The brush zigzags along the letters, like writing
+      const pts = [], mid = y - size * 0.32;
+      for (let k = 0, xx = x - 2; xx <= x + len + 2; xx += 5, k++) pts.push([xx, mid + (k % 2 ? 1 : -1) * size * 0.22 + rnd(-0.8, 0.8)]);
+      P.color(color);
+      steps.push({ path: pts, els: [], ms, reveal: [], linear: true, wipe: { id, x0: x - 6 } });
+      return id;
+    },
     // Fraction of the way along pts at the first point at or past x
     atX(pts, x) {
       let L = 0, total = 0, hit = null;
@@ -921,7 +934,9 @@ function paintVine(v) {
   const on = (id) => byId[id] && byId[id].classList.add("on");
   const finish = () => {
     Object.values(byId).forEach(e => {
-      if (e.classList.contains("v-line")) { e.style.strokeDashoffset = 0; e.classList.add("go"); } else e.classList.add("on");
+      if (e.classList.contains("v-line")) { e.style.strokeDashoffset = 0; e.classList.add("go"); }
+      else if (e.dataset.full) e.setAttribute("width", e.dataset.full);   // written words: fully shown
+      else e.classList.add("on");
     });
     if (brush) brush.remove();
     v.classList.add("painted");
@@ -965,8 +980,9 @@ function paintVine(v) {
     if (t0 === null) { t0 = now; if (s.path) s.els.forEach(id => byId[id] && byId[id].classList.add("go")); }
     const t = Math.min((now - t0) / s.ms, 1);
     if (s.path) {
-      const p = 1 - Math.pow(1 - t, 1.6), at = pointAt(s, p);
+      const p = s.linear ? t : 1 - Math.pow(1 - t, 1.6), at = pointAt(s, p);
       s.els.forEach(id => byId[id] && (byId[id].style.strokeDashoffset = 1 - p));
+      if (s.wipe && byId[s.wipe.id]) byId[s.wipe.id].setAttribute("width", Math.max(0, at[0] - s.wipe.x0 + 1).toFixed(1));
       s.reveal.forEach(r => { if (r.at <= p + 0.001) on(r.id); });
       place(at, Math.sin(now / 110) * 4);   // a slight wobble, like a hand
       if (t === 1) from = s.path[s.path.length - 1];

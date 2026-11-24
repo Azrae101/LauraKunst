@@ -174,35 +174,35 @@ const I18N = {
     "da": "Siden findes ikke | Japper studio",
     "en": "Page not found | Japper studio"
   },
-  "nf.eyebrow": {
+  "notfound.eyebrow": {
     "da": "Fejl 404",
     "en": "Error 404"
   },
-  "nf.title": {
+  "notfound.title": {
     "da": "<em>Den forsvundne side</em>, 2026",
     "en": "<em>The missing page</em>, 2026"
   },
-  "nf.medium": {
+  "notfound.medium": {
     "da": "Akryl, tørrede blomster og et lille tomrum på lærred",
     "en": "Acrylic, dried flowers and a small void on canvas"
   },
-  "nf.text": {
+  "notfound.text": {
     "da": "Den side, du leder efter, hænger her ikke. Måske er den solgt, flyttet til en anden væg eller aldrig blevet malet færdig.",
     "en": "The page you’re looking for isn’t hanging here. Maybe it was sold, moved to another wall, or never quite finished."
   },
-  "nf.sold": {
+  "notfound.sold": {
     "da": "Solgt (formentlig)",
     "en": "Sold (probably)"
   },
-  "nf.home": {
+  "notfound.home": {
     "da": "Til forsiden",
     "en": "Back to the front page"
   },
-  "nf.again": {
+  "notfound.again": {
     "da": "Mal den igen",
     "en": "Paint it again"
   },
-  "nf.canvas": {
+  "notfound.canvas": {
     "da": "Et maleri af tallet 404 med en lille blomst, malet af en pensel",
     "en": "A painting of the number 404 with a small flower, painted by a brush"
   },

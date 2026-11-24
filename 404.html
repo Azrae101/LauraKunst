@@ -12,14 +12,14 @@
   <title>Siden findes ikke | Japper studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&family=Caveat+Brush&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
   <link rel="apple-touch-icon" href="images/general/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20261208">
+  <link rel="stylesheet" href="css/style.css?v=20261216">
   <style>
     /* ---------- 404: an empty frame on a gallery wall, and a brush that paints "404" into it ---------- */
-    .nf {
+    .notfound {
       position: relative; overflow: hidden; isolation: isolate;
       min-height: calc(100svh - var(--nav-h) - env(safe-area-inset-top, 0px));
       display: grid; place-items: center; padding: 4.5rem 1rem calc(clamp(80px, 15vh, 140px) + 2.5rem);
@@ -30,26 +30,26 @@
         linear-gradient(180deg, #f3eee4 0%, #ebe4d6 100%);
     }
     /* Oak floor with a skirting shadow */
-    .nf-floor {
+    .notfound-floor {
       position: absolute; left: 0; right: 0; bottom: 0; height: clamp(80px, 15vh, 140px); z-index: -1;
       background:
         linear-gradient(180deg, rgba(42, 30, 18, 0.35) 0, rgba(42, 30, 18, 0) 18px),
         url("images/general/floor-oak.jpg?v=5") 0 0 / auto 100% repeat-x;
       box-shadow: 0 -1px 0 rgba(60, 45, 30, 0.25), 0 -6px 0 #f6f1e7, 0 -7px 0 rgba(60, 45, 30, 0.12);
     }
-    .nf-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 3.5rem 4rem; width: 100%; max-width: 1080px; }
+    .notfound-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 3.5rem 4rem; width: 100%; max-width: 1080px; }
 
     /* The painting hangs from a nail and swings, as if someone just bumped it */
-    .nf-hang { position: relative; width: min(560px, 90vw); transform-origin: 50% -54px; transform: rotate(-1.6deg); animation: nf-swing 2.6s cubic-bezier(.36, .07, .19, .97) both; }
-    @keyframes nf-swing {
+    .notfound-hang { position: relative; width: min(560px, 90vw); transform-origin: 50% -54px; transform: rotate(-1.6deg); animation: notfound-swing 2.6s cubic-bezier(.36, .07, .19, .97) both; }
+    @keyframes notfound-swing {
       0% { transform: rotate(-9deg); } 22% { transform: rotate(5deg); } 42% { transform: rotate(-5.5deg); }
       60% { transform: rotate(1.4deg); } 78% { transform: rotate(-3deg); } 100% { transform: rotate(-1.6deg); }
     }
-    .nf-wire { position: absolute; left: 22%; width: 56%; top: -58px; height: 62px; overflow: visible; }
-    .nf-frame { position: relative; aspect-ratio: 788 / 574; filter: drop-shadow(0 18px 22px rgba(42, 37, 32, 0.3)); }
+    .notfound-wire { position: absolute; left: 22%; width: 56%; top: -58px; height: 62px; overflow: visible; }
+    .notfound-frame { position: relative; aspect-ratio: 788 / 574; filter: drop-shadow(0 18px 22px rgba(42, 37, 32, 0.3)); }
     /* frame.png is portrait, so it is turned on its side */
-    .nf-frame > img { position: absolute; left: 50%; top: 50%; width: 72.84%; height: 137.28%; transform: translate(-50%, -50%) rotate(90deg); pointer-events: none; }
-    .nf-canvas {
+    .notfound-frame > img { position: absolute; left: 50%; top: 50%; width: 72.84%; height: 137.28%; transform: translate(-50%, -50%) rotate(90deg); pointer-events: none; }
+    .notfound-canvas {
       position: absolute; left: 5.3%; right: 5.4%; top: 7.6%; bottom: 7.6%;
       background:
         repeating-linear-gradient(0deg, rgba(120, 105, 85, 0.035) 0 1px, transparent 1px 3px),
@@ -57,32 +57,32 @@
         #fbf9f3;
       box-shadow: inset 0 0 18px rgba(42, 37, 32, 0.16);
     }
-    .nf-canvas .vine { width: 100%; height: 100%; margin: 0; transform: none; }
-    .nf-canvas .vine svg { height: 100%; }
-    .nf-canvas .v-streak { stroke-width: 2.2; }
+    .notfound-canvas .vine { width: 100%; height: 100%; margin: 0; transform: none; }
+    .notfound-canvas .vine svg { height: 100%; }
+    .notfound-canvas .v-streak { stroke-width: 2.2; }
 
     /* Museum label beside the painting */
-    .nf-label {
+    .notfound-label {
       position: relative; width: min(290px, 90vw); background: var(--white); padding: 1.4rem 1.4rem 1.3rem;
       box-shadow: 0 1px 2px rgba(42, 37, 32, 0.12), 0 8px 22px rgba(42, 37, 32, 0.1); font-size: 0.85rem; line-height: 1.6;
     }
-    .nf-label .eyebrow { margin-bottom: 0.7rem; }
-    .nf-label .artist { font-weight: 500; letter-spacing: 0.04em; }
-    .nf-label h1 { font-family: var(--serif); font-weight: 400; font-size: 1.45rem; line-height: 1.25; color: var(--green-dark); margin: 0.1rem 0 0.35rem; }
-    .nf-label .medium { color: var(--text-muted); font-size: 0.8rem; }
-    .nf-label .text { margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--line); }
-    .nf-label .sold { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.9rem; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rose); }
-    .nf-label .sold::before { content: ""; width: 11px; height: 11px; border-radius: 50%; background: #c2413d; box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.15); }
-    .nf-actions { display: grid; gap: 0.6rem; margin-top: 1.3rem; }
-    .nf-actions .btn { width: 100%; justify-content: center; }
-    .nf-again { justify-self: center; margin-top: 0.2rem; background: none; border: 0; padding: 0.4rem; cursor: pointer; font: inherit; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green-mid); text-decoration: underline; text-underline-offset: 4px; }
-    .nf-again:hover { color: var(--green-dark); }
+    .notfound-label .eyebrow { margin-bottom: 0.7rem; }
+    .notfound-label .artist { font-weight: 500; letter-spacing: 0.04em; }
+    .notfound-label h1 { font-family: var(--serif); font-weight: 400; font-size: 1.45rem; line-height: 1.25; color: var(--green-dark); margin: 0.1rem 0 0.35rem; }
+    .notfound-label .medium { color: var(--text-muted); font-size: 0.8rem; }
+    .notfound-label .text { margin-top: 0.9rem; padding-top: 0.9rem; border-top: 1px solid var(--line); }
+    .notfound-label .sold { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.9rem; font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--rose); }
+    .notfound-label .sold::before { content: ""; width: 11px; height: 11px; border-radius: 50%; background: #c2413d; box-shadow: inset -1px -1px 0 rgba(0, 0, 0, 0.15); }
+    .notfound-actions { display: grid; gap: 0.6rem; margin-top: 1.3rem; }
+    .notfound-actions .btn { width: 100%; justify-content: center; }
+    .notfound-again { justify-self: center; margin-top: 0.2rem; background: none; border: 0; padding: 0.4rem; cursor: pointer; font: inherit; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--green-mid); text-decoration: underline; text-underline-offset: 4px; }
+    .notfound-again:hover { color: var(--green-dark); }
 
     /* Dried petals that fall out of the frame onto the floor */
-    .nf-petal { position: absolute; width: 14px; height: 21px; z-index: 1; pointer-events: none; }
-    .nf-petal svg { width: 100%; height: 100%; display: block; overflow: visible; }
+    .notfound-petal { position: absolute; width: 14px; height: 21px; z-index: 1; pointer-events: none; }
+    .notfound-petal svg { width: 100%; height: 100%; display: block; overflow: visible; }
 
-    @media (prefers-reduced-motion: reduce) { .nf-hang { animation: none; } }
+    @media (prefers-reduced-motion: reduce) { .notfound-hang { animation: none; } }
   </style>
 </head>
 <body data-title="meta.404">
@@ -107,34 +107,34 @@
 </header>
 
 <main class="page">
-  <section class="nf" id="nf">
-    <div class="nf-floor" aria-hidden="true"></div>
-    <div class="nf-inner">
-      <div class="nf-hang" id="nf-hang">
-        <svg class="nf-wire" viewBox="0 0 100 62" preserveAspectRatio="none" aria-hidden="true">
+  <section class="notfound" id="notfound">
+    <div class="notfound-floor" aria-hidden="true"></div>
+    <div class="notfound-inner">
+      <div class="notfound-hang" id="notfound-hang">
+        <svg class="notfound-wire" viewBox="0 0 100 62" preserveAspectRatio="none" aria-hidden="true">
           <path d="M0 62L50 4L100 62" fill="none" stroke="#8d8270" stroke-width="0.9" vector-effect="non-scaling-stroke"/>
           <circle cx="50" cy="4" r="3.2" fill="#6f655a" vector-effect="non-scaling-stroke"/>
           <circle cx="49.2" cy="3.2" r="1" fill="#b9ae9a"/>
         </svg>
-        <div class="nf-frame">
+        <div class="notfound-frame">
           <img src="images/general/frame.png" alt="">
-          <div class="nf-canvas" role="img" data-i18n-aria="nf.canvas" aria-label="Et maleri af tallet 404 med en lille blomst, malet af en pensel">
-            <span class="vine" id="nf-paint" aria-hidden="true"></span>
+          <div class="notfound-canvas" role="img" data-i18n-aria="notfound.canvas" aria-label="Et maleri af tallet 404 med en lille blomst, malet af en pensel">
+            <span class="vine" id="notfound-paint" aria-hidden="true"></span>
           </div>
         </div>
       </div>
 
-      <div class="nf-label">
-        <p class="eyebrow" data-i18n="nf.eyebrow">Fejl 404</p>
+      <div class="notfound-label">
+        <p class="eyebrow" data-i18n="notfound.eyebrow">Fejl 404</p>
         <p class="artist">Laura Kruuse</p>
-        <h1 data-i18n-html="nf.title"><em>Den forsvundne side</em>, 2026</h1>
-        <p class="medium" data-i18n="nf.medium">Akryl, tørrede blomster og et lille tomrum på lærred</p>
-        <p class="text" data-i18n="nf.text">Den side, du leder efter, hænger her ikke. Måske er den solgt, flyttet til en anden væg eller aldrig blevet malet færdig.</p>
-        <p class="sold" data-i18n="nf.sold">Solgt (formentlig)</p>
-        <div class="nf-actions">
-          <a class="btn" href="index.html#top" data-i18n="nf.home">Til forsiden</a>
+        <h1 data-i18n-html="notfound.title"><em>Den forsvundne side</em>, 2026</h1>
+        <p class="medium" data-i18n="notfound.medium">Akryl, tørrede blomster og et lille tomrum på lærred</p>
+        <p class="text" data-i18n="notfound.text">Den side, du leder efter, hænger her ikke. Måske er den solgt, flyttet til en anden væg eller aldrig blevet malet færdig.</p>
+        <p class="sold" data-i18n="notfound.sold">Solgt (formentlig)</p>
+        <div class="notfound-actions">
+          <a class="btn" href="index.html#top" data-i18n="notfound.home">Til forsiden</a>
           <a class="btn line" href="museum.html" data-i18n="home.ctaMuseum">Se porteføljen</a>
-          <button class="nf-again" type="button" id="nf-again" data-i18n="nf.again">Mal den igen</button>
+          <button class="notfound-again" type="button" id="notfound-again" data-i18n="notfound.again">Mal den igen</button>
         </div>
       </div>
     </div>
@@ -157,8 +157,8 @@
 </footer>
 
 <script src="js/config.js?v=20261215"></script>
-<script src="js/i18n.js?v=20261206"></script>
-<script src="js/site.js?v=20261206"></script>
+<script src="js/i18n.js?v=20261216"></script>
+<script src="js/site.js?v=20261216"></script>
 <script>
 /* ---------- The painting: "404" in thick strokes, a drip, grass and a flower growing beside it.
    Uses the same brush as the vines under the headings (vinePainter / paintVine in js/site.js). ---------- */
@@ -180,29 +180,31 @@ function make404() {
   const ink = "var(--green-dark)", dx = rnd(2, 6), j = () => rnd(-1.2, 1.2);
   const stroke = (pts, ms) => P.line(pts, { width: 6.5, color: ink, ms, streak: true });
   const four = (x) => {
-    stroke(hand([[x + 22 + j(), 26 + j()], [x + j(), 76 + j()], [x + 40 + j(), 76 + j()]]), 520);
-    stroke(hand([[x + 29 + j(), 46 + j()], [x + 29 + j(), 106 + j()]]), 300);
+    stroke(hand([[x + 19 + j(), 14 + j()], [x + j(), 58 + j()], [x + 35 + j(), 58 + j()]]), 480);
+    stroke(hand([[x + 25 + j(), 32 + j()], [x + 25 + j(), 84 + j()]]), 280);
   };
-  four(12 + dx);
+  four(26 + dx);
   // The zero: one loop, a little past where it started, like a quick hand
-  const cx = 80 + dx, cy = 66, rx = rnd(14, 16), ry = rnd(33, 36), start = rnd(-95, -70), wob = rnd(0, 6);
+  const cx = 88 + dx, cy = 49, rx = rnd(12, 14), ry = rnd(33, 35), start = rnd(-95, -70), wob = rnd(0, 6);
   const zero = [];
   for (let a = start; a >= start - 372; a -= 7) {
     const r = 1 + 0.035 * Math.sin((a + wob) * 3 * Math.PI / 180);
     zero.push([cx + rx * r * Math.cos(a * Math.PI / 180), cy + ry * r * Math.sin(a * Math.PI / 180)]);
   }
-  stroke(zero, 720);
-  four(104 + dx);
+  stroke(zero, 680);
+  four(112 + dx);
   // A drip running down from the bottom of the zero
-  const dripX = cx + rnd(2, 6), dripY = cy + ry - 1;
-  P.line([[dripX, dripY], [dripX + 0.3, dripY + 7], [dripX, dripY + 12]], { width: 2.6, color: ink, ms: 650 });
+  const dripX = cx + rnd(2, 5), dripY = cy + ry - 1;
+  P.line([[dripX, dripY], [dripX + 0.3, dripY + 4], [dripX, dripY + 6]], { width: 2.4, color: ink, ms: 500 });
   P.color(ink);
-  P.dab([dripX, dripY + 13.5], P.dot(dripX, dripY + 13.6, 2.1, "#2d3d2e"), 160);
+  P.dab([dripX, dripY + 7.5], P.dot(dripX, dripY + 7.6, 1.9, "#2d3d2e"), 140);
+  // "not found", written out in a brush font underneath
+  P.write("not found", { x: 31 + dx, y: 113, len: 112, size: 25, color: ink, ms: 1300 });
   // Grass along the bottom of the canvas
   const ground = hand([[12, 125 + j()], [70, 124 + j()], [130, 126 + j()], [188, 124 + j()]], 0.6);
   P.line(ground, { width: 2, color: "var(--green-light)", ms: 600 });
   // A flower growing up beside the last four
-  const base = [174 + rnd(-3, 3), 124], top = [170 + rnd(-3, 3), rnd(40, 50)];
+  const base = [176 + rnd(-3, 3), 124], top = [173 + rnd(-2, 2), rnd(32, 42)];
   const stem = P.curve(base, [base[0] + rnd(8, 12), (base[1] + top[1]) / 2], top, 16);
   const reveal = [];
   P.line(stem, { width: 2.4, color: "var(--green-mid)", ms: 650, reveal });
@@ -218,14 +220,14 @@ function make404() {
 
 /* Dried petals falling out of the frame and landing on the floor */
 function dropPetals(count) {
-  const scene = $("#nf"), frame = $(".nf-frame"), floor = $(".nf-floor");
+  const scene = $("#notfound"), frame = $(".notfound-frame"), floor = $(".notfound-floor");
   const s = scene.getBoundingClientRect(), fr = frame.getBoundingClientRect(), fl = floor.getBoundingClientRect();
   const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const colors = [["#e9c9a8", "#b98a62"], ["#ecc6cf", "#b0707f"], ["#f6e6a8", "#c9a74a"], ["#ddd3ee", "#9a87b8"], ["#d9b84f", "#9c7a2a"]];
   for (let i = 0; i < count; i++) {
     const [fill, edge] = colors[Math.floor(Math.random() * colors.length)];
     const p = document.createElement("span");
-    p.className = "nf-petal";
+    p.className = "notfound-petal";
     p.innerHTML = `<svg viewBox="0 0 11 17" aria-hidden="true"><path d="M5.5 .5C9 3 10.5 8.5 8.6 13.2 7.6 15.6 3.4 15.6 2.4 13.2.5 8.5 2 3 5.5.5z" fill="${fill}" stroke="${edge}" stroke-width=".7"/><path d="M5.5 2.5V14" stroke="${edge}" stroke-width=".5" opacity=".6"/></svg>`;
     // Resting place on the floor (kept in % / from the bottom, so it stays put when the window changes size)
     const x = fr.left - s.left + fr.width * (0.12 + Math.random() * 0.76);
@@ -249,7 +251,7 @@ function dropPetals(count) {
 }
 
 (() => {
-  const host = $("#nf-paint");
+  const host = $("#notfound-paint");
   const paint = (delay) => {
     const { html, plan } = make404();
     host.classList.remove("painted");
@@ -257,8 +259,10 @@ function dropPetals(count) {
     host._plan = plan;
     setTimeout(() => paintVine(host), delay);
   };
-  addEventListener("load", () => { dropPetals(6); paint(900); });
-  $("#nf-again").addEventListener("click", () => { $$(".nf-petal").forEach(p => p.remove()); dropPetals(4); paint(150); });
+  // Wait for the brush font, so "not found" is never written in a stand-in font (max 2 s)
+  const font = Promise.race([document.fonts.load('25px "Caveat Brush"'), new Promise(r => setTimeout(r, 2000))]).catch(() => {});
+  addEventListener("load", () => { dropPetals(6); font.then(() => paint(900)); });
+  $("#notfound-again").addEventListener("click", () => { $$(".notfound-petal").forEach(p => p.remove()); dropPetals(4); paint(150); });
 })();
 </script>
 </body>
