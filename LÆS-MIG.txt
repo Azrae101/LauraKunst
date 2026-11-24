@@ -9,6 +9,8 @@ WHAT IS WHERE
   prints.html        the print shop, "Processen" (how a print is made) and "Kommer snart"
   museum.html        the virtual museum (portfolio). It hangs every painting in ARTWORKS and every sketch in SKETCHES by itself
   auction.html       the auction (hidden for now, see showAuction in js/config.js)
+  ordrer.html        the order overview for Laura, with login (see "The order overview" below). Not linked anywhere
+  supabase/functions/order-email/index.ts   the e-mail sent on every new order (see "E-mail on new orders")
   404.html           shown for any address that does not exist (an empty frame that gets "404 not found" painted in it)
   gallery.html, contact.html, about.html   old addresses: they only send visitors on to the right page
                      (old front page links like index.html#prints also still work: they are sent to prints.html)
@@ -95,7 +97,67 @@ SELLING PRINTS WITH MOBILEPAY
   supabase-setup.sql (max_per_person, hold_hours, and '48 hours' in order_status), then run the SQL again.
   Changing a price or the shipping price: change it in supabase-setup.sql (SEED at the bottom, and ship_price)
   AND in js/config.js (shipping), then run the SQL again. The price the buyer pays always comes from the database.
+  Cancelling: the buyer can cancel their own order on the site within 24 hours, as long as it is not paid.
+     It then shows as  cancelled  in the orders table. To change the 24: js/config.js (cancelHours)
+     AND cancel_hours in supabase-setup.sql, then run the SQL again.
+  Shipping only inside Denmark: the address must have a Danish postcode (4 digits, not Greenland 39xx).
+     This is checked on the site and in the database (place_order in supabase-setup.sql).
   Running supabase-setup.sql again is always safe: it updates the database without losing orders.
+
+
+DAILY LIMIT
+  At most 50 prints a day in total, for all buyers together (midnight to midnight, Danish time).
+  Cancelled orders do not count. When the 50 are gone, prints.html shows "Udsolgt for i dag" and
+  ordering opens again at midnight. When 10 or fewer are left, it shows "Kun X prints tilbage i dag".
+  To change 50: daily_print_limit() in supabase-setup.sql AND dailyLimit in js/config.js, then run the SQL again.
+
+
+THE ORDER OVERVIEW (japperstudio.dk/ordrer.html)
+  A page where Laura (and whoever else is allowed) sees all orders as cards and clicks
+  "Markér som betalt", "Sendt" / "Afhentet" or "Annullér". It is not linked anywhere on the site.
+  Logging in: type your e-mail, open the link in the e-mail you get, and you are in. No password.
+
+  Set up once (Supabase):
+  1. Run the newest supabase-setup.sql (SQL Editor, paste all, Run).
+  2. Authentication, then URL Configuration:
+       Site URL:       https://japperstudio.dk
+       Redirect URLs:  add  https://japperstudio.dk/ordrer.html
+                       (and http://127.0.0.1:5100/ordrer.html to try it on your own computer)
+  3. Authentication, then Users, then "Add user", then "Create new user": enter the e-mail, any password
+     (it is never used), tick "Auto Confirm User". Do this for each person who should have access.
+  4. The same e-mails must be in the admins table: see the bottom of supabase-setup.sql
+     (laur723kru@gmail.com and clara.holst@outlook.com are there). Add more there and run the SQL again.
+  Both steps 3 and 4 are needed: step 3 lets them log in, step 4 lets them see orders.
+  Supabase's own login e-mails are limited to a few an hour on the free plan, which is fine for this.
+
+
+E-MAIL ON NEW ORDERS
+  Every new order sends an e-mail like "Ny ordre LK-48213: 2× VESTIGE, 1.500 kr." with the buyer,
+  the address, the MobilePay message to look for and a button to the order overview.
+  It is the small Supabase function in supabase/functions/order-email/index.ts, sending through Resend.
+
+  Set up once:
+  1. Make a free account on resend.com with the e-mail that should get the order e-mails.
+     Then API Keys, Create API Key (permission "Sending access"), and copy the key (re_...).
+  2. Supabase: Edge Functions, "Deploy a new function", "Via Editor". Name it  order-email ,
+     replace the example code with ALL of supabase/functions/order-email/index.ts, and Deploy.
+     Then open the function's settings and turn OFF "Verify JWT" (or "Enforce JWT verification"), and Save.
+  3. Supabase: Edge Functions, Secrets (or "Manage secrets"). Add:
+       RESEND_API_KEY   the key from step 1
+       NOTIFY_EMAIL     the e-mail from step 1 (several: separate with commas, but see the note below)
+       WEBHOOK_SECRET   a long random text you make up (letters and digits, 30+ characters)
+  4. Supabase: Database, Webhooks, "Create a new hook":
+       Name: new-order-email    Table: orders    Events: Insert (only)
+       Type: Supabase Edge Functions, function: order-email, method POST
+       HTTP Headers: add  x-webhook-secret  with the same text as WEBHOOK_SECRET.  Create.
+  5. Test: place an order on the site. The e-mail should arrive within a minute (check spam the first time).
+     If not: Edge Functions, order-email, Logs shows what went wrong.
+
+  Note: until japperstudio.dk is verified in Resend, Resend only delivers to the e-mail of the Resend account.
+  To also send to others, or to send the buyer a confirmation: in Resend, Domains, add japperstudio.dk and add
+  the DNS records it shows where the domain is registered. When it says Verified, add the secrets
+     FROM_EMAIL      Japper studio <ordre@japperstudio.dk>
+     SEND_TO_BUYER   yes
 
 
 CHANGING TEXT

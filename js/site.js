@@ -67,6 +67,7 @@ const phoneKey = (p) => { const d = String(p || "").replace(/\D/g, "").slice(-8)
    Same rule as place_order() in supabase-setup.sql. 0 turns the option off. */
 const DEPOSIT_PCT = Math.max(0, Math.min(100, CONFIG.depositPercent || 0));
 const CANCEL_HOURS = CONFIG.cancelHours ?? 24;
+const DAILY_LIMIT = CONFIG.dailyLimit ?? 50;
 // Prints are only sent inside Denmark for now: a Danish postcode is 4 digits, 1000 to 9990.
 // 39xx is Greenland, which counts as abroad for shipping. Same rule as place_order() in supabase-setup.sql.
 const dkZip = (zip) => /^[1-9]\d{3}$/.test(zip) && +zip <= 9990 && !/^39/.test(zip);
@@ -89,9 +90,14 @@ function payMessage(code, lines) {
 const fmtDate = (d) => new Intl.DateTimeFormat(locale(), { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit", timeZone: "Europe/Copenhagen" }).format(new Date(d));
 
 /* Errors arrive as codes like "BID_TOO_LOW:5250" and are shown in the visitor's language */
+// "Only n prints left today" (or sold out / only 1) for the daily limit
+function dailyLimitText(n) {
+  return n <= 0 ? t("err.SOLD_OUT_TODAY") : n === 1 ? t("err.DAILY_LIMIT_ONE") : t("err.DAILY_LIMIT", { n });
+}
 function errText(err) {
   const raw = String((err && err.message) || "");
   const [code, a, b] = raw.split(":");
+  if (code === "DAILY_LIMIT") return dailyLimitText(+a);
   if (!I18N["err." + code]) return t("err.generic");
   return t("err." + code, { n: code === "BID_TOO_LOW" ? kr(+a) : a, t: b });
 }
@@ -201,6 +207,7 @@ function remoteApi() {
   return {
     auctions: () => rpc("auction_state"),
     prints: () => call("/rest/v1/prints?select=artwork_id,stock,edition_size,sold,price_unsigned,price_signed&active=eq.true"),
+    shop: () => rpc("shop_state"),
     bid: (b) => rpc("place_bid", { p_artwork: b.artwork, p_name: b.name, p_email: b.email, p_phone: b.phone, p_amount: b.amount }),
     order: (o) => rpc("place_order", { p_name: o.name, p_email: o.email, p_phone: o.phone, p_address: o.address, p_delivery: o.delivery, p_items: o.items, p_plan: o.plan || "full" }),
     status: (code, email) => rpc("order_status", { p_code: code, p_email: email }),
@@ -298,6 +305,9 @@ function demoApi() {
       if (delivery === "ship") total += CONFIG.shipping.ship;
       const order_code = "LK-" + (10000 + Math.floor(Math.random() * 90000));
       const message = payMessage(order_code, lines);
+      // Daily limit for all buyers together (same as place_order)
+      const count = items.reduce((s, it) => s + it.qty, 0), left = DAILY_LIMIT - demoSoldToday(db.orders);
+      if (count > left) return fail("DAILY_LIMIT:" + Math.max(left, 0));
       const { pay_now, pay_later } = splitPayment(total, plan);
       db.orders.push({ order_code, name, email: em, phone, address, delivery, items: lines, total, message, payment_plan: plan, pay_now, pay_later, status: "awaiting_payment", created_at: new Date().toISOString() });
       save(); return ok({ order_code, total, message, items: lines, payment_plan: plan, pay_now, pay_later });
@@ -329,8 +339,20 @@ function demoApi() {
     notify(email, topic) {
       if (!validEmail(email)) return fail("EMAIL");
       db.waitlist.push({ email, topic }); save(); return ok({ ok: true });
+    },
+    // Same as shop_state() in supabase-setup.sql
+    shop() {
+      const sold = demoSoldToday(db.orders);
+      return ok({ daily_limit: DAILY_LIMIT, sold_today: sold, left_today: Math.max(DAILY_LIMIT - sold, 0) });
     }
   };
+}
+// Prints ordered today (Danish calendar day), not counting cancelled orders: same as prints_sold_today()
+function demoSoldToday(orders) {
+  const day = (d) => new Date(d).toLocaleDateString("sv-SE", { timeZone: "Europe/Copenhagen" });
+  const today = day(Date.now());
+  return orders.filter(o => o.status !== "cancelled" && day(o.created_at) === today)
+               .reduce((s, o) => s + o.items.reduce((n, l) => n + l.qty, 0), 0);
 }
 
 const api = LIVE ? remoteApi() : demoApi();
@@ -364,20 +386,33 @@ function saveBasket() {
   renderBasketBtn();
   document.dispatchEvent(new CustomEvent("basket:change"));
 }
-async function loadPrints() { printsCache = await api.prints(); return printsCache; }
+// How many prints are left today for everyone together (null until known; then the shop simply allows ordering)
+let shopState = null;
+const leftToday = () => shopState ? shopState.left_today : Infinity;
+const soldOutToday = () => leftToday() <= 0;
+async function loadPrints() {
+  const [prints, shop] = await Promise.all([api.prints(), api.shop().catch(() => null)]);
+  printsCache = prints; shopState = shop;
+  return printsCache;
+}
 
 function addToBasket(artwork_id, signed, qty) {
   signed = true; // only signed and numbered prints are sold
   if (!printFor(artwork_id)) { toast(t("err.UNAVAILABLE")); return false; }   // no stock limit, only that the print exists
+  // The daily limit for everyone together (the server checks it again when the order is placed)
+  const dayRoom = leftToday() - basketQty();
+  if (soldOutToday()) { toast(t("err.SOLD_OUT_TODAY")); return false; }
+  if (dayRoom <= 0) { toast(dailyLimitText(leftToday())); return false; }
   // At most MAX_PER_PERSON of each print per person (the server also counts earlier orders)
-  const room = MAX_PER_PERSON - inBasket(artwork_id);
-  if (room <= 0) { toast(t("err.LIMIT_BASKET", { n: MAX_PER_PERSON, t: artById(artwork_id).title })); return false; }
-  const capped = qty > room;
+  const room = Math.min(MAX_PER_PERSON - inBasket(artwork_id), dayRoom);
+  if (MAX_PER_PERSON - inBasket(artwork_id) <= 0) { toast(t("err.LIMIT_BASKET", { n: MAX_PER_PERSON, t: artById(artwork_id).title })); return false; }
+  const capped = qty > room, byDay = capped && dayRoom < MAX_PER_PERSON - inBasket(artwork_id);
   if (capped) qty = room;
   const ex = basket.find(i => i.artwork_id === artwork_id && i.signed === signed);
   if (ex) ex.qty += qty; else basket.push({ artwork_id, signed, qty });
   saveBasket(); bumpBasket();
-  toast(capped ? t("err.LIMIT_BASKET", { n: MAX_PER_PERSON, t: artById(artwork_id).title }) : t("toast.added", { t: artById(artwork_id).title }),
+  toast(byDay ? dailyLimitText(leftToday())
+        : capped ? t("err.LIMIT_BASKET", { n: MAX_PER_PERSON, t: artById(artwork_id).title }) : t("toast.added", { t: artById(artwork_id).title }),
         { label: t("toast.view"), onClick: openBasket });
   return true;
 }
@@ -458,7 +493,8 @@ function renderBasket() {
         ${payPlan === "deposit" ? `<div class="split"><span>${t("basket.payNow")}</span><span>${kr(split.pay_now)}</span></div>
         <div class="split"><span>${t("basket.payLater")}</span><span>${kr(split.pay_later)}</span></div>` : ""}
       </div>
-      <button class="btn block" type="submit">${t("basket.submit")}</button>
+      ${basketQty() > leftToday() ? `<p class="msg err">${soldOutToday() ? t("err.SOLD_OUT_TODAY") : dailyLimitText(leftToday())}</p>` : ""}
+      <button class="btn block" type="submit" ${basketQty() > leftToday() ? "disabled" : ""}>${t("basket.submit")}</button>
       <p class="msg" id="co-msg" role="status"></p>
       <p class="fineprint">${t("basket.held", { h: CONFIG.reserveHours })}</p>
     </form>`;

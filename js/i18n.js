@@ -586,6 +586,38 @@ const I18N = {
     "da": "Vi sender kun til adresser i Danmark lige nu (ikke Grønland og Færøerne). Bor du i udlandet, så skriv til Laura via kontaktformularen.",
     "en": "For now we only send to addresses in Denmark (not Greenland or the Faroe Islands). Living abroad? Write to Laura through the contact form."
   },
+  "err.SOLD_OUT_TODAY": {
+    "da": "Dagens prints er udsolgt. Du kan bestille igen fra i morgen.",
+    "en": "Today’s prints are sold out. You can order again from tomorrow."
+  },
+  "err.DAILY_LIMIT": {
+    "da": "Der er kun {n} prints tilbage i dag. Fjern nogle fra kurven, eller bestil resten i morgen.",
+    "en": "There are only {n} prints left today. Remove some from the basket, or order the rest tomorrow."
+  },
+  "shop.soldOutH": {
+    "da": "Udsolgt for i dag",
+    "en": "Sold out for today"
+  },
+  "shop.soldOutP": {
+    "da": "Laura signerer og nummererer hvert print i hånden, så der kan kun bestilles {n} prints om dagen. Dagens er væk, men du kan bestille igen fra i morgen kl. 00.00.",
+    "en": "Laura signs and numbers every print by hand, so only {n} prints can be ordered a day. Today’s are gone, but you can order again from tomorrow at midnight."
+  },
+  "err.DAILY_LIMIT_ONE": {
+    "da": "Der er kun 1 print tilbage i dag. Fjern nogle fra kurven, eller bestil resten i morgen.",
+    "en": "There is only 1 print left today. Remove some from the basket, or order the rest tomorrow."
+  },
+  "shop.fewLeftOne": {
+    "da": "Kun 1 print tilbage i dag",
+    "en": "Only 1 print left today"
+  },
+  "shop.fewLeft": {
+    "da": "Kun {n} prints tilbage i dag",
+    "en": "Only {n} prints left today"
+  },
+  "prints.soldOutBtn": {
+    "da": "Udsolgt i dag",
+    "en": "Sold out today"
+  },
   "err.STREET": {
     "da": "Skriv venligst vej og husnummer.",
     "en": "Please enter the street and house number."

@@ -365,6 +365,12 @@ section.block { padding: 4rem 0; }
 .qty output { min-width: 2ch; display: grid; place-items: center; font-weight: 500; }
 .buy-row .btn { flex: 1; }
 .note-box { margin-top: 3rem; padding: 1.4rem; background: var(--ivory-deep); display: grid; gap: 0.5rem; }
+/* Daily limit on prints.html: a small line when few are left, a clear box when sold out for today */
+.day-box { margin: -1rem 0 2.2rem; padding: 0.8rem 1.1rem; border-left: 3px solid var(--warm-brown, #a0784e); background: var(--white); font-size: 0.95rem; color: var(--text); }
+.day-box.out { padding: 1.3rem 1.4rem; border-left-color: var(--rose); display: grid; gap: 0.4rem; }
+.day-box h2 { font-family: var(--serif); font-weight: 400; font-size: 1.6rem; color: var(--green-dark); }
+.day-box.out p { color: var(--text-muted); max-width: 62ch; }
+.qty button[disabled] { opacity: 0.35; cursor: not-allowed; }
 .note-box h3 { font-family: var(--serif); font-weight: 400; font-size: 1.4rem; color: var(--green-dark); }
 .note-box p { color: var(--text-muted); font-size: 0.95rem; }
 
@@ -472,8 +478,18 @@ fieldset.address { gap: 0.9rem; }
 .story-grid .story p:first-child { margin-top: 0; }
 .story-photo {
   position: relative; width: min(260px, 70%); margin: 1.6rem 0 0.5rem 0.4rem;
-  background: var(--white); padding: 0.7rem 0.7rem 0; transform: rotate(-2.5deg);
+  background: var(--white); padding: 0.7rem 0.7rem 0; transform: rotate(-2.5deg); transform-origin: 50% 0;   /* hangs from the tape */
   box-shadow: 0 1px 2px rgba(42, 37, 32, 0.12), 0 10px 24px rgba(42, 37, 32, 0.14);
+  transition: box-shadow 0.4s ease;
+}
+/* On hover it sways gently from the tape, like the sketches on the board in the portfolio */
+@keyframes photo-sway {
+  0%, 100% { transform: rotate(-2.5deg); }
+  25% { transform: rotate(-0.3deg); }
+  75% { transform: rotate(-4.7deg); }
+}
+@media (hover: hover) and (prefers-reduced-motion: no-preference) {
+  .story-photo:hover { animation: photo-sway 1.8s ease-in-out infinite; box-shadow: 0 2px 4px rgba(42, 37, 32, 0.12), 0 16px 32px rgba(42, 37, 32, 0.18); }
 }
 .story-photo img { display: block; width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; object-position: 50% 40%; }
 .story-photo figcaption { padding: 0.55rem 0 0.75rem; text-align: center; font-family: var(--serif); font-style: italic; font-size: 1.15rem; color: var(--text-muted); }

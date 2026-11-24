@@ -36,6 +36,10 @@ const CONFIG = {
   // Keep the same as cancel_hours in supabase-setup.sql.
   cancelHours: 24,
 
+  // At most this many prints a day in total, for all buyers together (a Danish calendar day).
+  // When they are gone the shop shows "sold out for today". Keep the same as daily_print_limit() in supabase-setup.sql.
+  dailyLimit: 50,
+
   contact: {
     email: "laur723kru@gmail.com",
     instagram: { url: "https://www.instagram.com/laur_kru", handle: "@laur_kru" },

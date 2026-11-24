@@ -137,6 +137,28 @@ begin
   return json_build_object('id', new_id, 'amount', p_amount);
 end $$;
 
+-- ---------- Daily limit: at most 50 prints a day in total, for all buyers together ----------
+-- A day is a Danish calendar day (midnight to midnight, Copenhagen time). Every order placed that day
+-- counts, except cancelled ones, so a cancelled order frees its prints again.
+-- To change 50: change it here AND dailyLimit in js/config.js, then run this file again.
+create or replace function daily_print_limit() returns integer language sql immutable as $$ select 50 $$;
+
+create or replace function prints_sold_today() returns integer
+language sql stable security definer set search_path = public as $$
+  select coalesce(sum((li->>'qty')::int), 0)::int
+  from orders o, jsonb_array_elements(o.items) li
+  where o.status <> 'cancelled'
+    and (o.created_at at time zone 'Europe/Copenhagen')::date = (now() at time zone 'Europe/Copenhagen')::date;
+$$;
+
+-- What the shop shows: how many prints are left today (0 = "sold out for today")
+create or replace function shop_state() returns json
+language sql stable security definer set search_path = public as $$
+  select json_build_object('daily_limit', daily_print_limit(),
+                           'sold_today', prints_sold_today(),
+                           'left_today', greatest(daily_print_limit() - prints_sold_today(), 0));
+$$;
+
 -- ---------- Order prints ----------
 -- Prints are made to order (no stock limit) and are all signed and numbered.
 -- These rules are checked here on the server, so nobody can get around them in the browser:
@@ -147,6 +169,7 @@ end $$;
 --     has seen the MobilePay payment and sets the status to 'paid' (see "Order status" below).
 --   * with pickup, the buyer may pay a deposit now (deposit_percent of the total, rounded up to
 --     whole kroner) and the rest in person at pickup. With shipping, everything is paid now.
+--   * at most daily_print_limit() prints a day in total for all buyers (see "Daily limit" above)
 -- Keep these numbers the same as in js/config.js (maxPerPerson, reserveHours, shipping.ship, depositPercent).
 drop function if exists place_order(text, text, text, text, text, jsonb);   -- the older version without p_plan
 create or replace function place_order(p_name text, p_email text, p_phone text, p_address text,
@@ -162,6 +185,7 @@ declare
   v_phone text := right(regexp_replace(coalesce(p_phone, ''), '\D', '', 'g'), 8);
   item jsonb; p prints; v_art text; qty integer; already integer; total integer := 0;
   wanted jsonb := '{}'::jsonb; lines jsonb := '[]'::jsonb; code text; msg text := '';
+  v_count integer := 0; v_left integer;
 begin
   if length(trim(coalesce(p_name,''))) < 2 then raise exception 'NAME'; end if;
   if v_email !~* '^[^@\s]+@[^@\s]+\.[^@\s]+$' then raise exception 'EMAIL'; end if;
@@ -187,7 +211,14 @@ begin
     if qty is null or qty < 1 or qty > max_per_person then raise exception 'QTY'; end if;
     v_art := coalesce(item->>'artwork_id', '');
     wanted := jsonb_set(wanted, array[v_art], to_jsonb(coalesce((wanted->>v_art)::int, 0) + qty));
+    v_count := v_count + qty;
   end loop;
+
+  -- Daily limit for all buyers together. The lock makes orders wait for each other here,
+  -- so two orders at the same moment cannot both take the last prints of the day.
+  perform pg_advisory_xact_lock(hashtext('order:daily-limit'));
+  v_left := daily_print_limit() - prints_sold_today();
+  if v_count > v_left then raise exception 'DAILY_LIMIT:%', greatest(v_left, 0); end if;
 
   for v_art, qty in select key, value::int from jsonb_each_text(wanted) loop
     select * into p from prints where artwork_id = v_art and active;
@@ -301,6 +332,56 @@ begin
   return json_build_object('order_code', o.order_code, 'status', 'cancelled');
 end $$;
 
+-- ---------- Order overview (ordrer.html) ----------
+-- Only people whose e-mail is in "admins" can see and change orders. They log in on ordrer.html with a
+-- link sent to their e-mail (Supabase Auth). The functions below check the e-mail of the logged-in person
+-- against this table, so nobody else gets anything, not even with the page's code.
+-- Add or remove people in the SEED section at the bottom (insert into admins ...).
+create table if not exists admins (
+  email text primary key   -- lower case
+);
+alter table admins enable row level security;
+revoke all on admins from anon, authenticated;
+
+create or replace function is_admin() returns boolean
+language sql stable security definer set search_path = public as $$
+  select exists (select 1 from admins where email = lower(coalesce(auth.jwt() ->> 'email', '')));
+$$;
+
+-- All orders, newest first, with everything the overview shows
+create or replace function admin_orders() returns json
+language plpgsql stable security definer set search_path = public as $$
+begin
+  if not is_admin() then raise exception 'NOT_ADMIN'; end if;
+  return (
+    select coalesce(json_agg(row_to_json(o) order by o.created_at desc), '[]'::json)
+    from (
+      select order_code, name, email, phone, address, delivery, items, total,
+             coalesce(pay_now, total) as pay_now, pay_later, payment_plan, mobilepay_message,
+             status, created_at, paid_at,
+             (status = 'awaiting_payment' and created_at < now() - interval '48 hours') as expired
+      from orders
+      order by created_at desc
+      limit 1000
+    ) o
+  );
+end $$;
+
+-- Change an order's status from the overview: paid, shipped, cancelled, or back to awaiting_payment.
+-- The trigger orders_status_change keeps prints.sold right and notes when it was paid.
+create or replace function admin_set_status(p_code text, p_status text) returns json
+language plpgsql security definer set search_path = public as $$
+begin
+  if not is_admin() then raise exception 'NOT_ADMIN'; end if;
+  if p_status not in ('awaiting_payment', 'paid', 'shipped', 'cancelled') then raise exception 'STATUS'; end if;
+  update orders
+     set status = p_status,
+         paid_at = case when p_status = 'awaiting_payment' then null else paid_at end
+   where order_code = upper(trim(p_code));
+  if not found then raise exception 'NOT_FOUND'; end if;
+  return json_build_object('order_code', upper(trim(p_code)), 'status', p_status);
+end $$;
+
 -- ---------- "Notify me" sign-ups ----------
 create or replace function join_waitlist(p_email text, p_topic text)
 returns json language plpgsql security definer set search_path = public as $$
@@ -316,6 +397,12 @@ grant execute on function place_order(text, text, text, text, text, jsonb, text)
 grant execute on function join_waitlist(text, text) to anon;
 grant execute on function order_status(text, text) to anon;
 grant execute on function cancel_order(text, text) to anon;
+grant execute on function shop_state() to anon, authenticated;
+-- The order overview: only for logged-in people (and the functions themselves check the admins table)
+revoke execute on function admin_orders() from public, anon;
+revoke execute on function admin_set_status(text, text) from public, anon;
+grant execute on function admin_orders() to authenticated;
+grant execute on function admin_set_status(text, text) to authenticated;
 revoke execute on function orders_status_change() from public, anon;
 
 -- ============================================================
@@ -334,3 +421,11 @@ insert into prints (artwork_id, title, stock, edition_size, price_unsigned, pric
   ('will-you-catch-me', 'WILL YOU CATCH ME?', 10, 50, 450, 750)
 on conflict (artwork_id) do update set stock = excluded.stock,
   price_unsigned = excluded.price_unsigned, price_signed = excluded.price_signed;
+
+-- Who may log in on ordrer.html and see/change orders. One e-mail per line, lower case.
+-- Each person must ALSO be added in Supabase: Authentication, Users, Add user (see LÆS-MIG.txt).
+-- To remove someone: delete from admins where email = 'their@email.dk';
+insert into admins (email) values
+  ('laur723kru@gmail.com'),
+  ('clara.holst@outlook.com')
+on conflict (email) do nothing;

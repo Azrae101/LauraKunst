@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light only">
+  <meta name="theme-color" content="#f7f4ee">
+  <!-- The order overview for Laura (and whoever is in the "admins" table in Supabase).
+       Not linked from the site and not for search engines. The page itself holds no orders: they are
+       only sent by the database to people who are logged in AND listed in "admins" (see supabase-setup.sql). -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>Ordrer | Japper studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
+  <link rel="stylesheet" href="css/style.css?v=20261220">
+  <style>
+    /* ---------- Order overview ---------- */
+    .admin { padding-bottom: 4rem; }
+    .tile b, .o-code, .o-amount { font-variant-numeric: lining-nums; }   /* "1" must not look like "I" */
+    .admin .wrap { max-width: 1100px; }
+    .admin-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 1rem 2rem; padding: 2.5rem 0 1.5rem; }
+    .admin-head h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(2.2rem, 5vw, 3rem); color: var(--green-dark); line-height: 1; }
+    .admin-head h1 em { color: var(--green-mid); }
+    .who { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 1rem; font-size: 0.85rem; color: var(--text-muted); }
+    .who b { font-weight: 500; color: var(--text); }
+
+    /* Log in */
+    .login-card { max-width: 440px; margin: 3rem auto; background: var(--white); border: 1px solid var(--line); padding: 2rem 1.8rem; display: grid; gap: 1rem; }
+    .login-card h1 { font-family: var(--serif); font-weight: 400; font-size: 2.2rem; color: var(--green-dark); line-height: 1.1; }
+    .login-card .btn { width: 100%; }
+
+    /* Numbers at the top */
+    .tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 0.8rem; margin-bottom: 1.6rem; }
+    .tile { background: var(--white); border: 1px solid var(--line); padding: 1rem 1.1rem; display: grid; gap: 0.2rem; }
+    .tile span { font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); }
+    .tile b { font-family: var(--serif); font-weight: 400; font-size: 2rem; color: var(--green-dark); line-height: 1.1; }
+    .tile.alert b { color: var(--warm-brown, #a0784e); }
+
+    /* Filters and search */
+    .toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; margin-bottom: 1.4rem; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tab { min-height: 42px; padding: 0 1rem; border: 1px solid var(--line); background: var(--white); cursor: pointer; font: inherit; font-size: 0.85rem; color: var(--text); border-radius: 999px; }
+    .tab b { font-weight: 500; margin-left: 0.3rem; color: var(--text-muted); }
+    .tab[aria-pressed="true"] { background: var(--green-dark); border-color: var(--green-dark); color: var(--ivory); }
+    .tab[aria-pressed="true"] b { color: var(--green-pale); }
+    .search { flex: 1 1 220px; min-height: 42px; padding: 0 1rem; border: 1px solid var(--line); background: var(--white); font: inherit; font-size: 0.9rem; border-radius: 999px; }
+
+    /* One card per order */
+    .orders { display: grid; gap: 1rem; }
+    .o-card { background: var(--white); border: 1px solid var(--line); border-left: 4px solid var(--line); display: grid; }
+    .o-card.awaiting_payment { border-left-color: #c9a74a; }
+    .o-card.expired { border-left-color: var(--err); }
+    .o-card.paid { border-left-color: var(--green-mid); }
+    .o-card.shipped, .o-card.cancelled { opacity: 0.78; }
+    .o-top { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.9rem; padding: 1rem 1.2rem 0.8rem; border-bottom: 1px solid var(--line); }
+    .o-code { font-family: var(--serif); font-size: 1.5rem; color: var(--green-dark); }
+    .o-age { margin-left: auto; font-size: 0.82rem; color: var(--text-muted); }
+    .o-body { display: grid; gap: 1rem 1.6rem; padding: 1rem 1.2rem; }
+    @media (min-width: 760px) { .o-body { grid-template-columns: 1.1fr 1fr 1fr; } }
+    .o-body h3 { font-family: var(--serif); font-weight: 400; font-size: 1.35rem; color: var(--green-dark); }
+    .o-body .lbl { display: block; font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.2rem; }
+    .o-body p, .o-body li { font-size: 0.95rem; line-height: 1.6; }
+    .o-body a { color: var(--green-dark); }
+    .o-body ul { list-style: none; }
+    .o-addr { white-space: pre-line; }
+    .o-amount { font-family: var(--serif); font-size: 1.6rem; color: var(--green-dark); line-height: 1.1; }
+    .o-mp { font-family: ui-monospace, Consolas, monospace; font-size: 0.85rem; background: var(--ivory); padding: 0.35rem 0.5rem; display: inline-block; overflow-wrap: anywhere; }
+    .o-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem 1rem; padding: 0.9rem 1.2rem 1.1rem; border-top: 1px solid var(--line); background: #fdfbf7; }
+    .o-actions .btn { min-height: 46px; }
+    .o-actions .link-btn { min-height: 46px; }
+    .empty { padding: 3rem 1rem; text-align: center; color: var(--text-muted); background: var(--white); border: 1px dashed var(--line); }
+    .order-status.expired { color: var(--err); }
+  </style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="nav-inner">
+    <a href="index.html#top" class="nav-logo"><img src="images/general/favicon-192.png" width="40" height="40" alt="">Japper studio</a>
+  </div>
+</header>
+
+<main class="page admin">
+  <div class="wrap">
+
+    <!-- Not set up -->
+    <div class="login-card" id="no-db" hidden>
+      <h1>Ordrer</h1>
+      <p>Siden kører i demo-tilstand: Supabase er ikke sat op i js/config.js endnu, så der er ingen ordrer at vise.</p>
+    </div>
+
+    <!-- Log in -->
+    <form class="login-card" id="login" novalidate hidden>
+      <p class="eyebrow">Kun for Japper studio</p>
+      <h1>Log ind for at se <em>ordrer</em></h1>
+      <p class="fineprint">Skriv din e-mail, så sender vi et link. Tryk på linket i mailen, så er du logget ind. Ingen adgangskode.</p>
+      <label class="field"><span>E-mail</span><input name="email" type="email" inputmode="email" autocomplete="email" required></label>
+      <button class="btn" type="submit">Send login-link</button>
+      <p class="msg" id="login-msg" role="status"></p>
+    </form>
+
+    <!-- Orders -->
+    <div id="app" hidden>
+      <div class="admin-head">
+        <h1>Ordrer <em>&amp; betalinger</em></h1>
+        <div class="who">
+          <span>Logget ind som <b id="who"></b></span>
+          <button class="link-btn" type="button" id="refresh">Opdatér</button>
+          <button class="link-btn" type="button" id="logout">Log ud</button>
+        </div>
+      </div>
+      <div class="tiles" id="tiles"></div>
+      <div class="toolbar">
+        <div class="tabs" id="tabs" role="group" aria-label="Vis ordrer"></div>
+        <input class="search" id="search" type="search" placeholder="Søg på navn, e-mail eller ordrenummer" aria-label="Søg">
+      </div>
+      <p class="msg" id="app-msg" role="status"></p>
+      <div class="orders" id="orders"></div>
+    </div>
+  </div>
+</main>
+
+<script src="js/config.js?v=20261218"></script>
+<script src="js/i18n.js?v=20261218"></script>
+<script src="js/site.js?v=20261218"></script>
+<script>
+/* ---------- Log in with a link sent by e-mail (Supabase Auth), and talk to the database as that person ---------- */
+const BASE = (CONFIG.supabaseUrl || "").replace(/\/$/, ""), KEY = CONFIG.supabaseAnonKey;
+const SESSION = "lk-admin-session";
+let session = local.get(SESSION, null);
+
+function setSession(j) {
+  session = { access_token: j.access_token, refresh_token: j.refresh_token,
+              expires_at: +j.expires_at || Math.floor(Date.now() / 1000) + (+j.expires_in || 3600) };
+  local.set(SESSION, session);
+}
+function forget() { session = null; try { localStorage.removeItem(SESSION); } catch {} }
+// The e-mail inside the login token
+function myEmail() {
+  try { return JSON.parse(atob(session.access_token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/"))).email || ""; } catch { return ""; }
+}
+
+// Coming back from the login link: the tokens are in the address (#access_token=...). Keep them, then tidy the address.
+let linkError = "";
+(() => {
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get("access_token")) setSession(Object.fromEntries(h));
+  if (h.get("error")) linkError = h.get("error_code") === "otp_expired"
+    ? "Linket er udløbet eller allerede brugt. Bed om et nyt herunder."
+    : "Login-linket virkede ikke. Bed om et nyt herunder.";
+  if (location.hash) history.replaceState(null, "", location.pathname);
+})();
+
+// A fresh token (renewed a minute before it runs out)
+async function token() {
+  if (!session) return null;
+  if (session.expires_at - 60 < Date.now() / 1000) {
+    const r = await fetch(BASE + "/auth/v1/token?grant_type=refresh_token", {
+      method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh_token: session.refresh_token })
+    }).catch(() => null);
+    if (!r || !r.ok) { forget(); return null; }
+    setSession(await r.json());
+  }
+  return session.access_token;
+}
+
+async function rpc(fn, args) {
+  const tk = await token();
+  if (!tk) throw new Error("LOGIN");
+  const res = await fetch(BASE + "/rest/v1/rpc/" + fn, {
+    method: "POST", headers: { apikey: KEY, Authorization: "Bearer " + tk, "Content-Type": "application/json" },
+    body: JSON.stringify(args || {})
+  });
+  const body = await res.json().catch(() => null);
+  if (res.status === 401) { forget(); throw new Error("LOGIN"); }
+  if (!res.ok) throw new Error((body && body.message) || "GENERIC");
+  return body;
+}
+
+$("#login").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const email = e.target.email.value.trim().toLowerCase(), msg = $("#login-msg"), btn = e.target.querySelector("button");
+  msg.className = "msg err";
+  if (!validEmail(email)) { msg.textContent = "Skriv en gyldig e-mail."; return; }
+  btn.disabled = true; msg.className = "msg"; msg.textContent = "Sender…";
+  try {
+    const back = location.origin + location.pathname;
+    const res = await fetch(BASE + "/auth/v1/otp?redirect_to=" + encodeURIComponent(back), {
+      method: "POST", headers: { apikey: KEY, "Content-Type": "application/json" },
+      body: JSON.stringify({ email, create_user: false })   // only people added in Supabase can log in
+    });
+    if (res.status === 429) { msg.className = "msg err"; msg.textContent = "Der er sendt for mange links lige nu. Vent et par minutter, og prøv igen."; }
+    else {
+      // The same answer whether or not the e-mail has access, so the page does not reveal who has
+      msg.className = "msg ok";
+      msg.textContent = `Hvis ${email} har adgang, er der nu sendt et login-link. Tjek indbakken (og spam). Linket virker i en time.`;
+    }
+  } catch { msg.className = "msg err"; msg.textContent = "Kunne ikke sende linket. Tjek internetforbindelsen, og prøv igen."; }
+  btn.disabled = false;
+});
+
+$("#logout").addEventListener("click", async () => {
+  const tk = session && session.access_token;
+  forget();
+  if (tk) fetch(BASE + "/auth/v1/logout", { method: "POST", headers: { apikey: KEY, Authorization: "Bearer " + tk } }).catch(() => {});
+  show();
+});
+
+/* ---------- The overview ---------- */
+let orders = [], shop = null, filter = "todo", query = "";
+const FILTERS = [
+  ["todo", "Venter på betaling", o => o.status === "awaiting_payment" && !o.expired],
+  ["paid", "Betalt – skal sendes", o => o.status === "paid"],
+  ["done", "Afsluttet", o => o.status === "shipped" || o.status === "cancelled" || (o.status === "awaiting_payment" && o.expired)],
+  ["all", "Alle", () => true]
+];
+const STATUS = {
+  awaiting_payment: "Venter på betaling", expired: "Ikke betalt i tide", paid: "Betalt", shipped: "Sendt / afhentet", cancelled: "Annulleret"
+};
+const stateOf = (o) => o.status === "awaiting_payment" && o.expired ? "expired" : o.status;
+
+const rtf = new Intl.RelativeTimeFormat("da", { numeric: "auto" });
+function ago(iso) {
+  const s = (Date.parse(iso) - Date.now()) / 1000, a = Math.abs(s);
+  return a < 3600 ? rtf.format(Math.round(s / 60), "minute") : a < 86400 ? rtf.format(Math.round(s / 3600), "hour") : rtf.format(Math.round(s / 86400), "day");
+}
+const when = (iso) => new Date(iso).toLocaleString("da-DK", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+function renderTiles() {
+  const n = (k) => orders.filter(FILTERS.find(f => f[0] === k)[2]).length;
+  $("#tiles").innerHTML = `
+    <div class="tile ${n("todo") ? "alert" : ""}"><span>Venter på betaling</span><b>${n("todo")}</b></div>
+    <div class="tile ${n("paid") ? "alert" : ""}"><span>Betalt – skal sendes</span><b>${n("paid")}</b></div>
+    <div class="tile"><span>Prints bestilt i dag</span><b>${shop ? `${shop.sold_today} / ${shop.daily_limit}` : "–"}</b></div>`;
+  $("#tabs").innerHTML = FILTERS.map(([k, label]) =>
+    `<button class="tab" type="button" data-f="${k}" aria-pressed="${k === filter}">${label}<b>${orders.filter(FILTERS.find(f => f[0] === k)[2]).length}</b></button>`).join("");
+}
+
+function actionsFor(o) {
+  const s = stateOf(o), b = (to, label, cls = "btn") => `<button class="${cls}" type="button" data-to="${to}" data-code="${esc(o.order_code)}">${label}</button>`;
+  if (s === "awaiting_payment" || s === "expired") return b("paid", "Markér som betalt") + b("cancelled", "Annullér", "btn line");
+  if (s === "paid") return b("shipped", o.delivery === "pickup" ? "Afhentet" : "Sendt") + b("awaiting_payment", "Fortryd betaling", "link-btn") + b("cancelled", "Annullér", "link-btn");
+  if (s === "shipped") return b("paid", "Fortryd (ikke sendt alligevel)", "link-btn");
+  return b("awaiting_payment", "Gendan ordren", "link-btn");
+}
+
+function renderOrders() {
+  renderTiles();
+  const f = FILTERS.find(x => x[0] === filter)[2], q = query.trim().toLowerCase();
+  const list = orders.filter(f).filter(o => !q || [o.order_code, o.name, o.email, o.phone].some(v => (v || "").toLowerCase().includes(q)));
+  $("#orders").innerHTML = list.length ? list.map(o => {
+    const s = stateOf(o), later = o.pay_later || 0;
+    return `<article class="o-card ${s}">
+      <div class="o-top">
+        <span class="o-code">${esc(o.order_code)}</span>
+        <span class="order-status ${s}">${STATUS[s]}${s === "paid" && later ? " (depositum)" : ""}</span>
+        <span class="o-age" title="${esc(when(o.created_at))}">${esc(ago(o.created_at))} · ${esc(when(o.created_at))}</span>
+      </div>
+      <div class="o-body">
+        <div>
+          <h3>${esc(o.name)}</h3>
+          <p><a href="mailto:${esc(o.email)}">${esc(o.email)}</a>${o.phone ? `<br><a href="tel:${esc(o.phone)}">${esc(o.phone)}</a>` : ""}</p>
+          <p style="margin-top:.6rem"><span class="lbl">${o.delivery === "ship" ? "Sendes til" : "Levering"}</span>
+            ${o.delivery === "ship" ? `<span class="o-addr">${esc(o.address)}</span>` : "Henter selv i Odense"}</p>
+        </div>
+        <div>
+          <span class="lbl">Prints</span>
+          <ul>${(o.items || []).map(l => `<li>${l.qty} × ${esc(l.title)}</li>`).join("")}</ul>
+          <p style="margin-top:.6rem"><span class="lbl">MobilePay-besked</span><span class="o-mp">${esc(o.mobilepay_message)}</span></p>
+        </div>
+        <div>
+          <span class="lbl">${later ? "Skal betale nu (depositum)" : "Skal betale"}</span>
+          <div class="o-amount">${kr(o.pay_now)}</div>
+          ${later ? `<p>Resten ved afhentning: <b>${kr(later)}</b><br>I alt ${kr(o.total)}</p>` : ""}
+          ${o.paid_at ? `<p class="fineprint">Betalt ${esc(when(o.paid_at))}</p>` : ""}
+        </div>
+      </div>
+      <div class="o-actions">${actionsFor(o)}</div>
+    </article>`;
+  }).join("") : `<p class="empty">${q ? "Ingen ordrer passer på søgningen." : filter === "todo" ? "Ingen ordrer venter på betaling lige nu." : filter === "paid" ? "Ingen betalte ordrer venter på at blive sendt." : "Ingen ordrer her endnu."}</p>`;
+}
+
+async function load() {
+  const msg = $("#app-msg");
+  try {
+    [orders, shop] = await Promise.all([rpc("admin_orders"), rpc("shop_state").catch(() => null)]);
+    msg.textContent = ""; msg.className = "msg";
+    renderOrders();
+  } catch (err) {
+    if (err.message === "LOGIN") return show();
+    msg.className = "msg err";
+    msg.textContent = err.message === "NOT_ADMIN"
+      ? `${myEmail()} er logget ind, men har ikke adgang til ordrer. Bed om at blive tilføjet (tabellen admins i Supabase).`
+      : "Kunne ikke hente ordrerne. Tryk på Opdatér for at prøve igen.";
+  }
+}
+
+$("#tabs").addEventListener("click", e => { const b = e.target.closest("[data-f]"); if (b) { filter = b.dataset.f; renderOrders(); } });
+$("#search").addEventListener("input", e => { query = e.target.value; renderOrders(); });
+$("#refresh").addEventListener("click", load);
+$("#orders").addEventListener("click", async e => {
+  const b = e.target.closest("[data-to]"); if (!b) return;
+  const code = b.dataset.code, to = b.dataset.to, o = orders.find(x => x.order_code === code);
+  if (to === "cancelled" && !confirm(`Annullér ordre ${code}?` + (o && o.status === "paid" ? "\n\nKunden har betalt: husk at sende pengene tilbage." : ""))) return;
+  b.disabled = true;
+  try {
+    await rpc("admin_set_status", { p_code: code, p_status: to });
+    toast(`${code}: ${STATUS[to]}`);
+    await load();
+  } catch (err) {
+    if (err.message === "LOGIN") return show();
+    toast("Det lykkedes ikke. Prøv igen.");
+    b.disabled = false;
+  }
+});
+
+function show() {
+  $("#no-db").hidden = !!BASE;
+  $("#login").hidden = !BASE || !!session;
+  $("#app").hidden = !BASE || !session;
+  if (!BASE) return;
+  if (!session) {
+    const msg = $("#login-msg");
+    if (linkError) { msg.className = "msg err"; msg.textContent = linkError; linkError = ""; }
+    return;
+  }
+  $("#who").textContent = myEmail();
+  load();
+}
+show();
+// Keep it up to date while the page is open
+setInterval(() => { if (session && !document.hidden) load(); }, 60000);
+document.addEventListener("visibilitychange", () => { if (session && !document.hidden) load(); });
+</script>
+</body>
+</html>
