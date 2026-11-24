@@ -157,7 +157,7 @@ declare
   hold_hours      constant integer := 48;
   ship_price      constant integer := 59;
   deposit_percent constant integer := 50;
-  v_plan text := coalesce(p_plan, 'full'); v_now integer; v_later integer := 0;
+  v_plan text := coalesce(p_plan, 'full'); v_now integer; v_later integer := 0; v_zip text;
   v_email text := lower(trim(coalesce(p_email, '')));
   v_phone text := right(regexp_replace(coalesce(p_phone, ''), '\D', '', 'g'), 8);
   item jsonb; p prints; v_art text; qty integer; already integer; total integer := 0;
@@ -167,6 +167,12 @@ begin
   if v_email !~* '^[^@\s]+@[^@\s]+\.[^@\s]+$' then raise exception 'EMAIL'; end if;
   if p_delivery not in ('ship','pickup') then raise exception 'DELIVERY'; end if;
   if p_delivery = 'ship' and length(trim(coalesce(p_address,''))) < 8 then raise exception 'ADDRESS'; end if;
+  -- Prints are only sent inside Denmark for now: the address must have a Danish postcode (4 digits, 1000-9990)
+  -- at the start of a line, followed by the town ("5000 Odense C"). 39xx is Greenland, which counts as abroad.
+  if p_delivery = 'ship' then
+    v_zip := substring(p_address from '(?:^|\n)\s*([0-9]{4})\s+\S');
+    if v_zip is null or v_zip::int < 1000 or v_zip::int > 9990 or v_zip like '39%' then raise exception 'ADDRESS_DK'; end if;
+  end if;
   if p_items is null or jsonb_typeof(p_items) <> 'array' or jsonb_array_length(p_items) = 0 then raise exception 'EMPTY'; end if;
   if v_plan not in ('full', 'deposit') or (v_plan = 'deposit' and p_delivery <> 'pickup') then raise exception 'PLAN'; end if;
   if length(v_phone) < 8 then v_phone := null; end if;
@@ -267,12 +273,33 @@ create or replace function order_status(p_code text, p_email text)
 returns json language sql security definer set search_path = public as $$
   select json_build_object(
     'order_code', order_code, 'total', total, 'message', mobilepay_message, 'items', items, 'paid_at', paid_at,
-    'payment_plan', payment_plan, 'pay_now', coalesce(pay_now, total), 'pay_later', pay_later,
+    'payment_plan', payment_plan, 'pay_now', coalesce(pay_now, total), 'pay_later', pay_later, 'created_at', created_at,
     'status', case when status = 'awaiting_payment' and created_at < now() - interval '48 hours'
                    then 'expired' else status end)
   from orders
   where order_code = upper(trim(p_code)) and email = lower(trim(p_email));
 $$;
+
+-- ---------- The buyer cancels their own order ----------
+-- Allowed within 24 hours of ordering, and only while it is not paid yet (status awaiting_payment).
+-- Like order_status, it needs both the order number and the e-mail, so nobody can cancel someone else's order.
+-- Keep the 24 the same as cancelHours in js/config.js.
+create or replace function cancel_order(p_code text, p_email text)
+returns json language plpgsql security definer set search_path = public as $$
+declare
+  cancel_hours constant integer := 24;
+  o orders;
+begin
+  select * into o from orders
+  where order_code = upper(trim(p_code)) and email = lower(trim(p_email))
+  for update;
+  if not found then raise exception 'NOT_FOUND'; end if;
+  if o.status = 'cancelled' then return json_build_object('order_code', o.order_code, 'status', 'cancelled'); end if;
+  if o.status <> 'awaiting_payment' then raise exception 'CANCEL_PAID'; end if;
+  if o.created_at < now() - make_interval(hours => cancel_hours) then raise exception 'CANCEL_LATE'; end if;
+  update orders set status = 'cancelled' where id = o.id;
+  return json_build_object('order_code', o.order_code, 'status', 'cancelled');
+end $$;
 
 -- ---------- "Notify me" sign-ups ----------
 create or replace function join_waitlist(p_email text, p_topic text)
@@ -288,6 +315,7 @@ grant execute on function place_bid(text, text, text, text, integer) to anon;
 grant execute on function place_order(text, text, text, text, text, jsonb, text) to anon;
 grant execute on function join_waitlist(text, text) to anon;
 grant execute on function order_status(text, text) to anon;
+grant execute on function cancel_order(text, text) to anon;
 revoke execute on function orders_status_change() from public, anon;
 
 -- ============================================================

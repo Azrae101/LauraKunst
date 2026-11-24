@@ -66,6 +66,15 @@ const phoneKey = (p) => { const d = String(p || "").replace(/\D/g, "").slice(-8)
 /* Deposit at pickup: pay DEPOSIT_PCT % now (rounded up to whole kroner), the rest at pickup.
    Same rule as place_order() in supabase-setup.sql. 0 turns the option off. */
 const DEPOSIT_PCT = Math.max(0, Math.min(100, CONFIG.depositPercent || 0));
+const CANCEL_HOURS = CONFIG.cancelHours ?? 24;
+// Prints are only sent inside Denmark for now: a Danish postcode is 4 digits, 1000 to 9990.
+// 39xx is Greenland, which counts as abroad for shipping. Same rule as place_order() in supabase-setup.sql.
+const dkZip = (zip) => /^[1-9]\d{3}$/.test(zip) && +zip <= 9990 && !/^39/.test(zip);
+// The postcode in an address made by submitOrder ("street\n5000 Odense C\nDanmark")
+const zipOf = (address) => ((address || "").match(/(?:^|\n)\s*(\d{4})\s+\S/) || [])[1] || "";
+// Can the buyer still cancel this order themselves? (not paid, and inside the cancel window)
+const canCancel = (o) => o.status === "awaiting_payment" && CANCEL_HOURS > 0 && o.created_at &&
+  Date.now() - Date.parse(o.created_at) < CANCEL_HOURS * 36e5;
 function splitPayment(total, plan) {
   if (plan !== "deposit") return { pay_now: total, pay_later: 0 };
   const pay_now = Math.ceil(total * DEPOSIT_PCT / 100);
@@ -195,6 +204,7 @@ function remoteApi() {
     bid: (b) => rpc("place_bid", { p_artwork: b.artwork, p_name: b.name, p_email: b.email, p_phone: b.phone, p_amount: b.amount }),
     order: (o) => rpc("place_order", { p_name: o.name, p_email: o.email, p_phone: o.phone, p_address: o.address, p_delivery: o.delivery, p_items: o.items, p_plan: o.plan || "full" }),
     status: (code, email) => rpc("order_status", { p_code: code, p_email: email }),
+    cancel: (code, email) => rpc("cancel_order", { p_code: code, p_email: email }),
     notify: (email, topic) => rpc("join_waitlist", { p_email: email, p_topic: topic })
   };
 }
@@ -264,6 +274,7 @@ function demoApi() {
       if (!["full", "deposit"].includes(plan) || (plan === "deposit" && (delivery !== "pickup" || !DEPOSIT_PCT))) return fail("PLAN");
       if (!validEmail(email)) return fail("EMAIL");
       if (delivery === "ship" && (address || "").trim().length < 8) return fail("ADDRESS");
+      if (delivery === "ship" && !dkZip(zipOf(address))) return fail("ADDRESS_DK");
       if (!items.length) return fail("EMPTY");
       // Same rules as place_order() in supabase-setup.sql
       const wanted = {};
@@ -296,7 +307,18 @@ function demoApi() {
       if (!o) return ok(null);
       const expired = o.status === "awaiting_payment" && Date.now() - Date.parse(o.created_at) > CONFIG.reserveHours * 36e5;
       return ok({ order_code: o.order_code, total: o.total, message: o.message, items: o.items, payment_plan: o.payment_plan || "full",
-                  pay_now: o.pay_now ?? o.total, pay_later: o.pay_later || 0, status: expired ? "expired" : (o.status || "awaiting_payment") });
+                  pay_now: o.pay_now ?? o.total, pay_later: o.pay_later || 0, created_at: o.created_at,
+                  status: expired ? "expired" : (o.status || "awaiting_payment") });
+    },
+    // Same rules as cancel_order() in supabase-setup.sql
+    cancel(code, email) {
+      const o = db.orders.find(x => x.order_code === code && x.email === email.trim().toLowerCase());
+      if (!o) return fail("NOT_FOUND");
+      if (o.status === "cancelled") return ok({ order_code: code, status: "cancelled" });
+      if (o.status !== "awaiting_payment") return fail("CANCEL_PAID");
+      if (Date.now() - Date.parse(o.created_at) > CANCEL_HOURS * 36e5) return fail("CANCEL_LATE");
+      o.status = "cancelled"; save();
+      return ok({ order_code: code, status: "cancelled" });
     },
     // Demo only: try the approval in the browser console with  api.markPaid("LK-12345")
     markPaid(code) {
@@ -421,7 +443,14 @@ function renderBasket() {
         <label class="field"><span>${t("email.label")}</span><input name="email" type="email" inputmode="email" autocomplete="email" value="${esc(keep.email ?? me.email ?? "")}" required></label>
       </div>
       <label class="field"><span>${t("basket.phone")}</span><input name="phone" type="tel" autocomplete="tel" value="${esc(keep.phone ?? me.phone ?? "")}"></label>
-      <label class="field" ${delivery === "ship" ? "" : "hidden"}><span>${t("basket.address")}</span><textarea name="address" rows="3" autocomplete="street-address" placeholder="${t("basket.addressPh")}">${esc(keep.address ?? "")}</textarea></label>
+      ${delivery === "ship" ? `<fieldset class="address"><legend>${t("basket.address")}</legend>
+        <label class="field"><span>${t("basket.street")}</span><input name="street" autocomplete="address-line1" placeholder="${t("basket.streetPh")}" value="${esc(keep.street ?? "")}" required></label>
+        <div class="row-zip">
+          <label class="field"><span>${t("basket.zip")}</span><input name="zip" inputmode="numeric" autocomplete="postal-code" maxlength="4" pattern="[0-9]{4}" placeholder="5000" value="${esc(keep.zip ?? "")}" required></label>
+          <label class="field"><span>${t("basket.city")}</span><input name="city" autocomplete="address-level2" placeholder="Odense C" value="${esc(keep.city ?? "")}" required></label>
+        </div>
+        <p class="fineprint">${t("basket.dkOnly")}</p>
+      </fieldset>` : ""}
       <div class="totals">
         <div><span>${t("basket.prints")}</span><span>${kr(subtotal())}</span></div>
         <div><span>${t(delivery === "ship" ? "basket.shipping" : "basket.pickup")}</span><span>${kr(ship)}</span></div>
@@ -446,12 +475,19 @@ async function submitOrder(e) {
   msg.className = "msg err";
   if ((f.name || "").trim().length < 2) { msg.textContent = t("err.NAME"); return; }
   if (!validEmail(f.email)) { msg.textContent = t("err.EMAIL"); return; }
-  if (f.delivery === "ship" && (f.address || "").trim().length < 8) { msg.textContent = t("err.ADDRESS"); return; }
+  let address = "";
+  if (f.delivery === "ship") {
+    const street = (f.street || "").trim(), zip = (f.zip || "").trim(), city = (f.city || "").trim();
+    if (street.length < 4 || !/\d/.test(street)) { msg.textContent = t("err.STREET"); return; }
+    if (!dkZip(zip)) { msg.textContent = t("err.ADDRESS_DK"); return; }
+    if (city.length < 2) { msg.textContent = t("err.CITY"); return; }
+    address = `${street}\n${zip} ${city}\nDanmark`;   // the same format place_order() checks
+  }
   btn.disabled = true; msg.className = "msg"; msg.textContent = t("basket.reserving");
   try {
     const items = basket.map(i => ({ artwork_id: i.artwork_id, signed: i.signed, qty: i.qty }));
     const plan = f.delivery === "pickup" && f.plan === "deposit" ? "deposit" : "full";
-    const r = await api.order({ name: f.name.trim(), email: f.email.trim(), phone: (f.phone || "").trim(), address: f.address || "", delivery: f.delivery, items, plan });
+    const r = await api.order({ name: f.name.trim(), email: f.email.trim(), phone: (f.phone || "").trim(), address, delivery: f.delivery, items, plan });
     local.set("lk-me", { ...local.get("lk-me", {}), name: f.name.trim(), email: f.email.trim(), phone: (f.phone || "").trim() });
     const order = { order_code: r.order_code, total: r.total, items: r.items || [], email: f.email.trim().toLowerCase(),
                     message: r.message || payMessage(r.order_code, r.items || []), status: "awaiting_payment", created_at: new Date().toISOString(),
@@ -484,16 +520,21 @@ function showPayment(order) {
   const mp = CONFIG.mobilepay;
   const number = mp.number.replace(/^\+45/, "").replace(/\D/g, "");   // MobilePay wants the 8 digits
   const paid = order.status === "paid" || order.status === "shipped";
+  const closed = order.status === "cancelled" || order.status === "expired";   // nothing to pay any more
+  const open = !paid && !closed;
   const now = order.pay_now ?? order.total, later = order.pay_later || 0;
-  $("#drawer-title").textContent = t(paid ? "pay.headPaid" : "pay.head");
+  const title = paid ? "pay.titlePaid" : order.status === "cancelled" ? "pay.titleCancelled" : order.status === "expired" ? "pay.titleExpired" : later ? "pay.titleDeposit" : "pay.title";
+  const text = paid ? "pay.textPaid" : order.status === "cancelled" ? "pay.textCancelled" : order.status === "expired" ? "pay.textExpired" : "pay.text";
+  $("#drawer-title").textContent = t(paid ? "pay.headPaid" : closed ? "orders.head" : "pay.head");
   $("#drawer-body").innerHTML = `
     <div class="pay-box">
       <p class="order-status big ${esc(order.status)}">${orderStatusText(order)}</p>
-      <h3>${t(paid ? "pay.titlePaid" : order.status === "expired" || order.status === "cancelled" ? "pay.titleExpired" : later ? "pay.titleDeposit" : "pay.title")}</h3>
-      <p>${t(paid ? "pay.textPaid" : "pay.text", { h: CONFIG.reserveHours })}</p>
-      ${later && order.status !== "shipped" ? `<p class="pay-rest">${t("pay.rest", { n: kr(later), t: kr(order.total) })}</p>` : ""}
+      <h3>${t(title)}</h3>
+      <p>${t(text, { h: CONFIG.reserveHours })}</p>
+      ${later && open ? `<p class="pay-rest">${t("pay.rest", { n: kr(later), t: kr(order.total) })}</p>` : ""}
+      ${later && paid && order.status !== "shipped" ? `<p class="pay-rest">${t("pay.rest", { n: kr(later), t: kr(order.total) })}</p>` : ""}
       <ul class="pay-items">${order.items.map(l => `<li>${l.qty} × ${esc(l.title)}, 50 × 70 cm</li>`).join("")}</ul>
-      ${paid ? "" : `<ol class="pay-steps">
+      ${!open ? "" : `<ol class="pay-steps">
         <li>${t("pay.step1")}</li><li>${t("pay.step2")}</li><li>${t("pay.step3")}</li></ol>
       <dl>
         <div class="pay-row"><dt>${t("pay.to")}</dt><dd>${esc(mp.number)}</dd><button class="copy" type="button" data-copy="${esc(number)}">${t("pay.copy")}</button></div>
@@ -502,14 +543,27 @@ function showPayment(order) {
         <div class="pay-row"><dt>${t("pay.msg")}</dt><dd class="pay-msg">${esc(order.message)}</dd><button class="copy" type="button" data-copy="${esc(order.message)}">${t("pay.copy")}</button></div>
       </dl>
       <p class="fineprint">${t("pay.msgWhy")}</p>`}
-      <p class="fineprint">${t(paid ? "pay.afterPaid" : "pay.after", { e: esc(order.email) })}</p>
+      ${closed ? "" : `<p class="fineprint">${t(paid ? "pay.afterPaid" : "pay.after", { e: esc(order.email) })}</p>`}
     </div>
-    ${paid ? "" : `<button class="btn block" type="button" id="pay-check">${t("pay.check")}</button><p class="msg" id="pay-msg" role="status"></p>`}
-    <button class="btn line block" type="button" id="pay-done">${t("close")}</button>`;
+    ${open ? `<button class="btn block" type="button" id="pay-check">${t("pay.check")}</button><p class="msg" id="pay-msg" role="status"></p>` : ""}
+    <button class="btn line block" type="button" id="pay-done">${t("close")}</button>
+    ${canCancel(order) ? `<div class="pay-cancel" id="pay-cancel">
+      <button class="link-btn" type="button" id="cancel-ask">${t("pay.cancel")}</button>
+      <p class="fineprint">${t("pay.cancelHint", { h: CANCEL_HOURS, until: cancelDeadline(order) })}</p>
+    </div>` : ""}`;
   $$("[data-copy]").forEach(b => b.addEventListener("click", async () => {
     try { await navigator.clipboard.writeText(b.dataset.copy); toast(t("toast.copied")); } catch { toast(t("toast.copyFail")); }
   }));
   $("#pay-done").addEventListener("click", () => drawer.close());
+
+  // Merge what the server says into the order kept in this browser, and redraw if the status changed
+  const update = (s) => {
+    const next = { ...order, status: s.status, pay_now: s.pay_now ?? order.pay_now, pay_later: s.pay_later ?? order.pay_later,
+                   created_at: s.created_at || order.created_at };
+    saveMyOrder(next);
+    return next;
+  };
+
   const check = $("#pay-check");
   if (check) check.addEventListener("click", async () => {
     check.disabled = true;
@@ -517,13 +571,45 @@ function showPayment(order) {
     try {
       const s = await api.status(order.order_code, order.email);
       if (!s) throw new Error("GENERIC");
-      const next = { ...order, status: s.status, pay_now: s.pay_now ?? order.pay_now, pay_later: s.pay_later ?? order.pay_later };
-      saveMyOrder(next);
+      const next = update(s);
       if (s.status !== order.status) { showPayment(next); return; }
       msg.textContent = t("pay.stillWaiting");
     } catch (err) { msg.className = "msg err"; msg.textContent = errText(err); }
     check.disabled = false;
   });
+
+  // Cancel: first ask, then cancel on the server (which checks the 24 hours and that it is not paid)
+  const box = $("#pay-cancel");
+  if (box) $("#cancel-ask").addEventListener("click", () => {
+    box.innerHTML = `<p><b>${t("pay.cancelSure", { c: esc(order.order_code) })}</b></p>
+      <p class="fineprint">${t("pay.cancelPaidNote")}</p>
+      <div class="pay-cancel-actions">
+        <button class="btn" type="button" id="cancel-yes">${t("pay.cancelYes")}</button>
+        <button class="btn line" type="button" id="cancel-no">${t("pay.cancelNo")}</button>
+      </div>
+      <p class="msg" id="cancel-msg" role="status"></p>`;
+    $("#cancel-no").addEventListener("click", () => showPayment(order));
+    $("#cancel-yes").addEventListener("click", async (e) => {
+      e.target.disabled = true;
+      const msg = $("#cancel-msg");
+      try {
+        const s = await api.cancel(order.order_code, order.email);
+        showPayment(update({ ...s, status: s.status || "cancelled" }));
+        toast(t("toast.cancelled"));
+      } catch (err) {
+        msg.className = "msg err"; msg.textContent = errText(err);
+        e.target.disabled = false;
+        // The server knows best (e.g. Laura marked it as paid meanwhile): refresh the status
+        try { const s = await api.status(order.order_code, order.email); if (s && s.status !== order.status) setTimeout(() => showPayment(update(s)), 2500); } catch {}
+      }
+    });
+  });
+}
+
+// "kl. 14:30 i morgen" style end of the cancel window, in the visitor's language
+function cancelDeadline(o) {
+  const end = new Date(Date.parse(o.created_at) + CANCEL_HOURS * 36e5);
+  return end.toLocaleString(locale(), { weekday: "long", hour: "2-digit", minute: "2-digit" });
 }
 
 /* ---------- Waitlist forms: any <form data-notify="topic"> ---------- */

@@ -403,6 +403,9 @@ section.block { padding: 4rem 0; }
 .link-btn { background: none; border: 0; color: var(--text-muted); text-decoration: underline; cursor: pointer; font-size: 0.85rem; min-height: 44px; padding: 0 0.25rem; }
 fieldset { border: 0; display: grid; gap: 0.5rem; }
 legend { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.4rem; }
+/* Delivery address: street, then postcode (narrow) and town side by side */
+fieldset.address { gap: 0.9rem; }
+.row-zip { display: grid; grid-template-columns: 6.5rem 1fr; gap: 1rem; }
 .radio { display: flex; gap: 0.7rem; align-items: center; min-height: 52px; padding: 0.6rem 0.9rem; border: 1px solid var(--line); background: var(--white); cursor: pointer; font-size: 0.95rem; }
 .radio:has(input:checked) { border-color: var(--green-dark); box-shadow: inset 0 0 0 1px var(--green-dark); }
 .radio input { width: 18px; height: 18px; accent-color: var(--green-mid); flex: none; }
@@ -423,7 +426,11 @@ legend { font-size: 0.8rem; letter-spacing: 0.08em; text-transform: uppercase; c
 .order-status { font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; padding: 0.25rem 0.55rem; border: 1px solid currentColor; color: var(--warm-brown); white-space: nowrap; justify-self: start; }
 .order-status.paid, .order-status.shipped { color: var(--ok); }
 .order-status.expired, .order-status.cancelled { color: var(--err); }
-#pay-msg:empty { display: none; }
+#pay-msg:empty, #cancel-msg:empty { display: none; }
+/* "Annullér ordren": small and quiet under the buttons, with a yes/no step */
+.pay-cancel { display: grid; gap: 0.6rem; justify-items: center; text-align: center; padding-top: 0.2rem; }
+.pay-cancel .fineprint { max-width: 36ch; }
+.pay-cancel-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; width: 100%; }
 .totals .split { font-size: 0.95rem; color: var(--green-dark); }
 .totals .split:last-child { color: var(--text-muted); }
 .pay-rest { padding: 0.7rem 0.9rem; background: var(--ivory); border-left: 3px solid var(--green-mid); font-size: 0.95rem; }

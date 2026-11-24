@@ -566,6 +566,38 @@ const I18N = {
     "da": "Adresse",
     "en": "Address"
   },
+  "basket.street": {
+    "da": "Vej og husnummer",
+    "en": "Street and number"
+  },
+  "basket.streetPh": {
+    "da": "Fx Kongensgade 12, 2. tv.",
+    "en": "E.g. Kongensgade 12, 2. tv."
+  },
+  "basket.zip": {
+    "da": "Postnr.",
+    "en": "Postcode"
+  },
+  "basket.city": {
+    "da": "By",
+    "en": "Town"
+  },
+  "basket.dkOnly": {
+    "da": "Vi sender kun til adresser i Danmark lige nu (ikke Grønland og Færøerne). Bor du i udlandet, så skriv til Laura via kontaktformularen.",
+    "en": "For now we only send to addresses in Denmark (not Greenland or the Faroe Islands). Living abroad? Write to Laura through the contact form."
+  },
+  "err.STREET": {
+    "da": "Skriv venligst vej og husnummer.",
+    "en": "Please enter the street and house number."
+  },
+  "err.CITY": {
+    "da": "Skriv venligst byen.",
+    "en": "Please enter the town."
+  },
+  "err.ADDRESS_DK": {
+    "da": "Skriv et dansk postnummer med 4 cifre, fx 5000. Vi sender kun inden for Danmark lige nu.",
+    "en": "Please enter a Danish postcode with 4 digits, e.g. 5000. For now we only send within Denmark."
+  },
   "basket.addressPh": {
     "da": "Vej, postnummer og by",
     "en": "Street, postcode and city"
@@ -649,6 +681,58 @@ const I18N = {
   "pay.checking": {
     "da": "Tjekker…",
     "en": "Checking…"
+  },
+  "pay.titleCancelled": {
+    "da": "Ordren er annulleret",
+    "en": "The order is cancelled"
+  },
+  "pay.textCancelled": {
+    "da": "Du skal ikke betale noget. Har du lyst, kan du altid lave en ny ordre.",
+    "en": "You don’t need to pay anything. You are welcome to place a new order at any time."
+  },
+  "pay.textExpired": {
+    "da": "Betalingen kom ikke inden for fristen, så ordren er lukket. Du skal ikke betale noget, men du er velkommen til at lave en ny ordre.",
+    "en": "The payment did not arrive in time, so the order is closed. You don’t need to pay anything, but you are welcome to place a new order."
+  },
+  "pay.cancel": {
+    "da": "Annullér ordren",
+    "en": "Cancel the order"
+  },
+  "pay.cancelHint": {
+    "da": "Du kan annullere ordren selv inden for {h} timer, så længe den ikke er betalt (indtil {until}).",
+    "en": "You can cancel the order yourself within {h} hours, as long as it is not paid (until {until})."
+  },
+  "pay.cancelSure": {
+    "da": "Vil du annullere ordre {c}?",
+    "en": "Do you want to cancel order {c}?"
+  },
+  "pay.cancelPaidNote": {
+    "da": "Har du allerede sendt pengene med MobilePay? Så annullér ikke her, men skriv til Laura via kontaktformularen, så finder I ud af det sammen.",
+    "en": "Have you already sent the money with MobilePay? Then don’t cancel here, but write to Laura through the contact form and you will sort it out together."
+  },
+  "pay.cancelYes": {
+    "da": "Ja, annullér",
+    "en": "Yes, cancel"
+  },
+  "pay.cancelNo": {
+    "da": "Nej, behold den",
+    "en": "No, keep it"
+  },
+  "toast.cancelled": {
+    "da": "Ordren er annulleret",
+    "en": "The order is cancelled"
+  },
+  "err.CANCEL_PAID": {
+    "da": "Ordren er allerede betalt, så den kan ikke annulleres her. Skriv til Laura via kontaktformularen.",
+    "en": "The order is already paid, so it can’t be cancelled here. Please write to Laura through the contact form."
+  },
+  "err.CANCEL_LATE": {
+    "da": "Det er mere end 24 timer siden, du bestilte, så ordren kan ikke annulleres her længere. Skriv til Laura via kontaktformularen.",
+    "en": "It is more than 24 hours since you ordered, so the order can no longer be cancelled here. Please write to Laura through the contact form."
+  },
+  "err.NOT_FOUND": {
+    "da": "Ordren blev ikke fundet.",
+    "en": "The order was not found."
   },
   "pay.stillWaiting": {
     "da": "Betalingen er ikke godkendt endnu. Laura tjekker MobilePay i hånden, så det kan tage nogle timer. Du får også en e-mail.",

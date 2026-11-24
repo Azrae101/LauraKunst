@@ -32,6 +32,10 @@ const CONFIG = {
   // Set to 0 to turn the option off. Keep the same as deposit_percent in supabase-setup.sql.
   depositPercent: 50,
 
+  // The buyer can cancel their own order for this many hours after ordering, as long as it is not paid.
+  // Keep the same as cancel_hours in supabase-setup.sql.
+  cancelHours: 24,
+
   contact: {
     email: "laur723kru@gmail.com",
     instagram: { url: "https://www.instagram.com/laur_kru", handle: "@laur_kru" },
