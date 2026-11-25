@@ -306,7 +306,7 @@ revoke execute on function orders_status_change() from public, anon;
 
 -- Who may see orders on ordrer.html (they must also be added as users under Authentication, Users)
 insert into admins (email) values
-  ('laur723kru@gmail.com'),
+  ('hello@japperstudio.dk'),
   ('clara.holst@outlook.com')
 on conflict (email) do nothing;
 

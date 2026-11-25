@@ -76,10 +76,9 @@ Alt herunder kan slås til igen uden at skrive ny kode, medmindre andet står.
 
 
 8. CVR, E-MAIL OG HANDELSBETINGELSER
-   - E-mailen på hjemmesiden er midlertidigt laur723kru@gmail.com. Skift til laura@japperstudio.dk,
-     når den mailadresse virker: ret email under contact i js/config.js. Så skifter den alle steder på én gang
-     (kontaktformularens fejlbesked, handelsbetingelser, privatlivspolitik og fortrydelsesformularen).
-     Tjek først, at der kommer mail frem til laura@japperstudio.dk, og at nogen læser den.
+   - E-mailen på hjemmesiden er hello@japperstudio.dk. Den står under contact i js/config.js og skifter alle steder
+     på én gang (kontaktformularens fejlbesked, handelsbetingelser, privatlivspolitik og fortrydelsesformularen).
+     Tjek, at der kommer mail frem til hello@japperstudio.dk, og at nogen læser den.
    - Når CVR-nummeret kommer: skriv det i js/config.js under business (cvr: "12345678").
      Så vises det i footeren og på betingelser.html.
    - Lad nogen med forstand på det læse betingelser.html igennem (handelsbetingelser og privatlivspolitik).

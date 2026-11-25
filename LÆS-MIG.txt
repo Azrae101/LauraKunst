@@ -143,7 +143,7 @@ THE ORDER OVERVIEW (japperstudio.dk/ordrer.html)
   3. Authentication, then Users, then "Add user", then "Create new user": enter the e-mail, any password
      (it is never used), tick "Auto Confirm User". Do this for each person who should have access.
   4. The same e-mails must be in the admins table: see the bottom of supabase-setup.sql
-     (laur723kru@gmail.com and clara.holst@outlook.com are there). Add more there and run the SQL again.
+     (hello@japperstudio.dk and clara.holst@outlook.com are there). Add more there and run the SQL again.
   Both steps 3 and 4 are needed: step 3 lets them log in, step 4 lets them see orders.
   Supabase's own login e-mails are limited to a few an hour on the free plan, which is fine for this.
 

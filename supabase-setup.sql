@@ -457,6 +457,6 @@ on conflict (artwork_id) do update set stock = excluded.stock,
 -- Each person must ALSO be added in Supabase: Authentication, Users, Add user (see LÆS-MIG.txt).
 -- To remove someone: delete from admins where email = 'their@email.dk';
 insert into admins (email) values
-  ('laur723kru@gmail.com'),
+  ('hello@japperstudio.dk'),
   ('clara.holst@outlook.com')
 on conflict (email) do nothing;
