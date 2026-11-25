@@ -25,7 +25,7 @@
   <link rel="icon" type="image/png" sizes="32x32" href="images/general/favicon-32.png">
   <link rel="icon" type="image/png" sizes="192x192" href="images/general/favicon-192.png">
   <link rel="apple-touch-icon" href="images/general/apple-touch-icon.png">
-  <link rel="stylesheet" href="css/style.css?v=20261125b">
+  <link rel="stylesheet" href="css/style.css?v=20261125j">
   <script>
     // Parts that used to be on the front page now have their own page: send old links there
     (() => {
@@ -63,6 +63,7 @@
     <div class="wrap hero-content">
       <!-- Left: the logo with the buttons underneath -->
       <div class="hero-text">
+        <p class="eyebrow hero-welcome" data-i18n="home.welcome">Velkommen til:</p>
         <h1 class="hero-logo-h">
           <!-- WebP (about 85 % smaller); the PNG is only for very old browsers -->
           <picture>
@@ -76,9 +77,17 @@
           <a class="btn line" href="museum.html" data-i18n="home.ctaMuseum">Se porteføljen</a>
         </div>
       </div>
-      <!-- Right: PLACEHOLDER. Replace this div with e.g.
-           <img class="hero-photo" src="images/general/your-photo.jpg" width="1200" height="1500" alt="..."> -->
-      <div class="hero-photo hero-photo-placeholder" aria-hidden="true"><span>Billede kommer her</span></div>
+      <!-- Right: photo of Laura in an artsy frame (a sage block, a drifting gold line and gold-leaf flakes).
+           Desktop: from just under the menu to the bottom of the buttons, from under "Forside" (set by
+           placeHeroPhoto below) to the right margin. Top and bottom are cropped to fit. Phones: under the buttons. -->
+      <figure class="hero-frame">
+        <div class="hero-frame-pic">
+          <img class="hero-photo" src="images/general/lauragrin.jpg?v=2" width="1065" height="1422" alt="Laura Kruuse griner ved et bord med blomster" fetchpriority="high">
+        </div>
+        <span class="flake f1" aria-hidden="true"></span>
+        <span class="flake f2" aria-hidden="true"></span>
+        <span class="flake f3" aria-hidden="true"></span>
+      </figure>
     </div>
   </section>
 
@@ -238,7 +247,7 @@
 </footer>
 
 <script src="js/config.js?v=20261125"></script>
-<script src="js/i18n.js?v=20261124g"></script>
+<script src="js/i18n.js?v=20261125"></script>
 <script src="js/site.js?v=20261124g"></script>
 <script>
 let auctions = [];
@@ -385,7 +394,18 @@ if (location.hash.length > 1 && !/^#print-/.test(location.hash)) addEventListene
   spy();
 })();
 
-document.addEventListener("lang:change", () => { renderTeaser(); renderLinks(); renderIgProfile(); });
+document.addEventListener("lang:change", () => { renderTeaser(); renderLinks(); renderIgProfile(); placeHeroPhoto(); });
+
+/* ---------- Top photo starts right under "Forside" in the menu (desktop only; the CSS falls back to the middle) ---------- */
+function placeHeroPhoto() {
+  const box = $(".hero-content"), link = $(".nav-links a[aria-current]");
+  if (!box) return;
+  if (link && innerWidth >= 900) box.style.setProperty("--photo-left", Math.round(link.getBoundingClientRect().left - box.getBoundingClientRect().left) + "px");
+  else box.style.removeProperty("--photo-left");
+}
+placeHeroPhoto();
+addEventListener("resize", placeHeroPhoto);
+document.fonts?.ready.then(placeHeroPhoto);
 if (AUCTION) {
   loadAuctions();
   setInterval(tickTeaser, 1000);

@@ -703,21 +703,81 @@ fieldset.address { gap: 0.9rem; }
 @media (max-width: 599px) { .mcta-label { display: none; } }
 @media (max-width: 479px) { .mcta-wall { padding-inline: 0.6rem; } .mcta-frame img { height: 72px; } .mcta-visitor { height: 120px; } }
 
-/* Top section: the logo with the buttons underneath on the left, a picture on the right (hidden on phones) */
-.hero-content { display: grid; gap: 1.5rem; }
-.hero-logo-h { margin: 0; line-height: 0; }
-.hero-logo { display: block; width: clamp(180px, 55vw, 240px); height: auto; filter: drop-shadow(0 14px 26px rgba(0, 0, 0, 0.25)); animation: fadeUp 0.8s 0.1s both; }
-.hero-photo { display: none; }
+/* ---------- Top section ----------
+   Phones: everything centred: "Velkommen til", the logo, the buttons, and the framed photo underneath.
+   700 px and up: logo and buttons on the left, vertically centred against the photo on the right. */
+:root { --gold: #c49a3c; --gold-light: #ecd28c; }
+.hero-content {
+  display: grid; justify-items: center; text-align: center; gap: 0;
+  padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 1.5rem);
+  padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0px));
+}
+.hero-text { display: flex; flex-direction: column; align-items: center; }
+@media (max-width: 699px) { .hero { align-items: flex-start; } }
+.hero-welcome { color: var(--green-mid) !important; }
+.hero-logo-h { position: relative; margin: 0.6rem 0 0; line-height: 0; }
+/* a soft sage glow behind the logo */
+.hero-logo-h::before { content: ""; position: absolute; inset: -18%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, rgba(200, 217, 184, 0.55), rgba(200, 217, 184, 0)); }
+.hero-logo { display: block; width: clamp(200px, 62vw, 260px); height: auto; filter: drop-shadow(0 10px 22px rgba(120, 100, 60, 0.14)); animation: fadeUp 0.8s 0.1s both; }
+.hero-actions { justify-content: center; }
+@media (max-width: 479px) { .hero-actions { width: min(100%, 340px); } }
+
+/* The frame: photo inside, a sage block offset behind it, a thin gold line that slowly drifts, and gold-leaf flakes */
+.hero-frame { position: relative; isolation: isolate; margin: 3rem auto 1rem; width: min(78vw, 330px); aspect-ratio: 4 / 5; }
+.hero-frame::after {   /* sage block, offset down and to the left */
+  content: ""; position: absolute; inset: 18px 18px -18px -18px; z-index: -2;
+  background: linear-gradient(150deg, rgba(200, 217, 184, 0.75), rgba(122, 158, 110, 0.35));
+  animation: frame-in 1s 0.5s both, drift-b 11s 1.5s ease-in-out infinite alternate;
+}
+.hero-frame::before {  /* thin gold line, offset up and to the right */
+  content: ""; position: absolute; inset: -14px -14px 14px 14px; z-index: -1;
+  border: 1.5px solid var(--gold); opacity: 0.85;
+  animation: frame-in 1s 0.8s both, drift-a 9s 1.8s ease-in-out infinite alternate;
+}
+.hero-frame-pic { position: absolute; inset: 0; overflow: hidden; background: #e9e2cf; box-shadow: 0 24px 44px -24px rgba(60, 50, 30, 0.45); animation: wipe-up 1.3s 0.25s cubic-bezier(0.7, 0, 0.2, 1) both; }
+.hero-photo { display: block; width: 100%; height: 100%; object-fit: cover; object-position: 85% 45%;   /* Laura sits to the right in the photo */
+  animation: settle 2.6s 0.25s cubic-bezier(0.2, 0.6, 0.2, 1) both; }
+.flake {
+  position: absolute; z-index: 1; width: 20px; height: 15px; pointer-events: none;
+  background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 55%, #f3e2a8 100%);
+  border-radius: 62% 38% 55% 45% / 48% 60% 40% 52%; box-shadow: 0 2px 6px rgba(120, 90, 30, 0.25);
+  animation: frame-in 0.8s both, flake-float 6s ease-in-out infinite;
+}
+.flake.f1 { top: -10px; left: -12px; animation-delay: 1.2s, 1.2s; transform: rotate(-20deg); }
+.flake.f2 { top: 38%; right: -11px; width: 13px; height: 10px; animation-delay: 1.4s, 2.4s; }
+.flake.f3 { bottom: -9px; left: 28%; width: 16px; height: 12px; animation-delay: 1.6s, 3.4s; }
+
+/* ends a little outside the box, so the shadow is not cut off once the wipe is done */
+@keyframes wipe-up { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(-60px); } }
+@keyframes settle { from { transform: scale(1.12); } to { transform: none; } }
+@keyframes frame-in { from { opacity: 0; } }
+@keyframes drift-a { from { transform: translate(0, 0) rotate(0deg); } to { transform: translate(-7px, 6px) rotate(0.6deg); } }
+@keyframes drift-b { from { transform: translate(0, 0); } to { transform: translate(8px, -6px); } }
+@keyframes flake-float { 0%, 100% { translate: 0 0; rotate: 0deg; } 50% { translate: 0 -7px; rotate: 18deg; } }
+
 @media (min-width: 700px) {
-  .hero-content { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: 3rem; }
-  .hero-photo { display: block; width: 100%; max-width: 460px; justify-self: end; aspect-ratio: 4 / 5; height: auto; object-fit: cover; animation: fadeUp 0.8s 0.3s both; }
+  /* The section is one screen tall; the photo goes from just under the menu to --ph-bottom above the bottom edge,
+     and from under "Forside" (--photo-left, measured in index.html; the middle of the page when the menu is folded
+     away) to the right margin, which is as far from the edge as the logo is on the left. */
+  .hero-content {
+    --ph-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 2rem);
+    --ph-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
+    min-height: 100svh; justify-items: start; align-content: center; text-align: left;
+    padding-top: var(--ph-top); padding-bottom: var(--ph-bottom);
+  }
+  .hero-text { align-items: flex-start; max-width: calc(var(--photo-left, 50%) - 3rem); }
+  .hero-actions { justify-content: flex-start; }
+  .hero-frame {
+    position: absolute; margin: 0; aspect-ratio: auto;
+    top: var(--ph-top); bottom: var(--ph-bottom); left: var(--photo-left, 50%); right: 0; width: auto;
+  }
+  .flake.f1 { width: 24px; height: 18px; }
 }
 @media (min-width: 900px) {
   .hero-logo { width: clamp(280px, 26vw, 360px); }
+  .hero-frame::after { inset: 26px 26px -26px -26px; }
+  .hero-frame::before { inset: -18px -18px 18px 18px; }
 }
-/* Placeholder until a real picture is chosen: a soft box with a note in the middle */
-.hero-photo-placeholder { background: rgba(106, 134, 96, 0.1); border: 1px dashed rgba(63, 84, 64, 0.35); }
-.hero-photo-placeholder span { display: grid; place-items: center; height: 100%; font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-muted); }
 
 /* Japper studio logo in the footer */
 .footer-logo { display: inline-flex; align-items: center; gap: 0.6rem; }

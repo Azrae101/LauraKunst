@@ -930,9 +930,9 @@ const I18N = {
     "da": "Ingen bud endnu",
     "en": "No bids yet"
   },
-  "home.eyebrow": {
-    "da": "Malerier og signerede prints",
-    "en": "Paintings and signed prints"
+  "home.welcome": {
+    "da": "Velkommen til:",
+    "en": "Welcome to:"
   },
   "home.sub": {
     "da": "Naturinspirerede malerier med tørrede blomster og bladguld. Byd på originalerne, eller tag et print med hjem.",
