@@ -934,6 +934,10 @@ const I18N = {
     "da": "Velkommen til:",
     "en": "Welcome to:"
   },
+  "home.tagline": {
+    "da": "Malerier med tørrede blomster og bladguld,<br>solgt som signerede og nummererede prints.",
+    "en": "Paintings with dried flowers and gold leaf,<br>available as signed and numbered prints."
+  },
   "home.sub": {
     "da": "Naturinspirerede malerier med tørrede blomster og bladguld. Byd på originalerne, eller tag et print med hjem.",
     "en": "Nature-inspired paintings with dried flowers and gold leaf. Bid on the originals, or take a print home."

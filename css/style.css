@@ -709,7 +709,7 @@ fieldset.address { gap: 0.9rem; }
 :root { --gold: #c49a3c; --gold-light: #ecd28c; }
 .hero-content {
   display: grid; justify-items: center; text-align: center; gap: 0;
-  padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 1.5rem);
+  padding-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 0.5rem);
   padding-bottom: calc(3rem + env(safe-area-inset-bottom, 0px));
 }
 .hero-text { display: flex; flex-direction: column; align-items: center; }
@@ -718,13 +718,21 @@ fieldset.address { gap: 0.9rem; }
 .hero-logo-h { position: relative; margin: 0.6rem 0 0; line-height: 0; }
 /* a soft sage glow behind the logo */
 .hero-logo-h::before { content: ""; position: absolute; inset: -18%; z-index: -1; border-radius: 50%; background: radial-gradient(closest-side, rgba(200, 217, 184, 0.55), rgba(200, 217, 184, 0)); }
-.hero-logo { display: block; width: clamp(200px, 62vw, 260px); height: auto; filter: drop-shadow(0 10px 22px rgba(120, 100, 60, 0.14)); animation: fadeUp 0.8s 0.1s both; }
+.hero-logo { display: block; width: clamp(180px, 54vw, 225px); height: auto; filter: drop-shadow(0 10px 22px rgba(120, 100, 60, 0.14)); animation: fadeUp 0.8s 0.1s both; }
 .hero-actions { justify-content: center; }
-@media (max-width: 479px) { .hero-actions { width: min(100%, 340px); } }
+/* Two lines saying what the shop sells, about as wide as the buttons (normal word spacing; the font size does it).
+   .hero-cta shrinks to the buttons' width,
+   and the text (width 0, min-width 100%) adds nothing to that width but fills it */
+.hero-cta { display: grid; width: fit-content; max-width: 100%; margin-top: 1.3rem; }
+.hero-tagline { width: 0; min-width: 100%; margin: 0; white-space: nowrap; font-size: clamp(0.9rem, 4.1vw, 1rem); font-weight: 400; line-height: 1.65; letter-spacing: 0.01em; color: var(--green-dark);
+  animation: fadeUp 0.8s 0.3s both; }
+.hero-cta .hero-actions { margin-top: 1.4rem; }
+@media (max-width: 479px) { .hero-cta { width: min(100%, 340px); } .hero-cta .hero-actions { width: 100%; } }
+@media (min-width: 480px) { .hero-tagline { font-size: 1.1rem; } }   /* sized so the lines are about as wide as the buttons */
 
 /* The frame: a sage square offset behind the photo (down and left), a thin gold square outline offset the other way
    (up and right), both drifting slowly */
-.hero-frame { position: relative; isolation: isolate; margin: 3rem auto 2.5rem; width: min(74vw, 320px); aspect-ratio: 5 / 6; }
+.hero-frame { position: relative; isolation: isolate; margin: 3rem auto 2.5rem; width: min(74vw, 320px); aspect-ratio: 1 / 1; }
 .hero-frame::after {   /* sage square */
   content: ""; position: absolute; inset: 18px 18px -18px -18px; z-index: -2;
   background: linear-gradient(150deg, rgba(200, 217, 184, 0.75), rgba(122, 158, 110, 0.35));
@@ -774,7 +782,7 @@ fieldset.address { gap: 0.9rem; }
   .hero-content {
     --ph-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 2rem);
     --ph-bottom: calc(3.5rem + env(safe-area-inset-bottom, 0px));
-    min-height: 100svh; justify-items: start; align-content: center; text-align: left;
+    min-height: calc(100svh - 3.5rem); justify-items: start; align-content: center; text-align: left;
     padding-top: var(--ph-top); padding-bottom: var(--ph-bottom);
   }
   .hero-text { align-items: flex-start; max-width: calc(var(--photo-left, 50%) - 3rem); }
@@ -789,13 +797,14 @@ fieldset.address { gap: 0.9rem; }
   }
   /* Height: the photo starts a little below the menu, and the bottom of the sage square (--decor-b) ends exactly
      level with the bottom of the buttons, which sit at the bottom of the section */
-  .hero-content { --ph-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 5rem); align-content: end; }
+  .hero-content { --ph-top: calc(var(--nav-h) + env(safe-area-inset-top, 0px) + 3rem); align-content: end; }
+  .hero { min-height: 0; }   /* the section is 3.5rem less than a screen tall, so everything sits closer to the menu */
   .hero-frame { --decor-b: 26px; bottom: calc(var(--ph-bottom) + var(--decor-b)); }
   .hero-frame::after { inset: 26px 26px calc(-1 * var(--decor-b)) calc(-1 * var(--decor-l)); }
   .hero-gold { inset: -18px calc(-1 * var(--decor-r)) 18px 18px; }
 }
 @media (min-width: 900px) {
-  .hero-logo { width: clamp(280px, 26vw, 360px); }
+  .hero-logo { width: clamp(240px, 22vw, 300px); }
 }
 
 /* Japper studio logo in the footer */
